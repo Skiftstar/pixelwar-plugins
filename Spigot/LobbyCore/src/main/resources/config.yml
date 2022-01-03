@@ -1,0 +1,11 @@
+defaultGamemode: "ADVENTURE"
+resetOnVoid: true
+serverInterfaceTitle: "&aServers"
+servers:
+  ExampleServer:
+    name: "Example Server"
+    description:
+      - "Zeile 1"
+      - "&aKuck mal, Farbe!"
+    block: "NOTE_BLOCK"
+    slot: 10

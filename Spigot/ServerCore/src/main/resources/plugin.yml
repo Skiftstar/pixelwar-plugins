@@ -1,0 +1,58 @@
+name: ServerCore
+version: '${project.version}'
+main: Kyu.ServerCore.Main
+api-version: 1.18
+depends: [LuckPerms, Vault, BetterEconomy]
+
+commands:
+  gamemode:
+    aliases:
+      - gm
+    description: Allows the user to change their gamemode
+  teleport:
+    aliases:
+      - tp
+    description: Allows the user to teleport himself or other players
+  discord:
+    aliases:
+      - dc
+    description: Shows the discord link
+  sReload:
+    description: Reloads the plugin
+
+permissions:
+  core.reload:
+    default: false
+    description: Alows the usage of the reload command
+  core.gamemode:
+    description: Allows the usage of the gamemode command
+    default: false
+  core.gamemode.others:
+    description: Allows setting the gamemode of others, gives the gamemode permission as well
+    default: false
+    children: [core.gamemode]
+  core.teleport:
+    description: Allows the usage of the teleport command
+    default: false
+  core.teleport.others:
+    description: Allows teleporting other player, gives the teleport permission as well
+    default: false
+    children: [core.teleport]
+  core.colorchat:
+    description: Allows the user of color codes in chat
+    default: false
+  core.ignoreLuckDenial:
+    description: Users with this permission bypass the LuckPerms Weight Check
+    default: false
+  core.mod:
+    description: Access to all moderation related commands
+    default: false
+  core.*:
+    description: Full access
+    default: false
+    children:
+      - core.gamemode.others
+      - core.teleport.others
+      - core.colorchat
+      - core.mod
+      - core.reload

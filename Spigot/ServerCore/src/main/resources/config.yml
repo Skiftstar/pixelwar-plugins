@@ -1,0 +1,13 @@
+chatPrefix: "&6[PixelCore]"
+serverName: "&aPixel&cWar"
+ScoreboardRefreshDelay: 5
+filterFromPrefixForScoreboard: "|"
+discordLink: "https://discord.gg/Fce224eSzf"
+cacheTimeout: 30
+
+database:
+  host: localhost # host of your database
+  port: 3306 # default port for MySQL
+  database: db # name of your database. A database server can contain multiple databases
+  user: username
+  password: passy

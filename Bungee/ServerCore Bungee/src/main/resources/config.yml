@@ -1,0 +1,9 @@
+cacheTimeout: 30
+confirmTimeout: 30
+
+database:
+  host: localhost # host of your database
+  port: 3306 # default port for MySQL
+  database: db # name of your database. A database server can contain multiple databases
+  user: username
+  password: passy

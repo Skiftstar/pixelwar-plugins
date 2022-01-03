@@ -1,0 +1,43 @@
+Errors:
+  NEPerms: "&cDu hast nicht genug Rechte!"
+  NEArgs: "&cNicht genug Argumente!"
+  PlayerNotFound: "&cSpieler wurde nicht gefunden!"
+  PlayerOnly: "Nur für Spieler!"
+  GlobalChatNotActive: "&cDu hast den Globalen Chat nicht aktieviert! Aktiviere ihn mit /g"
+  NaN: "&4%value &cmuss eine Zahl sein!"
+  IndexOutOfBounds: "&cGib eine gültige Zahl ein!"
+  NoConfirmationPresent: "&cDu musst nichts bestätigen!"
+  ConfirmationTimeout: "&cDeine Bestätigungszeit ist ausgelaufen!"
+  NoLangSet: "&aDu hast noch keine Sprache gesetzt, daher wurde sie vorerst auf &b%default &agesetzt!"
+  PlayerWasNeverOnServer: "&cDieser Spieler war noch nie auf dem Server!"
+
+Templates:
+  DMTemplate: "&8[&7%p1 -> %p2&8] %mess"
+
+SuccessMessages:
+  GlobalChatStatus: "&bDu hast den Globalen Chat %status!"
+
+Info:
+  NoLangSet: '&aDu hast noch keine Sprache gesetzt, daher wird sie auf %default gesetzt'
+  ReloadDone: "&aPlugin erfolgreich reloaded!"
+
+Constants:
+  "you": "Du"
+  "activated": "&aaktiviert"
+  "deactivated": "&cdeaktiviert"
+  "Days": "Tage"
+  "Months": "Monate"
+  "Hours": "Stunden"
+  "Minutes": "Minuten"
+  "Seconds": "Sekunden"
+
+Bans:
+  PleaseConfirmBan: "&b%player &aist nicht online! Bitte bestätige, dass du &b%player &afür &b%reason &abestrafen willst mit &b/banconfirm!"
+  BanConfirmed: "&aBestätigung erfolgreich!"
+  BanReasonListTitle: "&aListe aller Bangründe:"
+  BanReasonListEntry: "&a%index - %reason"
+  PermaBanMessage: "&cDu wurdest &4PERMANENT &cvom Server gebannt!\n&cGrund: &4%reason"
+  TempbanMessage: "&cDu wurdest für &4%duration &cvom Server gebannt!\n&cGrund: &4%reason"
+  KickMessage: "&cDu wurdest vom Server gekickt!\n&cGrund: &4%reason"
+  GChatPermaMuteMessage: "&cDu wurdest &4PERMANENT &cim &4Globalen Chat &cgemutet!\n&cGrund: &4%reason"
+  GChatMuteMessage: "&cDu wurdest für &4%duration &cim &4Globalen Chat &cgemutet!\n&cGrund: &4%reason"

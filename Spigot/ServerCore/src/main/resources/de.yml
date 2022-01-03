@@ -1,0 +1,48 @@
+Error:
+  PlayerOnly: "Nur für Spieler!"
+  InvalidGamemode: "&4%mode &cist kein Spielmodus!"
+  NEPerms: "&cNicht genug Rechte!"
+  NEArgs: "&cNicht genug Argumente!"
+  PlayerNotFound: "&cSpieler &4%player &cwurde nicht gefunden!"
+  InvalidCoordinates: "&4%cords &csind keine Koordinaten!"
+  LuckPermsCantChangeThis: "&cDu kannst &4%target &cnicht editieren, weil dein Rang nicht hoch genug ist!"
+
+Info:
+  GameModeChanged: "&aDein Spielmodus wurde zu &b%mode &ageändert!"
+  OtherGameModeChanged: "&aDu hast &b%player's &aSpielmodus zu &b%mode &ageändert!"
+  Teleported: "&aDu hast dich zu &b%location &ateleportiert!"
+  TeleportedToYou: "&b%player &ahat sich zu dir teleportiert!"
+  SbTeleportedYou: "&b%player &ahat dich zu &b%location &ateleportiert!"
+  SbTeleportedToYou: "&b%player1 &ahat &b%player2 &azu dir teleportiert!"
+  YouTeleportedSb: "&aDu hast &b%player &azu &b%location &ateleportiert!"
+  DiscordMessage: "&aJoine unserm Discord: &b%link !"
+  BadWordSent: "&4%player &chat versucht ein gefiltertes Wort zu schicken: &4%word"
+  ReloadDone: "&aPlugin erfolgreich reloaded!"
+
+Tab:
+  TabHeader: "&aHey!"
+  TabFooter: "&bJoine unserm Discord: &a/discord"
+
+Sidebar:
+  SidebarTitle: "%ServerName"
+
+Sidebarlores:
+  Sidebar:
+    - "&7» Rang"
+    - "%rankName"
+    - " "
+    - "&7» Online: %players"
+    - "  "
+    - "&7» Geld: %money"
+
+
+JoinLeave:
+  Join: "&8[&a+&8] &7%player"
+  Leave: "&8[&c-&8] &7%player"
+
+Chat:
+  ChatTemplate: "&7%prefix%player &8» &7%message"
+
+Mute:
+  PermaMuteMessage: "&cDu wurdest &4PERMANENT &cgemutet!\n&cGrund: &4%reason"
+  MuteMessage: "&cDu wurdest für &4%duration &cgemutet!\n&cGrund: &4%reason"

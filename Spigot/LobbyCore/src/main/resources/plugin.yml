@@ -1,0 +1,69 @@
+name: LobbyCore
+version: '${project.version}'
+main: Kyu.LobbyCore.Main
+api-version: 1.18
+
+commands:
+  toggleReset:
+    description: Toggles the reset on void
+    aliases: [void, tr]
+  setSpawn:
+    description: Sets the Lobby Spawn to the current Location of the player
+  spawn:
+    description: Teleports to the lobby spawn
+  lReload:
+    description: Reloads the plugin
+  servers:
+    description: Opens the Servers GUI
+
+permissions:
+  lobbycore.bypassGamemode:
+    default: false
+    description: Users with this perm are not set to the default gamemode when joining the server
+  lobbycore.bypassTeleport:
+    default: false
+    description: Users with this perm will not be teleported to the lobby spawn on join
+  lobbycore.bypassClear:
+    default: false
+    description: Users with this perm will not have their inventory cleared on join
+  lobbycore.bypassCancelDropPickup:
+    default: false
+    description: Users with this perm will bypass not being able to drop/pickup Items
+  lobbycore.toggleReset:
+    default: false
+    description: Users with this perm are able to use the toggleReset command
+  lobbycore.setSpawn:
+    default: false
+    description: Users with this perm can use the setSpawn command
+  lobbycore.spawn:
+    default: true
+    description: Users with this perm can use the spawn command
+  lobbycore.reload:
+    default: false
+    description: Users with this perm can use the reload command
+  lobbycore.servers:
+    default: false
+    description: Users with this perm can use the servers command
+
+  lobbycore.bypass:
+    default: false
+    description: Users with this perm bypass the GameMode change, teleport and inventory clear on join
+    children:
+      - lobbycore.bypassGamemode
+      - lobbycore.bypassTeleport
+      - lobbycore.bypassClear
+      - lobbycore.bypassCancelDropPickup
+
+  lobbycore.*:
+    default: false
+    description: Full access to all commands and bypasses
+    children:
+      - lobbycore.bypass
+      - lobbycore.togglereset
+      - lobbycore.setSpawn
+      - lobbycore.spawn
+      - lobbycore.reload
+      - lobbycore.servers
+  '*':
+    default: false
+    children: [lobbycore.*]

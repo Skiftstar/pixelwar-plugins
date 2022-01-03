@@ -1,0 +1,20 @@
+Errors:
+  InvalidGamemode: "&cdefaultGamemode in Config ist kein valider Gamemode!"
+  SpawnLocationError: "&cLobby spawn Location konnte nicht geladen werden!"
+  InvalidMaterial: "&cBlock Material von %server ist nich valide!"
+  NEPerms: "&cDu hast nicht genug Rechte!"
+  NoSpawn: "&cEs ist kein Spawn gesetzt!"
+  PlayerOnly: "For players only!"
+
+Info:
+  NoLangSet: "&aDu hast noch keine Sprache gesetzt, daher wird sie auf %default gesetzt"
+
+SuccessMessages:
+  TeleportToSpawn: "&aDu wurdest zum Spawn teleportier!"
+  LobbySpawnSet: "&aLobby Spawn erfolgreich gesetzt!"
+  VoidResetStatus: "&aVoid Reset ist nun %status!"
+  ReloadDone: "&aPlugin erfolgreich reloaded!"
+
+Status:
+  active: "&baktiviert"
+  inactive: "&cdeaktiviert"
