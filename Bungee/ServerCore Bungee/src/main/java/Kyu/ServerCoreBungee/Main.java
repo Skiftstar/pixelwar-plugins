@@ -1,7 +1,9 @@
 package Kyu.ServerCoreBungee;
 
 import Kyu.ServerCoreBungee.Bansystem.BanCMD;
+import Kyu.ServerCoreBungee.Bansystem.BanInfoCMD;
 import Kyu.ServerCoreBungee.Bansystem.BansHandler;
+import Kyu.ServerCoreBungee.Bansystem.UnbanCMD;
 import Kyu.ServerCoreBungee.Commands.DMCommand;
 import Kyu.ServerCoreBungee.Commands.GlobalChatCommand;
 import Kyu.ServerCoreBungee.Commands.ReloadCMD;
@@ -60,6 +62,8 @@ public final class Main extends Plugin {
 
 
         new BanCMD(this);
+        new BanInfoCMD(this);
+        new UnbanCMD(this);
         new ReloadCMD(this);
         handler = new BansHandler(this);
         handler.loadBanReasons();
@@ -82,6 +86,8 @@ public final class Main extends Plugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        uuidStorage.set("CONSOLE", "CONSOLE");
+        saveUUIDStorage();
 
         configFile = new File(getDataFolder(), "config.yml");
         try {

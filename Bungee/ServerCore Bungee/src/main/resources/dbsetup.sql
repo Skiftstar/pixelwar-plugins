@@ -6,8 +6,7 @@ CREATE TABLE IF NOT EXISTS bans(
     bannedBy char(36) NOT NULL,
     bannedOn BIGINT NOT NULL,
     unbanOn BIGINT NOT NULL,
-    CONSTRAINT banID
-        UNIQUE (banUUID, uuid)
+    PRIMARY KEY (banUUID)
 );
 
 CREATE TABLE IF NOT EXISTS banlogs(
@@ -18,6 +17,8 @@ CREATE TABLE IF NOT EXISTS banlogs(
     bannedBy char(36) NOT NULL,
     bannedOn BIGINT NOT NULL,
     unbanOn BIGINT NOT NULL,
-    CONSTRAINT banID
-        UNIQUE (banUUID, uuid)
+    earlyUnban BOOL NOT NULL,
+    earlyUnbanByUUID char(36),
+    earlyUnbanOn BIGINT,
+    PRIMARY KEY (banUUID)
 );

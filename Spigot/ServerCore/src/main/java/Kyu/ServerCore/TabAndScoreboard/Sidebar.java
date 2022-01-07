@@ -56,9 +56,8 @@ public class Sidebar {
                 obj.getScore(ChatColor.BLUE + "" + ChatColor.WHITE).setScore(index);
             } else if (line.contains("%money")) {
                 team = sb.getTeam("moneyCounter");
-                // Economy econ = Main.econ;
-                // double money = econ.getBalance(p);
-                double money = 0.0d;
+                Economy econ = Main.econ;
+                double money = econ.getBalance(p);
                 line = line.replace("%money", "" + money);
                 obj.getScore(ChatColor.YELLOW + "" + ChatColor.WHITE).setScore(index);
             }

@@ -2,7 +2,7 @@ name: ServerCore
 version: '${project.version}'
 main: Kyu.ServerCore.Main
 api-version: 1.18
-depends: [LuckPerms, Vault, BetterEconomy]
+depend: [LuckPerms, BetterEconomy, Vault]
 
 commands:
   gamemode:

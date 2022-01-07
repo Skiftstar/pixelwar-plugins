@@ -46,3 +46,10 @@ Chat:
 Mute:
   PermaMuteMessage: "&cDu wurdest &4PERMANENT &cgemutet!\n&cGrund: &4%reason"
   MuteMessage: "&cDu wurdest für &4%duration &cgemutet!\n&cGrund: &4%reason"
+
+Constants:
+  "Days": "Tage"
+  "Months": "Monate"
+  "Hours": "Stunden"
+  "Minutes": "Minuten"
+  "Seconds": "Sekunden"

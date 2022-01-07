@@ -17,7 +17,6 @@ import Kyu.ServerCore.Util.Util;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.milkbowl.vault.economy.Economy;
-
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -41,7 +40,6 @@ public final class Main extends JavaPlugin implements PluginMessageListener{
     public static LanguageHelper helper;
     public static String serverName;
     private static Main instance;
-    public static Economy econ = null;
     public static int sidebarDelay;
     public static String toIgnore, discordLink;
     public static List<String> badWords = new ArrayList<>();
@@ -49,6 +47,7 @@ public final class Main extends JavaPlugin implements PluginMessageListener{
     private YamlConfiguration config;
     private File configFile;
     public static long cacheDelay;
+    public static Economy econ = null;
 
     @Override
     public void onEnable() {
@@ -63,11 +62,10 @@ public final class Main extends JavaPlugin implements PluginMessageListener{
             return;
         }
 
-        // if (!setupEconomy() ) {
-        //     getLogger().severe(String.format("[%s] - Disabled due to no Vault dependency found!", getDescription().getName()));
-        //     getServer().getPluginManager().disablePlugin(this);
-        //     return;
-        // }
+        if (!setupEconomy()) {
+            System.out.println("Vault dependency not found! disabling!");
+            return;
+        }
 
         getServer().getMessenger().registerIncomingPluginChannel( this, "my:channel", this ); // we register the incoming channel
 
@@ -194,6 +192,12 @@ public final class Main extends JavaPlugin implements PluginMessageListener{
             System.out.println(System.currentTimeMillis());
             Mute mute = new Mute(reason, new Date(unbanTime < 0 ? 0 : unbanTime), permanent, banUUID);
             MuteHandler.mutedPlayers.put(uuid, mute);
+        }
+        if ( subChannel.equalsIgnoreCase("UnmuteChannel")) {
+            String string = in.readUTF();
+            UUID pUUID = UUID.fromString(string.split(";;;")[0]);
+            MuteHandler.mutedPlayers.remove(pUUID);
+            MuteHandler.mutedCache.remove(pUUID);
         }
     }
 }

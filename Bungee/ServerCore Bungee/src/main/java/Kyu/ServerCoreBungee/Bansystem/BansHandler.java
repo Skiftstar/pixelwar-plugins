@@ -120,19 +120,36 @@ public class BansHandler implements Listener {
                 unbanLong = unbanLong == -1 ? 0 : unbanLong;
                 String banUUID = resultSet.getString("banUUID");
                 Ban ban = new Ban(reasonKey, new Date(unbanLong), banType, permanent, banUUID);
-                //TODO: Fetch Language from DB
-                ban.setLanguage("de");
+                String language = fetchLangFromDB(uuid.toString());
+                ban.setLanguage(language);
 
                 System.out.println("Found!");
 
                 if (ban.getType().equals(BanType.BAN)) {
                     BansHandler.bans.put(uuid, ban);
-                } else if (ban.getType().equals(BanType.GCHAT_MUTE)) {
+                } else if (ban.getType().equals(BanType.GCHAT_MUTE) || ban.getType().equals(BanType.MUTE)) {
                     gMuteds.put(uuid, ban);
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    private String fetchLangFromDB(String uuid) {
+        Connection conn = Main.getDb().getConnection();
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "SELECT * FROM langusers WHERE uuid = ?;")) {
+            stmt.setString(1, uuid);
+            ResultSet rs = stmt.executeQuery();
+            conn.close();
+            if (rs.next()) {
+                return rs.getString("lang");
+            }
+            return LanguageHelper.getDefaultLang();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return LanguageHelper.getDefaultLang();
         }
     }
 

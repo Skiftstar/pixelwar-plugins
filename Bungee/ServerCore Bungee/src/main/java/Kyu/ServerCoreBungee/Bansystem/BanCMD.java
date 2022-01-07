@@ -11,6 +11,7 @@ import net.md_5.bungee.api.plugin.Command;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -81,12 +82,17 @@ public class BanCMD extends Command {
         Consumer<Void> function = new Consumer<Void>() {
             @Override
             public void accept(Void unused) {
-                // TODO: Log check instead of fixed index
-                BanTime bantime = reason.getBantime(1);
+                int index = checkForPrevBans(uuid.toString(), reason.getReason());
+                BanTime bantime = reason.getBantime(index);
                 BanType banType = bantime.getBanType();
 
-                String banUUID = Util.generateUUID();
-                String banner = sender instanceof ProxiedPlayer ? ((ProxiedPlayer) sender).getUniqueId().toString() : "CONSOLE";
+                String banUUID;
+                do {
+                    banUUID = Util.generateUUID();
+                } while (exists(banUUID));
+
+                String banner = sender instanceof ProxiedPlayer ? ((ProxiedPlayer) sender).getUniqueId().toString()
+                        : "CONSOLE";
                 putInDB(uuid, banner, reason.getReason(), bantime, banUUID);
                 // TODO: Logging on Discord
 
@@ -95,7 +101,8 @@ public class BanCMD extends Command {
                     Ban ban;
                     switch (banType) {
                         case BAN:
-                            ban = new Ban(reason.getReason(), bantime.getUnbanDate(), banType, bantime.isPermanent(), banUUID);
+                            ban = new Ban(reason.getReason(), bantime.getUnbanDate(), banType, bantime.isPermanent(),
+                                    banUUID);
                             ban.setLanguage(LanguageHelper.getLanguage(p));
                             if (bantime.isPermanent()) {
                                 kickMessage = LanguageHelper.getMess(p, "PermaBanMessage")
@@ -115,6 +122,8 @@ public class BanCMD extends Command {
                             p.disconnect(new TextComponent(kickMessage));
                             break;
                         case MUTE:
+                            ban = new Ban(reason.getReason(), bantime.getUnbanDate(), banType, bantime.isPermanent(),
+                                    banUUID);
                             if (bantime.isPermanent()) {
                                 p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "PermaMuteMessage")
                                         .replace("%reason", LanguageHelper.getMess(p, reason.getReason()))));
@@ -128,9 +137,11 @@ public class BanCMD extends Command {
                                 sendCustomData(p, p.getUniqueId().toString(), reason.getReason(),
                                         bantime.getUnbanDate().getTime(), banUUID);
                             }
+                            BansHandler.gMuteds.put(p.getUniqueId(), ban);
                             break;
                         case GCHAT_MUTE:
-                            ban = new Ban(reason.getReason(), bantime.getUnbanDate(), banType, bantime.isPermanent(), banUUID);
+                            ban = new Ban(reason.getReason(), bantime.getUnbanDate(), banType, bantime.isPermanent(),
+                                    banUUID);
                             if (bantime.isPermanent()) {
                                 p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "GChatPermaMuteMessage")
                                         .replace("%reason", LanguageHelper.getMess(p, reason.getReason()))));
@@ -146,6 +157,9 @@ public class BanCMD extends Command {
                     }
 
                 }
+                sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "PlayerBanned", true)
+                        .replace("%player", playerName)
+                        .replace("%reason", LanguageHelper.getMess(sender, reason.getReason()))));
             }
         };
 
@@ -158,6 +172,24 @@ public class BanCMD extends Command {
             function.accept(null);
         }
 
+    }
+
+    private boolean exists(String uuid) {
+        Connection conn = Main.getDb().getConnection();
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "SELECT * FROM banlogs WHERE banUUID = ?;")) {
+            stmt.setString(1, uuid);
+            ResultSet resultSet = stmt.executeQuery();
+
+            conn.close();
+            if (resultSet.next())
+                return true;
+            else
+                return false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private UUID getUUID(String playerName) {
@@ -182,24 +214,47 @@ public class BanCMD extends Command {
         player.getServer().getInfo().sendData("my:channel", out.toByteArray());
     }
 
-    private void putInDB(UUID uuid, String banner, String reason, BanTime bantime, String banUUID) {
+    private int checkForPrevBans(String uuid, String reason) {
+
         Connection conn = Main.getDb().getConnection();
         try (PreparedStatement stmt = conn.prepareStatement(
-                        "INSERT INTO bans(uuid, banType, banReasonKey, bannedBy, bannedOn, unbanOn, banUUID) VALUES(?, ?, ?, ?, ?, ?, ?);")) {
-            stmt.setString(1, uuid.toString());
-            stmt.setString(2, bantime.getBanType().toString());
-            stmt.setString(3, reason);
-            stmt.setString(4, banner);
-            stmt.setLong(5, System.currentTimeMillis());
-            stmt.setLong(6, bantime.isPermanent() ? -1 : bantime.getUnbanDate().getTime());
-            stmt.setString(7, banUUID);
-            stmt.execute();
+                "SELECT * FROM banlogs WHERE uuid = ? AND banReasonKey = ?;")) {
+            stmt.setString(1, uuid);
+            stmt.setString(2, reason);
+            ResultSet resultSet = stmt.executeQuery();
+
+            int index = 0;
+            while (resultSet.next()) {
+                index++;
+            }
+            conn.close();
+            return index;
         } catch (SQLException e) {
-            Main.logger().warning("Something went wrong.");
             e.printStackTrace();
+            return 0;
+        }
+    }
+
+    private void putInDB(UUID uuid, String banner, String reason, BanTime bantime, String banUUID) {
+        Connection conn = Main.getDb().getConnection();
+        if (!bantime.getBanType().equals(BanType.KICK)) {
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "INSERT INTO bans(uuid, banType, banReasonKey, bannedBy, bannedOn, unbanOn, banUUID) VALUES(?, ?, ?, ?, ?, ?, ?);")) {
+                stmt.setString(1, uuid.toString());
+                stmt.setString(2, bantime.getBanType().toString());
+                stmt.setString(3, reason);
+                stmt.setString(4, banner);
+                stmt.setLong(5, System.currentTimeMillis());
+                stmt.setLong(6, bantime.isPermanent() ? -1 : bantime.getUnbanDate().getTime());
+                stmt.setString(7, banUUID);
+                stmt.execute();
+            } catch (SQLException e) {
+                Main.logger().warning("Something went wrong.");
+                e.printStackTrace();
+            }
         }
         try (PreparedStatement stmt = conn.prepareStatement(
-                        "INSERT INTO banlogs(uuid, banType, banReasonKey, bannedBy, bannedOn, unbanOn, banUUID) VALUES(?, ?, ?, ?, ?, ?, ?);")) {
+                "INSERT INTO banlogs(uuid, banType, banReasonKey, bannedBy, bannedOn, unbanOn, banUUID, earlyUnban) VALUES(?, ?, ?, ?, ?, ?, ?, ?);")) {
             stmt.setString(1, uuid.toString());
             stmt.setString(2, bantime.getBanType().toString());
             stmt.setString(3, reason);
@@ -207,6 +262,7 @@ public class BanCMD extends Command {
             stmt.setLong(5, System.currentTimeMillis());
             stmt.setLong(6, bantime.getUnbanDate().getTime());
             stmt.setString(7, banUUID);
+            stmt.setBoolean(8, false);
             stmt.execute();
         } catch (SQLException e) {
             Main.logger().warning("Something went wrong.");
