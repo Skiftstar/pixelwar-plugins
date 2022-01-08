@@ -10,6 +10,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -82,6 +83,7 @@ public class BanCMD extends Command {
         Consumer<Void> function = new Consumer<Void>() {
             @Override
             public void accept(Void unused) {
+                long banTime = System.currentTimeMillis();
                 int index = checkForPrevBans(uuid.toString(), reason.getReason());
                 BanTime bantime = reason.getBantime(index);
                 BanType banType = bantime.getBanType();
@@ -91,9 +93,17 @@ public class BanCMD extends Command {
                     banUUID = Util.generateUUID();
                 } while (exists(banUUID));
 
+                Pair<Long, String> pair = checkForActive(uuid, banType.toString(), bantime, banUUID);
+
+                long unbanOn = pair.first;
+                System.out.println(unbanOn);
+                String reasonSt = reason.getReason();
+                if (pair.second.length() > 0) {
+                    reasonSt = "CMB_" + reasonSt + pair.second;
+                }
                 String banner = sender instanceof ProxiedPlayer ? ((ProxiedPlayer) sender).getUniqueId().toString()
                         : "CONSOLE";
-                putInDB(uuid, banner, reason.getReason(), bantime, banUUID);
+                putInDB(uuid, banner, reasonSt, bantime, unbanOn, banUUID, banTime);
                 // TODO: Logging on Discord
 
                 if (p != null) {
@@ -101,16 +111,16 @@ public class BanCMD extends Command {
                     Ban ban;
                     switch (banType) {
                         case BAN:
-                            ban = new Ban(reason.getReason(), bantime.getUnbanDate(), banType, bantime.isPermanent(),
+                            ban = new Ban(reason.getReason(), new Date(unbanOn), banType, unbanOn == -1,
                                     banUUID);
                             ban.setLanguage(LanguageHelper.getLanguage(p));
-                            if (bantime.isPermanent()) {
+                            if (unbanOn == -1) {
                                 kickMessage = LanguageHelper.getMess(p, "PermaBanMessage")
                                         .replace("%reason", LanguageHelper.getMess(p, reason.getReason()));
                             } else {
                                 kickMessage = LanguageHelper.getMess(p, "TempbanMessage")
                                         .replace("%reason", LanguageHelper.getMess(p, reason.getReason()))
-                                        .replace("%duration", Util.getRemainingTime(bantime.getUnbanDate(),
+                                        .replace("%duration", Util.getRemainingTime(new Date(unbanOn),
                                                 LanguageHelper.getLanguage(p)));
                             }
                             BansHandler.bans.put(p.getUniqueId(), ban);
@@ -122,33 +132,33 @@ public class BanCMD extends Command {
                             p.disconnect(new TextComponent(kickMessage));
                             break;
                         case MUTE:
-                            ban = new Ban(reason.getReason(), bantime.getUnbanDate(), banType, bantime.isPermanent(),
+                            ban = new Ban(reason.getReason(), new Date(unbanOn), banType, unbanOn == -1,
                                     banUUID);
-                            if (bantime.isPermanent()) {
+                            if (unbanOn == -1) {
                                 p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "PermaMuteMessage")
                                         .replace("%reason", LanguageHelper.getMess(p, reason.getReason()))));
                                 sendCustomData(p, p.getUniqueId().toString(), reason.getReason(), -1, banUUID);
                             } else {
                                 p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "MuteMessage")
                                         .replace("%duration",
-                                                Util.getRemainingTime(bantime.getUnbanDate(),
+                                                Util.getRemainingTime(new Date(unbanOn),
                                                         LanguageHelper.getLanguage(p)))
                                         .replace("%reason", LanguageHelper.getMess(p, reason.getReason()))));
                                 sendCustomData(p, p.getUniqueId().toString(), reason.getReason(),
-                                        bantime.getUnbanDate().getTime(), banUUID);
+                                        unbanOn, banUUID);
                             }
                             BansHandler.gMuteds.put(p.getUniqueId(), ban);
                             break;
                         case GCHAT_MUTE:
-                            ban = new Ban(reason.getReason(), bantime.getUnbanDate(), banType, bantime.isPermanent(),
+                            ban = new Ban(reason.getReason(), new Date(unbanOn), banType, unbanOn == -1,
                                     banUUID);
-                            if (bantime.isPermanent()) {
+                            if (unbanOn == -1) {
                                 p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "GChatPermaMuteMessage")
                                         .replace("%reason", LanguageHelper.getMess(p, reason.getReason()))));
                             } else {
                                 p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "GChatMuteMessage")
                                         .replace("%duration",
-                                                Util.getRemainingTime(bantime.getUnbanDate(),
+                                                Util.getRemainingTime(new Date(unbanOn),
                                                         LanguageHelper.getLanguage(p)))
                                         .replace("%reason", LanguageHelper.getMess(p, reason.getReason()))));
                             }
@@ -157,9 +167,10 @@ public class BanCMD extends Command {
                     }
 
                 }
-                sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "PlayerBanned", true)
-                        .replace("%player", playerName)
-                        .replace("%reason", LanguageHelper.getMess(sender, reason.getReason()))));
+
+                String banMess = LanguageHelper.getMess(sender, "PlayerBanned", true).replace("%player", playerName).replace("%reason", LanguageHelper.getMess(sender, reason.getReason()));
+                
+                sender.sendMessage(new TextComponent(banMess));
             }
         };
 
@@ -199,6 +210,63 @@ public class BanCMD extends Command {
         return UUID.fromString(Main.getUuidStorage().getString(playerName.toLowerCase()));
     }
 
+    private Pair<Long, String> checkForActive(UUID uuid, String banType, BanTime bantime, String newBanUUID) {
+        Connection conn = Main.getDb().getConnection();
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "SELECT * FROM bans WHERE uuid = ? AND banType = ?;")) {
+            stmt.setString(1, uuid.toString());
+            stmt.setString(2, banType);
+            ResultSet resultSet = stmt.executeQuery();
+
+            long banLong = bantime.isPermanent() ? -1 : bantime.getUnbanDate().getTime();
+
+            String newReasons = "";
+            List<String> oldBans = new ArrayList<>();
+            while (resultSet.next()) {
+                System.out.println("Found ban");
+                oldBans.add(resultSet.getString("banUUID"));
+                String reason = resultSet.getString("banReasonKey");
+                long unbanTime = resultSet.getLong("unbanOn");
+                System.out.println(unbanTime);
+                System.out.println(banLong);
+                if (unbanTime < System.currentTimeMillis())
+                    continue;
+                if (unbanTime == -1 || bantime.isPermanent()) {
+                    banLong = -1;
+                } else {
+                    banLong = banLong + (unbanTime - System.currentTimeMillis());
+                }
+                System.out.println(banLong);
+                newReasons += "+" + reason.replace("CMB_", "");
+            }
+            stmt.close();
+
+            if (oldBans.size() > 0) {
+                BanType bantype = BanType.valueOf(banType);
+                Util.clearBans(uuid, bantype, newBanUUID);
+            }
+
+            PreparedStatement stamt = null;
+            for (String oldBanUUID : oldBans) {
+                stamt = conn.prepareStatement("DELETE FROM bans WHERE banUUID = ?;");
+                stamt.setString(1, oldBanUUID);
+                stamt.execute();
+                stamt.close();
+                stamt = conn.prepareStatement("UPDATE banlogs SET combinedIntoNew = ? WHERE banUUID = ?");
+                stamt.setString(1, newBanUUID);
+                stamt.setString(2, oldBanUUID);
+                stamt.executeUpdate();
+                stamt.close();
+            }
+            conn.close();
+            System.out.println(newReasons);
+            return new Pair<>(banLong, newReasons);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new Pair<>(bantime.getUnbanDate().getTime(), "");
+        }
+    }
+
     public void sendCustomData(ProxiedPlayer player, String pUUID, String reason, long unbanLong, String banUUID) {
         Collection<ProxiedPlayer> networkPlayers = ProxyServer.getInstance().getPlayers();
         // perform a check to see if globally are no players
@@ -235,7 +303,7 @@ public class BanCMD extends Command {
         }
     }
 
-    private void putInDB(UUID uuid, String banner, String reason, BanTime bantime, String banUUID) {
+    private void putInDB(UUID uuid, String banner, String reason, BanTime bantime, long unbanOn, String banUUID, long banTime) {
         Connection conn = Main.getDb().getConnection();
         if (!bantime.getBanType().equals(BanType.KICK)) {
             try (PreparedStatement stmt = conn.prepareStatement(
@@ -244,8 +312,8 @@ public class BanCMD extends Command {
                 stmt.setString(2, bantime.getBanType().toString());
                 stmt.setString(3, reason);
                 stmt.setString(4, banner);
-                stmt.setLong(5, System.currentTimeMillis());
-                stmt.setLong(6, bantime.isPermanent() ? -1 : bantime.getUnbanDate().getTime());
+                stmt.setLong(5, banTime);
+                stmt.setLong(6, unbanOn);
                 stmt.setString(7, banUUID);
                 stmt.execute();
             } catch (SQLException e) {
@@ -259,8 +327,8 @@ public class BanCMD extends Command {
             stmt.setString(2, bantime.getBanType().toString());
             stmt.setString(3, reason);
             stmt.setString(4, banner);
-            stmt.setLong(5, System.currentTimeMillis());
-            stmt.setLong(6, bantime.getUnbanDate().getTime());
+            stmt.setLong(5, banTime);
+            stmt.setLong(6, unbanOn);
             stmt.setString(7, banUUID);
             stmt.setBoolean(8, false);
             stmt.execute();

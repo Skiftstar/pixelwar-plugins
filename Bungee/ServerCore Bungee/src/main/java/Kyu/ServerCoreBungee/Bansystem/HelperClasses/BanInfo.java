@@ -4,7 +4,7 @@ import java.sql.Date;
 
 public class BanInfo {
 
-    private String bannedBy = null, earlyUnbanBy = null, banUUID = null, playerUUID = null;
+    private String bannedBy = null, earlyUnbanBy = null, banUUID = null, playerUUID = null, combinedInto = null;
     private Date banExpireOn = null, banOn = null, earlyUnbanOn = null;
     private boolean earlyUnban = false, permanent = false;
     private BanType bantype;
@@ -71,5 +71,13 @@ public class BanInfo {
 
     public String getPlayerUUID() {
         return playerUUID;
+    }
+    
+    public String getCombinedInto() {
+        return combinedInto;
+    }
+
+    public void setCombinedInto(String combinedInto) {
+        this.combinedInto = combinedInto;
     }
 }

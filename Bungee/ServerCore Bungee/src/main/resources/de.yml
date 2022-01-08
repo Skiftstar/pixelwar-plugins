@@ -51,6 +51,8 @@ BanInfo:
   BanInfoTemplateActiveHeader: "&b=== %player's laufende Bans ==="
   BanInfoTemplateReasonHeader: "&b= Gebannt für %reason ="
   BanInfoTemplateEntry: "&b%index: BanID = &6%banID &bGebannt von: &6%bannedBy &bGebannt am: &6%banDate &bDauer: &6%banTime (%unbanDate) &bTyp: &6%banType"
+  BanInfoTemplateCombineEntry: "&bBanID = &6%banID &bGebannt von: &6%bannedBy &bGebannt am: &6%banDate &bDauer: &6%banTime"
   BanInfoTemplateEarlyUnbanInfo: "&b- Frühzeitig entbannt von: &6%player &bam &6%date"
   BanInfoTemplateHoverText: "&bDieser ban ist noch aktiv! Klicke hier um zu unbannen"
+  BanInfoTemplateCombined: "&b---Zusammengesetzt aus: %ban"
   

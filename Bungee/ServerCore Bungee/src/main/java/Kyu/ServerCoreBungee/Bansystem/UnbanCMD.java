@@ -117,7 +117,7 @@ public class UnbanCMD extends Command {
         }
     }
 
-    public void sendCustomData(ProxiedPlayer player, String pUUID, String banUUID) {
+    public static void sendCustomData(ProxiedPlayer player, String pUUID, String banUUID) {
         Collection<ProxiedPlayer> networkPlayers = ProxyServer.getInstance().getPlayers();
         // perform a check to see if globally are no players
         if (networkPlayers == null || networkPlayers.isEmpty()) {

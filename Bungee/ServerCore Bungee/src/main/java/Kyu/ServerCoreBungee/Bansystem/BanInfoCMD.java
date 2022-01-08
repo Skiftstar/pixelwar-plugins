@@ -67,23 +67,40 @@ public class BanInfoCMD extends Command {
                     .replace("%player", playerName));
         }
 
+        Map<String, TextComponent> combinedBans = new HashMap<>();
+        Map<TextComponent, String> bansThatAreCombined = new HashMap<>();
+
         for (String reason : bans.keySet()) {
             if (bans.get(reason).isEmpty())
                 continue;
-            banInfo.addExtra("\n");
-            banInfo.addExtra("\n");
 
             String reasonMess = LanguageHelper.getMess(sender, "BanInfoTemplateReasonHeader");
             if (reason.startsWith("CUSTOM_")) {
                 reasonMess = reasonMess.replace("%reason", reason.split("CUSTOM_")[1]);
+            } else if (reason.startsWith("CMB_")) {
+                String reasons = "";
+                for (String string : reason.split("CMB_")[1].split("\\+")) {
+                    if (string.startsWith("CUSTOM_")) reasons += " + " + string.split("CUSTOM_")[1];
+                    else reasons += " + " + LanguageHelper.getMess(sender, string);
+                }
+                reasons = reasons.replaceFirst(" \\+ ", "");
+                reasonMess = reasonMess.replace("%reason", reasons);
             } else {
                 reasonMess = reasonMess.replace("%reason", LanguageHelper.getMess(sender, reason));
             }
-            banInfo.addExtra(reasonMess);
+            TextComponent reasonComponent = new TextComponent(reasonMess);
+            
 
             int index = 1;
+
             for (BanInfo info : bans.get(reason)) {
-                String message = LanguageHelper.getMess(sender, "BanInfoTemplateEntry");
+                String message;
+
+                if (info.getCombinedInto() != null) {
+                    message = LanguageHelper.getMess(sender, "BanInfoTemplateCombineEntry");
+                } else {
+                    message = LanguageHelper.getMess(sender, "BanInfoTemplateEntry");
+                }
 
                 if (info.getBantype().equals(BanType.KICK)) {
                     message = message.replace("%banTime", "Kick").replace("%unbanDate", "Kick");
@@ -108,23 +125,53 @@ public class BanInfoCMD extends Command {
                 }
 
                 TextComponent banInfoComponent = new TextComponent(message);
-                if (!info.isEarlyUnban() && !info.getBantype().equals(BanType.KICK) && (info.isPermanent() || info.getBanExpireOn().getTime() > System.currentTimeMillis())) {
+                if (info.getCombinedInto() != null) {
+                    bansThatAreCombined.put(banInfoComponent, info.getCombinedInto());
+                    continue;
+                }
+
+                if (!info.isEarlyUnban() && !info.getBantype().equals(BanType.KICK)
+                        && (info.isPermanent() || info.getBanExpireOn().getTime() > System.currentTimeMillis())) {
                     banInfoComponent
                             .setClickEvent(new ClickEvent(Action.SUGGEST_COMMAND,
                                     "/unban " + info.getBanUUID()));
                     banInfoComponent.setHoverEvent(new HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT,
                             new ComponentBuilder(LanguageHelper.getMess(sender, "BanInfoTemplateHoverText")).create()));
                 }
-                banInfo.addExtra("\n");
-                banInfo.addExtra(banInfoComponent);
+
+                reasonComponent.addExtra("\n");
+                reasonComponent.addExtra(banInfoComponent);
+
+                if (reason.startsWith("CMB_"))
+                    combinedBans.put(info.getBanUUID(), banInfoComponent);
 
                 if (info.isEarlyUnban()) {
-                    banInfo.addExtra("\n");
-                    banInfo.addExtra(LanguageHelper.getMess(sender, "BanInfoTemplateEarlyUnbanInfo")
+                    reasonComponent.addExtra("\n");
+                    reasonComponent.addExtra(LanguageHelper.getMess(sender, "BanInfoTemplateEarlyUnbanInfo")
                             .replace("%player", info.getEarlyUnbanBy())
                             .replace("%date", info.getEarlyUnbanOn().toString()));
                 }
+
                 index++;
+            }
+            if (index > 1) {
+                banInfo.addExtra("\n");
+                banInfo.addExtra("\n");
+                banInfo.addExtra(reasonComponent);
+            }
+        }
+        for (TextComponent comp : bansThatAreCombined.keySet()) {
+            String banToCombineInto = bansThatAreCombined.get(comp);
+            TextComponent ban = combinedBans.getOrDefault(banToCombineInto, null);
+            if (ban == null)
+                continue;
+            ban.addExtra("\n");
+            String combineMess = LanguageHelper.getMess(sender, "BanInfoTemplateCombined");
+            String[] split = combineMess.split("%ban");
+            ban.addExtra(split[0]);
+            ban.addExtra(comp);
+            if (split.length > 1) {
+                ban.addExtra(split[1]);
             }
         }
         sender.sendMessage(banInfo);
@@ -151,9 +198,10 @@ public class BanInfoCMD extends Command {
                 String bannedBy = uuidToName(resultSet.getString("bannedBy"));
                 Date bannedOn = new Date(resultSet.getLong("bannedOn"));
                 String playerUUID = resultSet.getString("uuid");
+                String combinedInto = resultSet.getString("combinedIntoNew");
 
                 long unbanLong = resultSet.getLong("unbanOn");
-                boolean permanent = unbanLong == bannedOn.getTime();
+                boolean permanent = unbanLong == -1;
                 unbanLong = permanent ? 0 : unbanLong;
                 if (permanent) {
                     info = new BanInfo(banUUID, playerUUID, banType, bannedBy, bannedOn);
@@ -167,6 +215,10 @@ public class BanInfoCMD extends Command {
                     String unbanBy = uuidToName(resultSet.getString("earlyUnbanByUUID"));
                     Date earlyUnbanOn = new Date(resultSet.getLong("earlyUnbanOn"));
                     info.setEarlyUnban(unbanBy, earlyUnbanOn);
+                }
+
+                if (combinedInto != null) {
+                    info.setCombinedInto(combinedInto);
                 }
 
                 if (!bans.containsKey(reasonKey)) {

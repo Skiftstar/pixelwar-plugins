@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS bans(
-    banUUID varchar(50) NOT NULL,
+    banUUID char(50) NOT NULL,
     uuid char(36) NOT NULL,
     banType char(255) NOT NULL,
     banReasonKey char(255) NOT NULL,
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS bans(
 );
 
 CREATE TABLE IF NOT EXISTS banlogs(
-    banUUID varchar(50) NOT NULL ,
+    banUUID char(50) NOT NULL ,
     uuid char(36) NOT NULL,
     banType char(255) NOT NULL,
     banReasonKey char(255) NOT NULL,
@@ -20,5 +20,6 @@ CREATE TABLE IF NOT EXISTS banlogs(
     earlyUnban BOOL NOT NULL,
     earlyUnbanByUUID char(36),
     earlyUnbanOn BIGINT,
+    combinedIntoNew char(36),
     PRIMARY KEY (banUUID)
 );

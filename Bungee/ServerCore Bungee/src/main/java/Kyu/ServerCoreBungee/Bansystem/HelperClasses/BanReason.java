@@ -24,4 +24,8 @@ public class BanReason {
         bantimes.forEach(e -> System.out.println(e.getBanType().toString()));
         return bantimes.get(index);
     }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
 }

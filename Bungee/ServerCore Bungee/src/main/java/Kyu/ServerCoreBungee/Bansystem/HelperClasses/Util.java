@@ -1,5 +1,8 @@
 package Kyu.ServerCoreBungee.Bansystem.HelperClasses;
 
+import Kyu.ServerCoreBungee.Main;
+import Kyu.ServerCoreBungee.Bansystem.BansHandler;
+import Kyu.ServerCoreBungee.Bansystem.UnbanCMD;
 import Kyu.WaterFallLanguageHelper.LanguageHelper;
 
 import java.sql.Date;
@@ -80,6 +83,30 @@ public class Util {
     public static String generateUUID() {
         UUID uuid = UUID.randomUUID();
         return uuid.toString();
+    }
+
+    public static void clearBans(UUID pUUID, BanType banType, String banUUID) {
+        switch (banType) {
+            case BAN:
+                BansHandler.bans.remove(pUUID);
+                BansHandler.bansCache.remove(pUUID);
+                break;
+            case GCHAT_MUTE:
+                BansHandler.gMuteds.remove(pUUID);
+                BansHandler.gMutedsCache.remove(pUUID);
+                break;
+            case MUTE:
+                if (Main.instance().getProxy().getPlayers().size() == 0) {
+                    System.out.println("Couldn't send PluginChannel Message while clearing bans bc no player was online! Yikes.");
+                } else {
+                    UnbanCMD.sendCustomData(Main.instance().getProxy().getPlayers().iterator().next(), pUUID.toString(), banUUID);
+                }
+                BansHandler.gMuteds.remove(pUUID);
+                BansHandler.gMutedsCache.remove(pUUID);
+                break;
+            case KICK:
+                break;
+        }
     }
 
 }
