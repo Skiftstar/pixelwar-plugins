@@ -5,7 +5,11 @@ import Kyu.ServerCoreBungee.Bansystem.BansHandler;
 import Kyu.ServerCoreBungee.Bansystem.UnbanCMD;
 import Kyu.WaterFallLanguageHelper.LanguageHelper;
 
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.UUID;
 
 public class Util {
@@ -107,6 +111,93 @@ public class Util {
             case KICK:
                 break;
         }
+    }
+
+    public static boolean exists(String uuid) {
+        Connection conn = Main.getDb().getConnection();
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "SELECT * FROM banlogs WHERE banUUID = ?;")) {
+            stmt.setString(1, uuid);
+            ResultSet resultSet = stmt.executeQuery();
+
+            conn.close();
+            if (resultSet.next())
+                return true;
+            else
+                return false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static void putInDB(UUID uuid, String banner, String reason, BanTime bantime, long unbanOn, String banUUID, long banTime) {
+        Connection conn = Main.getDb().getConnection();
+        if (!bantime.getBanType().equals(BanType.KICK)) {
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "INSERT INTO bans(uuid, banType, banReasonKey, bannedBy, bannedOn, unbanOn, banUUID) VALUES(?, ?, ?, ?, ?, ?, ?);")) {
+                stmt.setString(1, uuid.toString());
+                stmt.setString(2, bantime.getBanType().toString());
+                stmt.setString(3, reason);
+                stmt.setString(4, banner);
+                stmt.setLong(5, banTime);
+                stmt.setLong(6, unbanOn);
+                stmt.setString(7, banUUID);
+                stmt.execute();
+            } catch (SQLException e) {
+                Main.logger().warning("Something went wrong.");
+                e.printStackTrace();
+            }
+        }
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "INSERT INTO banlogs(uuid, banType, banReasonKey, bannedBy, bannedOn, unbanOn, banUUID, earlyUnban) VALUES(?, ?, ?, ?, ?, ?, ?, ?);")) {
+            stmt.setString(1, uuid.toString());
+            stmt.setString(2, bantime.getBanType().toString());
+            stmt.setString(3, reason);
+            stmt.setString(4, banner);
+            stmt.setLong(5, banTime);
+            stmt.setLong(6, unbanOn);
+            stmt.setString(7, banUUID);
+            stmt.setBoolean(8, false);
+            stmt.execute();
+        } catch (SQLException e) {
+            Main.logger().warning("Something went wrong.");
+            e.printStackTrace();
+        }
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static long stringToUnbanTime(String durationSt) {
+        long unbanOn = 0;
+        durationSt = durationSt.toLowerCase();
+        int months = 0;
+        int days = 0;
+        int hours = 0;
+        int minutes = 0;
+        int seconds = 0;
+        if (durationSt.contains("mo")) {
+            //TODO: this
+            months = convert()
+        }
+
+        return unbanOn;
+    }
+
+    private static int convert(String s) {
+         try {
+            return Integer.parseInt(s);
+         } catch (NumberFormatException e) {
+             return 0;
+         }
+    }
+
+    public static void main(String[] args) {
+        String test = "1mo1";
+        System.out.println("String: " + test.split("mo")[0]);
     }
 
 }

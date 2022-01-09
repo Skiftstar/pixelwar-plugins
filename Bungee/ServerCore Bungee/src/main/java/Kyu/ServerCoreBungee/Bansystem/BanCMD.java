@@ -91,19 +91,18 @@ public class BanCMD extends Command {
                 String banUUID;
                 do {
                     banUUID = Util.generateUUID();
-                } while (exists(banUUID));
+                } while (Util.exists(banUUID));
 
                 Pair<Long, String> pair = checkForActive(uuid, banType.toString(), bantime, banUUID);
 
                 long unbanOn = pair.first;
-                System.out.println(unbanOn);
                 String reasonSt = reason.getReason();
                 if (pair.second.length() > 0) {
                     reasonSt = "CMB_" + reasonSt + pair.second;
                 }
                 String banner = sender instanceof ProxiedPlayer ? ((ProxiedPlayer) sender).getUniqueId().toString()
                         : "CONSOLE";
-                putInDB(uuid, banner, reasonSt, bantime, unbanOn, banUUID, banTime);
+                Util.putInDB(uuid, banner, reasonSt, bantime, unbanOn, banUUID, banTime);
                 // TODO: Logging on Discord
 
                 if (p != null) {
@@ -185,23 +184,7 @@ public class BanCMD extends Command {
 
     }
 
-    private boolean exists(String uuid) {
-        Connection conn = Main.getDb().getConnection();
-        try (PreparedStatement stmt = conn.prepareStatement(
-                "SELECT * FROM banlogs WHERE banUUID = ?;")) {
-            stmt.setString(1, uuid);
-            ResultSet resultSet = stmt.executeQuery();
 
-            conn.close();
-            if (resultSet.next())
-                return true;
-            else
-                return false;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 
     private UUID getUUID(String playerName) {
         if (Main.getUuidStorage().get(playerName.toLowerCase()) == null) {
@@ -300,46 +283,6 @@ public class BanCMD extends Command {
         } catch (SQLException e) {
             e.printStackTrace();
             return 0;
-        }
-    }
-
-    private void putInDB(UUID uuid, String banner, String reason, BanTime bantime, long unbanOn, String banUUID, long banTime) {
-        Connection conn = Main.getDb().getConnection();
-        if (!bantime.getBanType().equals(BanType.KICK)) {
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "INSERT INTO bans(uuid, banType, banReasonKey, bannedBy, bannedOn, unbanOn, banUUID) VALUES(?, ?, ?, ?, ?, ?, ?);")) {
-                stmt.setString(1, uuid.toString());
-                stmt.setString(2, bantime.getBanType().toString());
-                stmt.setString(3, reason);
-                stmt.setString(4, banner);
-                stmt.setLong(5, banTime);
-                stmt.setLong(6, unbanOn);
-                stmt.setString(7, banUUID);
-                stmt.execute();
-            } catch (SQLException e) {
-                Main.logger().warning("Something went wrong.");
-                e.printStackTrace();
-            }
-        }
-        try (PreparedStatement stmt = conn.prepareStatement(
-                "INSERT INTO banlogs(uuid, banType, banReasonKey, bannedBy, bannedOn, unbanOn, banUUID, earlyUnban) VALUES(?, ?, ?, ?, ?, ?, ?, ?);")) {
-            stmt.setString(1, uuid.toString());
-            stmt.setString(2, bantime.getBanType().toString());
-            stmt.setString(3, reason);
-            stmt.setString(4, banner);
-            stmt.setLong(5, banTime);
-            stmt.setLong(6, unbanOn);
-            stmt.setString(7, banUUID);
-            stmt.setBoolean(8, false);
-            stmt.execute();
-        } catch (SQLException e) {
-            Main.logger().warning("Something went wrong.");
-            e.printStackTrace();
-        }
-        try {
-            conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 }
