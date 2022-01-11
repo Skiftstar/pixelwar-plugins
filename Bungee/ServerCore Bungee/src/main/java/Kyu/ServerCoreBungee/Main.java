@@ -3,6 +3,7 @@ package Kyu.ServerCoreBungee;
 import Kyu.ServerCoreBungee.Bansystem.BanCMD;
 import Kyu.ServerCoreBungee.Bansystem.BanInfoCMD;
 import Kyu.ServerCoreBungee.Bansystem.BansHandler;
+import Kyu.ServerCoreBungee.Bansystem.HardBanCMD;
 import Kyu.ServerCoreBungee.Bansystem.UnbanCMD;
 import Kyu.ServerCoreBungee.Commands.DMCommand;
 import Kyu.ServerCoreBungee.Commands.GlobalChatCommand;
@@ -62,6 +63,7 @@ public final class Main extends Plugin {
 
 
         new BanCMD(this);
+        new HardBanCMD(this);
         new BanInfoCMD(this);
         new UnbanCMD(this);
         new ReloadCMD(this);

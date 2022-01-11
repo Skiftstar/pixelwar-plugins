@@ -54,6 +54,7 @@ public class GlobalChatCommand extends Command {
             if (!ban.getUnbanDate().before(new Date(System.currentTimeMillis()))) {
                 if (ban.isPermanent()) {
                     p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "GChatPermaMuteMessage")
+                    //TODO: fix reason
                             .replace("%reason", LanguageHelper.getMess(p, ban.getReason()))));
                 } else {
                     p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "GChatMuteMessage")

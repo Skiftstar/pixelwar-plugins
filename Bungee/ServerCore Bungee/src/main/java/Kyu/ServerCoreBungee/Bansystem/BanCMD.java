@@ -93,7 +93,7 @@ public class BanCMD extends Command {
                     banUUID = Util.generateUUID();
                 } while (Util.exists(banUUID));
 
-                Pair<Long, String> pair = checkForActive(uuid, banType.toString(), bantime, banUUID);
+                Pair<Long, String> pair = Util.checkForActive(uuid, banType.toString(), bantime, banUUID);
 
                 long unbanOn = pair.first;
                 String reasonSt = reason.getReason();
@@ -191,63 +191,6 @@ public class BanCMD extends Command {
             return null;
         }
         return UUID.fromString(Main.getUuidStorage().getString(playerName.toLowerCase()));
-    }
-
-    private Pair<Long, String> checkForActive(UUID uuid, String banType, BanTime bantime, String newBanUUID) {
-        Connection conn = Main.getDb().getConnection();
-        try (PreparedStatement stmt = conn.prepareStatement(
-                "SELECT * FROM bans WHERE uuid = ? AND banType = ?;")) {
-            stmt.setString(1, uuid.toString());
-            stmt.setString(2, banType);
-            ResultSet resultSet = stmt.executeQuery();
-
-            long banLong = bantime.isPermanent() ? -1 : bantime.getUnbanDate().getTime();
-
-            String newReasons = "";
-            List<String> oldBans = new ArrayList<>();
-            while (resultSet.next()) {
-                System.out.println("Found ban");
-                oldBans.add(resultSet.getString("banUUID"));
-                String reason = resultSet.getString("banReasonKey");
-                long unbanTime = resultSet.getLong("unbanOn");
-                System.out.println(unbanTime);
-                System.out.println(banLong);
-                if (unbanTime < System.currentTimeMillis())
-                    continue;
-                if (unbanTime == -1 || bantime.isPermanent()) {
-                    banLong = -1;
-                } else {
-                    banLong = banLong + (unbanTime - System.currentTimeMillis());
-                }
-                System.out.println(banLong);
-                newReasons += "+" + reason.replace("CMB_", "");
-            }
-            stmt.close();
-
-            if (oldBans.size() > 0) {
-                BanType bantype = BanType.valueOf(banType);
-                Util.clearBans(uuid, bantype, newBanUUID);
-            }
-
-            PreparedStatement stamt = null;
-            for (String oldBanUUID : oldBans) {
-                stamt = conn.prepareStatement("DELETE FROM bans WHERE banUUID = ?;");
-                stamt.setString(1, oldBanUUID);
-                stamt.execute();
-                stamt.close();
-                stamt = conn.prepareStatement("UPDATE banlogs SET combinedIntoNew = ? WHERE banUUID = ?");
-                stamt.setString(1, newBanUUID);
-                stamt.setString(2, oldBanUUID);
-                stamt.executeUpdate();
-                stamt.close();
-            }
-            conn.close();
-            System.out.println(newReasons);
-            return new Pair<>(banLong, newReasons);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return new Pair<>(bantime.getUnbanDate().getTime(), "");
-        }
     }
 
     public void sendCustomData(ProxiedPlayer player, String pUUID, String reason, long unbanLong, String banUUID) {

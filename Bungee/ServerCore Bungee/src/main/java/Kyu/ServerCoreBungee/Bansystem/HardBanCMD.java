@@ -10,7 +10,9 @@ import com.google.common.io.ByteStreams;
 
 import Kyu.ServerCoreBungee.Main;
 import Kyu.ServerCoreBungee.Bansystem.HelperClasses.Ban;
+import Kyu.ServerCoreBungee.Bansystem.HelperClasses.BanTime;
 import Kyu.ServerCoreBungee.Bansystem.HelperClasses.BanType;
+import Kyu.ServerCoreBungee.Bansystem.HelperClasses.Pair;
 import Kyu.ServerCoreBungee.Bansystem.HelperClasses.Util;
 import Kyu.WaterFallLanguageHelper.LanguageHelper;
 import net.md_5.bungee.api.CommandSender;
@@ -33,11 +35,11 @@ public class HardBanCMD extends Command {
             return;
         }
         String player = args[0];
-        if (Main.getUuidStorage().get(player) == null) {
+        if (Main.getUuidStorage().get(player.toLowerCase()) == null) {
             sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "PlayerWasNeverOnServer", true)));
             return;
         }
-        String uuid = Main.getUuidStorage().getString(player);
+        String uuid = Main.getUuidStorage().getString(player.toLowerCase());
         String banTypeSt = args[1];
         BanType banType;
         try {
@@ -57,22 +59,39 @@ public class HardBanCMD extends Command {
         int reasonIndex = isKick ? 2 : 3;
         String reason = "";
         for (int i = reasonIndex; i < args.length; i++) {
-            reason += args[i];
+            reason += " " + args[i];
         }
         reason = "CUSTOM_" + reason;
 
-        long unbanOn;
+        int[] times = new int[]{0, 0, 0, 0, 0};
+        boolean permanent = false;
         if (!isKick) {
             String duration = args[2];
-            unbanOn = Util.stringToUnbanTime(duration);
-        } else {
-            unbanOn = System.currentTimeMillis();
+            if (duration.equalsIgnoreCase("permanent")) {
+                permanent = true;
+            } else {
+                times = Util.stringToUnbanTime(duration);
+            }
         }
+
+        BanTime bantime = new BanTime(times[0], times[1], times[2], times[3], times[4], permanent, banType);
+        long currTime = System.currentTimeMillis();
 
         String banUUID;
         do {
             banUUID = Util.generateUUID();
         } while (Util.exists(banUUID));
+
+        Pair<Long, String> pair = Util.checkForActive(UUID.fromString(uuid), banType.toString(), bantime, banUUID);
+
+        long unbanOn = pair.first;
+        String reasonSt = reason;
+        if (pair.second.length() > 0) {
+            reasonSt = "CMB_" + reasonSt + pair.second;
+        }
+        String banner = sender instanceof ProxiedPlayer ? ((ProxiedPlayer) sender).getUniqueId().toString()
+                : "CONSOLE";
+        Util.putInDB(UUID.fromString(uuid), banner, reasonSt, bantime, unbanOn, banUUID, currTime);
 
         ProxiedPlayer p = Main.instance().getProxy().getPlayer(UUID.fromString(uuid));
         String kickMessage;

@@ -68,6 +68,7 @@ public class BansHandler implements Listener {
     private void kickForBan(LoginEvent e, UUID uuid) {
         Ban ban = bans.get(uuid);
         if (ban.isPermanent()) {
+            //TODO: fix reason
             e.setCancelReason(new TextComponent(LanguageHelper.getMess(ban.getLanguage(), "PermaBanMessage")
             .replace("%reason", LanguageHelper.getMess(ban.getLanguage(), ban.getReason()))));
         } else {

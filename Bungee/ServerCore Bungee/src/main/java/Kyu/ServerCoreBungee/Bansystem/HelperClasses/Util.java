@@ -10,6 +10,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class Util {
@@ -140,7 +142,7 @@ public class Util {
     }
 
     public static void putInDB(UUID uuid, String banner, String reason, BanTime bantime, long unbanOn, String banUUID,
-            long banTime) {
+            long banOn) {
         Connection conn = Main.getDb().getConnection();
         if (!bantime.getBanType().equals(BanType.KICK)) {
             try (PreparedStatement stmt = conn.prepareStatement(
@@ -149,7 +151,7 @@ public class Util {
                 stmt.setString(2, bantime.getBanType().toString());
                 stmt.setString(3, reason);
                 stmt.setString(4, banner);
-                stmt.setLong(5, banTime);
+                stmt.setLong(5, banOn);
                 stmt.setLong(6, unbanOn);
                 stmt.setString(7, banUUID);
                 stmt.execute();
@@ -164,7 +166,7 @@ public class Util {
             stmt.setString(2, bantime.getBanType().toString());
             stmt.setString(3, reason);
             stmt.setString(4, banner);
-            stmt.setLong(5, banTime);
+            stmt.setLong(5, banOn);
             stmt.setLong(6, unbanOn);
             stmt.setString(7, banUUID);
             stmt.setBoolean(8, false);
@@ -180,8 +182,7 @@ public class Util {
         }
     }
 
-    public static long stringToUnbanTime(String durationSt) {
-        long unbanOn = 0;
+    public static int[] stringToUnbanTime(String durationSt) {
         durationSt = durationSt.toLowerCase();
         int months = 0;
         int days = 0;
@@ -203,8 +204,7 @@ public class Util {
         if (durationSt.contains("s")) {
             seconds = convert(durationSt.split("s")[0]);
         }
-        unbanOn = (seconds * 1000) + (minutes * 60 * 1000) + (hours * 60 * 60 * 1000) + (days * 24 * 60 * 60 * 1000) + (months * 30 * 24 * 60 * 60 * 1000) + System.currentTimeMillis();
-        return unbanOn;
+        return new int[]{months, days, hours, minutes, seconds};
     }
 
     private static int convert(String s) {
@@ -215,9 +215,67 @@ public class Util {
                 index = i;
             } catch (NumberFormatException e) {
                 if (index == s.length() - 1) return 0;
+                break;
             }
         }
         return Integer.parseInt(s.substring(index));
+    }
+
+    public static Pair<Long, String> checkForActive(UUID uuid, String banType, BanTime bantime, String newBanUUID) {
+        Connection conn = Main.getDb().getConnection();
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "SELECT * FROM bans WHERE uuid = ? AND banType = ?;")) {
+            stmt.setString(1, uuid.toString());
+            stmt.setString(2, banType);
+            ResultSet resultSet = stmt.executeQuery();
+
+            long banLong = bantime.isPermanent() ? -1 : bantime.getUnbanDate().getTime();
+
+            String newReasons = "";
+            List<String> oldBans = new ArrayList<>();
+            while (resultSet.next()) {
+                System.out.println("Found ban");
+                oldBans.add(resultSet.getString("banUUID"));
+                String reason = resultSet.getString("banReasonKey");
+                long unbanTime = resultSet.getLong("unbanOn");
+                System.out.println(unbanTime);
+                System.out.println(banLong);
+                if (unbanTime < System.currentTimeMillis())
+                    continue;
+                if (unbanTime == -1 || bantime.isPermanent()) {
+                    banLong = -1;
+                } else {
+                    banLong = banLong + (unbanTime - System.currentTimeMillis());
+                }
+                System.out.println(banLong);
+                newReasons += "+" + reason.replace("CMB_", "");
+            }
+            stmt.close();
+
+            if (oldBans.size() > 0) {
+                BanType bantype = BanType.valueOf(banType);
+                Util.clearBans(uuid, bantype, newBanUUID);
+            }
+
+            PreparedStatement stamt = null;
+            for (String oldBanUUID : oldBans) {
+                stamt = conn.prepareStatement("DELETE FROM bans WHERE banUUID = ?;");
+                stamt.setString(1, oldBanUUID);
+                stamt.execute();
+                stamt.close();
+                stamt = conn.prepareStatement("UPDATE banlogs SET combinedIntoNew = ? WHERE banUUID = ?");
+                stamt.setString(1, newBanUUID);
+                stamt.setString(2, oldBanUUID);
+                stamt.executeUpdate();
+                stamt.close();
+            }
+            conn.close();
+            System.out.println(newReasons);
+            return new Pair<>(banLong, newReasons);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new Pair<>(bantime.getUnbanDate().getTime(), "");
+        }
     }
 
     public static void main(String[] args) {
