@@ -1,0 +1,18 @@
+- Staedte Gruenden kostet
+- Name fuer Staedte
+- Chunks nur in Buildwelt claimbar
+- Anzahl an claimbaren Chunks abhaengig von Stadt Level
+- Jobs -> Geld und EXP fuer Stadt
+- Raenge -> Rechte
+- StaedteChat
+- Einladungssystem
+
+
+
+
+
+
+
+
+ADDON:
+    - Haeuser Claimen -> WorldEdit Prinzip
