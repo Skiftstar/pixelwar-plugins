@@ -35,15 +35,18 @@ public class Util {
 
         System.out.println(months + " " + days + " " + hours + " " + minutes + " " + seconds);
 
-        long[] array = new long[]{months, days, hours, minutes, seconds};
-        String[] nameArray = new String[]{"Months", "Days", "Hours", "Minutes", "Seconds"};
+        long[] array = new long[] { months, days, hours, minutes, seconds };
+        String[] nameArray = new String[] { "Months", "Days", "Hours", "Minutes", "Seconds" };
         int used = 0;
         StringBuilder duration = new StringBuilder();
         for (int i = 0; i < array.length; i++) {
-            if (array[i] == 0) continue;
+            if (array[i] == 0)
+                continue;
             duration.append(array[i]).append(" ").append(LanguageHelper.getMess(language, nameArray[i]));
-            if (used == 0) duration.append(" ");
-            else break;
+            if (used == 0)
+                duration.append(" ");
+            else
+                break;
             used++;
         }
         return duration.toString();
@@ -70,15 +73,18 @@ public class Util {
 
         System.out.println(months + " " + days + " " + hours + " " + minutes + " " + seconds);
 
-        long[] array = new long[]{months, days, hours, minutes, seconds};
-        String[] nameArray = new String[]{"Months", "Days", "Hours", "Minutes", "Seconds"};
+        long[] array = new long[] { months, days, hours, minutes, seconds };
+        String[] nameArray = new String[] { "Months", "Days", "Hours", "Minutes", "Seconds" };
         int used = 0;
         StringBuilder duration = new StringBuilder();
         for (int i = 0; i < array.length; i++) {
-            if (array[i] == 0) continue;
+            if (array[i] == 0)
+                continue;
             duration.append(array[i]).append(" ").append(LanguageHelper.getMess(language, nameArray[i]));
-            if (used == 0) duration.append(" ");
-            else break;
+            if (used == 0)
+                duration.append(" ");
+            else
+                break;
             used++;
         }
         return duration.toString();
@@ -101,9 +107,11 @@ public class Util {
                 break;
             case MUTE:
                 if (Main.instance().getProxy().getPlayers().size() == 0) {
-                    System.out.println("Couldn't send PluginChannel Message while clearing bans bc no player was online! Yikes.");
+                    System.out.println(
+                            "Couldn't send PluginChannel Message while clearing bans bc no player was online! Yikes.");
                 } else {
-                    UnbanCMD.sendCustomData(Main.instance().getProxy().getPlayers().iterator().next(), pUUID.toString(), banUUID);
+                    UnbanCMD.sendCustomData(Main.instance().getProxy().getPlayers().iterator().next(), pUUID.toString(),
+                            banUUID);
                 }
                 BansHandler.gMuteds.remove(pUUID);
                 BansHandler.gMutedsCache.remove(pUUID);
@@ -131,7 +139,8 @@ public class Util {
         }
     }
 
-    public static void putInDB(UUID uuid, String banner, String reason, BanTime bantime, long unbanOn, String banUUID, long banTime) {
+    public static void putInDB(UUID uuid, String banner, String reason, BanTime bantime, long unbanOn, String banUUID,
+            long banTime) {
         Connection conn = Main.getDb().getConnection();
         if (!bantime.getBanType().equals(BanType.KICK)) {
             try (PreparedStatement stmt = conn.prepareStatement(
@@ -180,19 +189,35 @@ public class Util {
         int minutes = 0;
         int seconds = 0;
         if (durationSt.contains("mo")) {
-            //TODO: this
-            months = convert()
+            months = convert(durationSt.split("mo")[0]);
         }
-
+        if (durationSt.contains("d")) {
+            days = convert(durationSt.split("d")[0]);
+        }
+        if (durationSt.contains("h")) {
+            hours = convert(durationSt.split("h")[0]);
+        }
+        if (durationSt.contains("mi")) {
+            minutes = convert(durationSt.split("mi")[0]);
+        }
+        if (durationSt.contains("s")) {
+            seconds = convert(durationSt.split("s")[0]);
+        }
+        unbanOn = (seconds * 1000) + (minutes * 60 * 1000) + (hours * 60 * 60 * 1000) + (days * 24 * 60 * 60 * 1000) + (months * 30 * 24 * 60 * 60 * 1000) + System.currentTimeMillis();
         return unbanOn;
     }
 
     private static int convert(String s) {
-         try {
-            return Integer.parseInt(s);
-         } catch (NumberFormatException e) {
-             return 0;
-         }
+        int index = s.length() - 1;
+        for (int i = index; i >= 0; i--) {
+            try {
+                Integer.parseInt(Character.toString(s.charAt(i)));
+                index = i;
+            } catch (NumberFormatException e) {
+                if (index == s.length() - 1) return 0;
+            }
+        }
+        return Integer.parseInt(s.substring(index));
     }
 
     public static void main(String[] args) {
