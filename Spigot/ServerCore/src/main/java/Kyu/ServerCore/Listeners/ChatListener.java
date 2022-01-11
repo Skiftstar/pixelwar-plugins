@@ -34,10 +34,10 @@ public class ChatListener  implements Listener {
             if (!ban.getUnbanDate().before(new Date(System.currentTimeMillis()))) {
                 if (ban.isPermanent()) {
                     player.sendMessage(Component.text(Main.helper.getMess(player, "PermaMuteMessage")
-                            .replace("%reason", Main.helper.getMess(player, ban.getReason()))));
+                            .replace("%reason", Util.getReason(ban.getReason(), player))));
                 } else {
                     player.sendMessage(Component.text(Main.helper.getMess(player, "MuteMessage")
-                            .replace("%reason", Main.helper.getMess(player, ban.getReason()))
+                            .replace("%reason",  Util.getReason(ban.getReason(), player))
                             .replace("%duration", Util.getRemainingTime(ban.getUnbanDate(), player))));
                 }
                 return;

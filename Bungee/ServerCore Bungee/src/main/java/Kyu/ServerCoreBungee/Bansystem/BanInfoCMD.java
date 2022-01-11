@@ -74,20 +74,7 @@ public class BanInfoCMD extends Command {
             if (bans.get(reason).isEmpty())
                 continue;
 
-            String reasonMess = LanguageHelper.getMess(sender, "BanInfoTemplateReasonHeader");
-            if (reason.startsWith("CUSTOM_")) {
-                reasonMess = reasonMess.replace("%reason", reason.split("CUSTOM_")[1]);
-            } else if (reason.startsWith("CMB_")) {
-                String reasons = "";
-                for (String string : reason.split("CMB_")[1].split("\\+")) {
-                    if (string.startsWith("CUSTOM_")) reasons += " + " + string.split("CUSTOM_")[1];
-                    else reasons += " + " + LanguageHelper.getMess(sender, string);
-                }
-                reasons = reasons.replaceFirst(" \\+ ", "");
-                reasonMess = reasonMess.replace("%reason", reasons);
-            } else {
-                reasonMess = reasonMess.replace("%reason", LanguageHelper.getMess(sender, reason));
-            }
+            String reasonMess = LanguageHelper.getMess(sender, "BanInfoTemplateReasonHeader").replace("%reason", Util.getReason(reason, sender));
             TextComponent reasonComponent = new TextComponent(reasonMess);
             
 

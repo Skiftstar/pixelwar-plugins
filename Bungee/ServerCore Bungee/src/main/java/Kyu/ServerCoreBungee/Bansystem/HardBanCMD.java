@@ -61,6 +61,7 @@ public class HardBanCMD extends Command {
         for (int i = reasonIndex; i < args.length; i++) {
             reason += " " + args[i];
         }
+        reason = reason.replaceFirst(" ", "");
         reason = "CUSTOM_" + reason;
 
         int[] times = new int[]{0, 0, 0, 0, 0};
@@ -99,7 +100,7 @@ public class HardBanCMD extends Command {
             Ban ban;
             switch (banType) {
                 case BAN:
-                    ban = new Ban(reason, new Date(unbanOn), banType, unbanOn == -1,
+                    ban = new Ban(reasonSt, new Date(unbanOn), banType, unbanOn == -1,
                             banUUID);
                     ban.setLanguage(LanguageHelper.getLanguage(p));
                     if (unbanOn == -1) {
@@ -120,25 +121,25 @@ public class HardBanCMD extends Command {
                     p.disconnect(new TextComponent(kickMessage));
                     break;
                 case MUTE:
-                    ban = new Ban(reason, new Date(unbanOn), banType, unbanOn == -1,
+                    ban = new Ban(reasonSt, new Date(unbanOn), banType, unbanOn == -1,
                             banUUID);
                     if (unbanOn == -1) {
                         p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "PermaMuteMessage")
                                 .replace("%reason", reason.split("CUSTOM_")[1])));
-                        sendCustomData(p, p.getUniqueId().toString(), reason, -1, banUUID);
+                        sendCustomData(p, p.getUniqueId().toString(), reasonSt, -1, banUUID);
                     } else {
                         p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "MuteMessage")
                                 .replace("%duration",
                                         Util.getRemainingTime(new Date(unbanOn),
                                                 LanguageHelper.getLanguage(p)))
                                 .replace("%reason", reason.split("CUSTOM_")[1])));
-                        sendCustomData(p, p.getUniqueId().toString(), reason,
+                        sendCustomData(p, p.getUniqueId().toString(), reasonSt,
                                 unbanOn, banUUID);
                     }
                     BansHandler.gMuteds.put(p.getUniqueId(), ban);
                     break;
                 case GCHAT_MUTE:
-                    ban = new Ban(reason, new Date(unbanOn), banType, unbanOn == -1,
+                    ban = new Ban(reasonSt, new Date(unbanOn), banType, unbanOn == -1,
                             banUUID);
                     if (unbanOn == -1) {
                         p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "GChatPermaMuteMessage")
@@ -154,6 +155,9 @@ public class HardBanCMD extends Command {
                     break;
             }
         }
+        sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "PlayerBanned", true)
+            .replace("%player", player)
+            .replace("%reason", Util.getReason(reason, sender))));
 
     }
 

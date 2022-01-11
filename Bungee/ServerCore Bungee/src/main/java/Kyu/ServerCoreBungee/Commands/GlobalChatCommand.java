@@ -54,11 +54,10 @@ public class GlobalChatCommand extends Command {
             if (!ban.getUnbanDate().before(new Date(System.currentTimeMillis()))) {
                 if (ban.isPermanent()) {
                     p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "GChatPermaMuteMessage")
-                    //TODO: fix reason
-                            .replace("%reason", LanguageHelper.getMess(p, ban.getReason()))));
+                            .replace("%reason", Util.getReason(ban.getReason(), p))));
                 } else {
                     p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "GChatMuteMessage")
-                            .replace("%reason", LanguageHelper.getMess(p, ban.getReason()))
+                            .replace("%reason", Util.getReason(ban.getReason(), p))
                             .replace("%duration", Util.getRemainingTime(ban.getUnbanDate(), LanguageHelper.getLanguage(p)))));
                 }
                 return;

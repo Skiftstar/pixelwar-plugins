@@ -45,6 +45,8 @@ Bans:
   KickMessage: "&cDu wurdest vom Server gekickt!\n&cGrund: &4%reason"
   GChatPermaMuteMessage: "&cDu wurdest &4PERMANENT &cim &4Globalen Chat &cgemutet!\n&cGrund: &4%reason"
   GChatMuteMessage: "&cDu wurdest für &4%duration &cim &4Globalen Chat &cgemutet!\n&cGrund: &4%reason"
+  PermaMuteMessage: "&cDu wurdest &4PERMANENT &cgemutet!\n&cGrund: &4%reason"
+  MuteMessage: "&cDu wurdest für &4%duration &cgemutet!\n&cGrund: &4%reason"
 
 BanInfo:
   BanInfoTemplateHeader: "&b=== %player's Bans ==="

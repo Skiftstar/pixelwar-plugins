@@ -4,6 +4,7 @@ import Kyu.ServerCoreBungee.Main;
 import Kyu.ServerCoreBungee.Bansystem.BansHandler;
 import Kyu.ServerCoreBungee.Bansystem.UnbanCMD;
 import Kyu.WaterFallLanguageHelper.LanguageHelper;
+import net.md_5.bungee.api.CommandSender;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -182,6 +183,46 @@ public class Util {
         }
     }
 
+    public static String getReason(String reason, CommandSender sender) {
+        String reasonMess;
+        if (reason.startsWith("CUSTOM_")) {
+            reasonMess = reason.split("CUSTOM_")[1];
+        } else if (reason.startsWith("CMB_")) {
+            String reasons = "";
+            for (String string : reason.split("CMB_")[1].split("\\+")) {
+                if (string.startsWith("CUSTOM_"))
+                    reasons += " + " + string.split("CUSTOM_")[1];
+                else
+                    reasons += " + " + LanguageHelper.getMess(sender, string);
+            }
+            reasons = reasons.replaceFirst(" \\+ ", "");
+            reasonMess = reasons;
+        } else {
+            reasonMess = LanguageHelper.getMess(sender, reason);
+        }
+        return reasonMess;
+    }
+
+    public static String getReason(String reason, String language) {
+        String reasonMess;
+        if (reason.startsWith("CUSTOM_")) {
+            reasonMess = reason.split("CUSTOM_")[1];
+        } else if (reason.startsWith("CMB_")) {
+            String reasons = "";
+            for (String string : reason.split("CMB_")[1].split("\\+")) {
+                if (string.startsWith("CUSTOM_"))
+                    reasons += " + " + string.split("CUSTOM_")[1];
+                else
+                    reasons += " + " + LanguageHelper.getMess(language, string);
+            }
+            reasons = reasons.replaceFirst(" \\+ ", "");
+            reasonMess = reasons;
+        } else {
+            reasonMess = LanguageHelper.getMess(language, reason);
+        }
+        return reasonMess;
+    }
+
     public static int[] stringToUnbanTime(String durationSt) {
         durationSt = durationSt.toLowerCase();
         int months = 0;
@@ -204,7 +245,7 @@ public class Util {
         if (durationSt.contains("s")) {
             seconds = convert(durationSt.split("s")[0]);
         }
-        return new int[]{months, days, hours, minutes, seconds};
+        return new int[] { months, days, hours, minutes, seconds };
     }
 
     private static int convert(String s) {
@@ -214,7 +255,8 @@ public class Util {
                 Integer.parseInt(Character.toString(s.charAt(i)));
                 index = i;
             } catch (NumberFormatException e) {
-                if (index == s.length() - 1) return 0;
+                if (index == s.length() - 1)
+                    return 0;
                 break;
             }
         }

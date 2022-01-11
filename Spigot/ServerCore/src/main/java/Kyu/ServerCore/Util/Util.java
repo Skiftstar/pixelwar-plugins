@@ -35,6 +35,26 @@ public class Util {
         return colorCode;
     }
 
+    public static String getReason(String reason, Player sender) {
+        String reasonMess;
+        if (reason.startsWith("CUSTOM_")) {
+            reasonMess = reason.split("CUSTOM_")[1];
+        } else if (reason.startsWith("CMB_")) {
+            String reasons = "";
+            for (String string : reason.split("CMB_")[1].split("\\+")) {
+                if (string.startsWith("CUSTOM_"))
+                    reasons += " + " + string.split("CUSTOM_")[1];
+                else
+                    reasons += " + " + Main.helper.getMess(sender, string);
+            }
+            reasons = reasons.replaceFirst(" \\+ ", "");
+            reasonMess = reasons;
+        } else {
+            reasonMess = Main.helper.getMess(sender, reason);
+        }
+        return reasonMess;
+    }
+
     public static String getRemainingTime(Date unbanDate, Player p) {
         long millisDiff = unbanDate.getTime() - System.currentTimeMillis();
 
@@ -63,7 +83,7 @@ public class Util {
         for (int i = 0; i < array.length; i++) {
             if (array[i] == 0) continue;
             duration.append(array[i]).append(" ").append(Main.helper.getMess(p, nameArray[i]));
-            if (used == 0) duration.append(" ");
+            if (used == 0 && i != array.length - 1) duration.append(" ");
             else break;
             used++;
         }
