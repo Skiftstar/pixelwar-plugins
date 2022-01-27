@@ -1,5 +1,9 @@
 cacheTimeout: 30
 confirmTimeout: 30
+announceBanGlobally: true
+DiscordToken: "TokenHere"
+DiscordLogChannel: "ChannelIDHere"
+DiscordServerID: "DiscordServerIDHere"
 
 database:
   host: localhost # host of your database

@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.logging.Logger;
+import Kyu.ServerCoreBungee.DiscordBot.DCBot;
 
 public final class Main extends Plugin {
 
@@ -36,6 +37,7 @@ public final class Main extends Plugin {
     private static Main instance;
     private BansHandler handler = null;
     private static DB db;
+    private DCBot discordBot;
 
 
     @Override
@@ -43,6 +45,8 @@ public final class Main extends Plugin {
         instance = this;
         // Plugin startup logic
         logger = getLogger();
+
+        discordBot = new DCBot();
 
         loadConfigValues();
 
@@ -114,6 +118,9 @@ public final class Main extends Plugin {
         confirmTimeout = getConfig().getInt("confirmTimeout");
         cacheTimeout = getConfig().getInt("cacheTimeout");
         if (handler != null) handler.loadBanReasons();
+        BanCMD.announceBan = getConfig().getBoolean("announceBanGlobally");
+        HardBanCMD.announceBan = BanCMD.announceBan;
+        discordBot.login(getConfig().getString("DiscordToken"));
     }
 
     public static Configuration getConfig() {
@@ -150,5 +157,9 @@ public final class Main extends Plugin {
 
     public static DB getDb() {
         return db;
+    }
+
+    public DCBot getDiscordBot() {
+        return discordBot;
     }
 }

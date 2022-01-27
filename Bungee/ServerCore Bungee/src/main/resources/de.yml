@@ -57,4 +57,4 @@ BanInfo:
   BanInfoTemplateEarlyUnbanInfo: "&b- Frühzeitig entbannt von: &6%player &bam &6%date"
   BanInfoTemplateHoverText: "&bDieser ban ist noch aktiv! Klicke hier um zu unbannen"
   BanInfoTemplateCombined: "&b---Zusammengesetzt aus: %ban"
-  
+  Global_PlayerPunished: "&7%player &8wurde für folgenden Grund bestraft: &7%reason"

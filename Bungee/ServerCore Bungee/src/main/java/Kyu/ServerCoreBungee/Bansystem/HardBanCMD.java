@@ -23,6 +23,8 @@ import net.md_5.bungee.api.plugin.Command;
 
 public class HardBanCMD extends Command {
 
+    public static boolean announceBan;
+
     public HardBanCMD(Main plugin) {
         super("hardban", "core.hardban");
         plugin.getProxy().getPluginManager().registerCommand(plugin, this);
@@ -64,7 +66,7 @@ public class HardBanCMD extends Command {
         reason = reason.replaceFirst(" ", "");
         reason = "CUSTOM_" + reason;
 
-        int[] times = new int[]{0, 0, 0, 0, 0};
+        int[] times = new int[] { 0, 0, 0, 0, 0 };
         boolean permanent = false;
         if (!isKick) {
             String duration = args[2];
@@ -156,8 +158,16 @@ public class HardBanCMD extends Command {
             }
         }
         sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "PlayerBanned", true)
-            .replace("%player", player)
-            .replace("%reason", Util.getReason(reason, sender))));
+                .replace("%player", player)
+                .replace("%reason", Util.getReason(reason, sender))));
+
+        if (announceBan) {
+            for (ProxiedPlayer pl : Main.instance().getProxy().getPlayers()) {
+                pl.sendMessage(new TextComponent(LanguageHelper.getMess(pl, "Global_PlayerPunished", true)
+                        .replace("%player", player)
+                        .replace("%reason", Util.getReason(reason, pl))));
+            }
+        }
 
     }
 

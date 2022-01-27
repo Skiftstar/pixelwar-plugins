@@ -1,0 +1,5 @@
+name: cities
+version: 1.0-SNAPSHOT
+author: CoderDojo Ninja
+main: kyu.cities.Main
+

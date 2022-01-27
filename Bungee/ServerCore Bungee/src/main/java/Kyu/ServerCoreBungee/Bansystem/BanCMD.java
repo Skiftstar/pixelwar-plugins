@@ -26,6 +26,7 @@ import com.google.common.io.ByteStreams;
 public class BanCMD extends Command {
 
     private Main main;
+    public static boolean announceBan;
     public static List<BanReason> banReasons = new ArrayList<>();
     private ConfirmCMD confirmCMD;
 
@@ -168,7 +169,12 @@ public class BanCMD extends Command {
                 }
 
                 String banMess = LanguageHelper.getMess(sender, "PlayerBanned", true).replace("%player", playerName).replace("%reason", LanguageHelper.getMess(sender, reason.getReason()));
-                
+                for (ProxiedPlayer pl : main.getProxy().getPlayers()) {
+                    pl.sendMessage(new TextComponent(LanguageHelper.getMess(pl, "Global_PlayerPunished", true)
+                        .replace("%player", playerName)
+                        .replace("%reason", LanguageHelper.getMess(pl, reason.getReason()))));
+                }
+                Main.instance().getDiscordBot().logSmth(sender instanceof ProxiedPlayer ? ((ProxiedPlayer) sender).getDisplayName() : "CONSOLE", playerName, LanguageHelper.getMess("de", reason.getReason()));
                 sender.sendMessage(new TextComponent(banMess));
             }
         };
