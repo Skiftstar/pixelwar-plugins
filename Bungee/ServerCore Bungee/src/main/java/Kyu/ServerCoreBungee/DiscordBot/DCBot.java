@@ -7,35 +7,37 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import Kyu.ServerCoreBungee.Main;
 import Kyu.ServerCoreBungee.Bansystem.HelperClasses.BanInfo;
 import Kyu.ServerCoreBungee.Bansystem.HelperClasses.BanType;
+import Kyu.ServerCoreBungee.Bansystem.HelperClasses.DiscordBanInfoHelper;
+import Kyu.ServerCoreBungee.Bansystem.HelperClasses.Pair;
 import Kyu.ServerCoreBungee.Bansystem.HelperClasses.Util;
 import Kyu.WaterFallLanguageHelper.LanguageHelper;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.ClickEvent.Action;
+import net.md_5.bungee.api.scheduler.ScheduledTask;
 
 public class DCBot implements EventListener {
 
     private String logChannelID, guildId;
     private JDA jda;
+    private Map<Long, Pair<ScheduledTask, DiscordBanInfoHelper>> messages = new HashMap<>();
 
     public void login(String token) {
         try {
@@ -64,6 +66,37 @@ public class DCBot implements EventListener {
         if (e instanceof SlashCommandEvent) {
             handleSlashCommands((SlashCommandEvent) e);
         }
+        if (e instanceof MessageReactionAddEvent) {
+            System.out.println("Emote Event triggered!");
+            handleReactAddEvent((MessageReactionAddEvent) e);
+        }
+    }
+
+    private void handleReactAddEvent(MessageReactionAddEvent e) {
+        if (!messages.containsKey(e.getMessageIdLong()))
+            return;
+        if (e.getMember().getIdLong() == jda.getSelfUser().getIdLong())
+            return;
+        DiscordBanInfoHelper helper = messages.get(e.getMessageIdLong()).second;
+        ScheduledTask task = messages.get(e.getMessageIdLong()).first;
+        task.cancel();
+        messages.remove(e.getMessageIdLong());
+        Message message = e.getChannel().retrieveMessageById(e.getMessageIdLong()).complete();
+        e.getReaction().removeReaction(e.getUser()).complete();
+        if (e.getReactionEmote().getEmoji().equals("⬅")) {
+            helper.setIndex(helper.getIndex() - 1);
+            message.editMessageEmbeds(getBanInfoEmbed(helper.getIndex(), helper.isActiveOnly(), helper.getReasons(),
+                    helper.getBansMap(), helper.getPlayerName())).complete();
+        } else if (e.getReactionEmote().getEmoji().equals("➡")) {
+            helper.setIndex(helper.getIndex() + 1);
+            message.editMessageEmbeds(getBanInfoEmbed(helper.getIndex(), helper.isActiveOnly(), helper.getReasons(),
+                    helper.getBansMap(), helper.getPlayerName())).complete();
+        }
+        task = Main.instance().getProxy().getScheduler().schedule(Main.instance(), () -> {
+            messages.remove(message.getIdLong());
+            message.clearReactions().complete();
+        }, 30, TimeUnit.SECONDS);
+        messages.put(message.getIdLong(), new Pair<ScheduledTask, DiscordBanInfoHelper>(task, helper));
     }
 
     private void handleSlashCommands(SlashCommandEvent e) {
@@ -215,7 +248,20 @@ public class DCBot implements EventListener {
         // }
         // message.append("\n");
         // }
-        e.replyEmbeds(getBanInfoEmbed(0, activeOnly, reasons, bansMap, playerName)).complete();
+        e.reply("Hier sind die Bans von " + playerName).complete();
+        e.getChannel().sendMessageEmbeds(getBanInfoEmbed(0, activeOnly, reasons, bansMap, playerName))
+                .queue(message -> {
+                    if (bansMap.size() > 1) {
+                        message.addReaction("⬅").queue();
+                        message.addReaction("➡").queue();
+                        ScheduledTask task = Main.instance().getProxy().getScheduler().schedule(Main.instance(), () -> {
+                            messages.remove(message.getIdLong());
+                            message.clearReactions().complete();
+                        }, 30, TimeUnit.SECONDS);
+                        messages.put(message.getIdLong(), new Pair<ScheduledTask, DiscordBanInfoHelper>(task,
+                                new DiscordBanInfoHelper(0, activeOnly, reasons, bansMap, playerName)));
+                    }
+                });
     }
 
     private MessageEmbed getBanInfoEmbed(int index, boolean activeOnly, Map<String, String> reasons,
@@ -224,6 +270,7 @@ public class DCBot implements EventListener {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(Color.RED);
         eb.setTitle(activeOnly ? playerName + "'s laufende Bans" : playerName + "'s Bans");
+        eb.setFooter("Seite " + (index + 1) + " von " + bansMap.size());
         eb.setDescription("Grund: " + reasons.get(bansList.get(index)));
         int c = 0;
         for (List<BanInfo> bans : bansMap.get(bansList.get(index))) {
