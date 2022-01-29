@@ -174,7 +174,7 @@ public class BanCMD extends Command {
                         .replace("%player", playerName)
                         .replace("%reason", LanguageHelper.getMess(pl, reason.getReason()))));
                 }
-                Main.instance().getDiscordBot().logSmth(sender instanceof ProxiedPlayer ? ((ProxiedPlayer) sender).getDisplayName() : "CONSOLE", playerName, LanguageHelper.getMess("de", reason.getReason()));
+                Main.instance().getDiscordBot().logBan(sender instanceof ProxiedPlayer ? ((ProxiedPlayer) sender).getDisplayName() : "CONSOLE", playerName, LanguageHelper.getMess("de", reason.getReason()));
                 sender.sendMessage(new TextComponent(banMess));
             }
         };

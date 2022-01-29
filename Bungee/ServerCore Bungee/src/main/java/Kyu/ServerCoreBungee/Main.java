@@ -7,6 +7,7 @@ import Kyu.ServerCoreBungee.Bansystem.HardBanCMD;
 import Kyu.ServerCoreBungee.Bansystem.UnbanCMD;
 import Kyu.ServerCoreBungee.Commands.DMCommand;
 import Kyu.ServerCoreBungee.Commands.GlobalChatCommand;
+import Kyu.ServerCoreBungee.Commands.OnlineCommand;
 import Kyu.ServerCoreBungee.Commands.ReloadCMD;
 import Kyu.ServerCoreBungee.Commands.TeamchatCommand;
 import Kyu.ServerCoreBungee.Database.DB;
@@ -60,6 +61,8 @@ public final class Main extends Plugin {
         db = new DB();
 
         new JoinListener(this);
+
+        new OnlineCommand(this);
 
         new TeamchatCommand(this);
         new DMCommand(this);
