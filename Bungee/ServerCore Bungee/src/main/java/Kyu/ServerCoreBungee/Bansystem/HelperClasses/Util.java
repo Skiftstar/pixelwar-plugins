@@ -1,6 +1,7 @@
 package Kyu.ServerCoreBungee.Bansystem.HelperClasses;
 
 import Kyu.ServerCoreBungee.Main;
+import Kyu.ServerCoreBungee.Bansystem.BanCMD;
 import Kyu.ServerCoreBungee.Bansystem.BansHandler;
 import Kyu.ServerCoreBungee.Bansystem.UnbanCMD;
 import Kyu.WaterFallLanguageHelper.LanguageHelper;
@@ -12,7 +13,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class Util {
@@ -222,6 +226,123 @@ public class Util {
         }
         return reasonMess;
     }
+
+    public static Map<String, List<BanInfo>> fetchAllBans(String uuid) {
+        Map<String, List<BanInfo>> bans = new HashMap<>();
+        for (BanReason banreason : BanCMD.banReasons) {
+            bans.put(banreason.getReason(), new ArrayList<>());
+        }
+
+        Connection conn = Main.getDb().getConnection();
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "SELECT * FROM banlogs WHERE uuid = ? ORDER BY bannedOn ASC;")) {
+            stmt.setString(1, uuid);
+            ResultSet resultSet = stmt.executeQuery();
+
+            while (resultSet.next()) {
+                BanInfo info;
+
+                BanType banType = BanType.valueOf(resultSet.getString("banType"));
+                String reasonKey = resultSet.getString("banReasonKey");
+                String banUUID = resultSet.getString("banUUID");
+                String bannedBy = uuidToName(resultSet.getString("bannedBy"));
+                Date bannedOn = new Date(resultSet.getLong("bannedOn"));
+                String playerUUID = resultSet.getString("uuid");
+                String combinedInto = resultSet.getString("combinedIntoNew");
+
+                long unbanLong = resultSet.getLong("unbanOn");
+                boolean permanent = unbanLong == -1;
+                unbanLong = permanent ? 0 : unbanLong;
+                if (permanent) {
+                    info = new BanInfo(banUUID, playerUUID, banType, bannedBy, bannedOn);
+                } else {
+                    Date unbanOn = new Date(unbanLong);
+                    info = new BanInfo(banUUID, playerUUID, banType, bannedBy, bannedOn, unbanOn);
+                }
+
+                boolean earlyUnban = resultSet.getBoolean("earlyUnban");
+                if (earlyUnban) {
+                    String unbanBy = uuidToName(resultSet.getString("earlyUnbanByUUID"));
+                    Date earlyUnbanOn = new Date(resultSet.getLong("earlyUnbanOn"));
+                    info.setEarlyUnban(unbanBy, earlyUnbanOn);
+                }
+
+                if (combinedInto != null) {
+                    info.setCombinedInto(combinedInto);
+                }
+
+                if (!bans.containsKey(reasonKey)) {
+                    List<BanInfo> list = new ArrayList<>(Arrays.asList(info));
+                    bans.put(reasonKey, list);
+                } else {
+                    bans.get(reasonKey).add(info);
+                }
+            }
+            conn.close();
+            return bans;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Map<String, List<BanInfo>> fetchActiveBans(String uuid) {
+        Map<String, List<BanInfo>> bans = new HashMap<>();
+        for (BanReason banreason : BanCMD.banReasons) {
+            bans.put(banreason.getReason(), new ArrayList<>());
+        }
+
+        Connection conn = Main.getDb().getConnection();
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "SELECT * FROM bans WHERE uuid = ? ORDER BY bannedOn ASC;")) {
+            stmt.setString(1, uuid);
+            ResultSet resultSet = stmt.executeQuery();
+
+            while (resultSet.next()) {
+                BanInfo info;
+
+                BanType banType = BanType.valueOf(resultSet.getString("banType"));
+                String reasonKey = resultSet.getString("banReasonKey");
+                String banUUID = resultSet.getString("banUUID");
+                String bannedBy = uuidToName(resultSet.getString("bannedBy"));
+                Date bannedOn = new Date(resultSet.getLong("bannedOn"));
+                String playerUUID = resultSet.getString("uuid");
+
+                long unbanLong = resultSet.getLong("unbanOn");
+                boolean permanent = unbanLong == -1;
+                unbanLong = permanent ? 0 : unbanLong;
+                if (!permanent && unbanLong < System.currentTimeMillis())
+                    continue;
+                if (permanent) {
+                    info = new BanInfo(banUUID, playerUUID, banType, bannedBy, bannedOn);
+                } else {
+                    Date unbanOn = new Date(unbanLong);
+                    info = new BanInfo(banUUID, playerUUID, banType, bannedBy, bannedOn, unbanOn);
+                }
+
+                if (!bans.containsKey(reasonKey)) {
+                    List<BanInfo> list = new ArrayList<>(Arrays.asList(info));
+                    bans.put(reasonKey, list);
+                } else {
+                    bans.get(reasonKey).add(info);
+                }
+            }
+            conn.close();
+            return bans;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static String uuidToName(String uuid) {
+        if (Main.getUuidStorage().get(uuid) == null) {
+            return "UUID NOT FOUND!";
+        } else {
+            return Main.getUuidStorage().getString(uuid);
+        }
+    }
+
 
     public static int[] stringToUnbanTime(String durationSt) {
         durationSt = durationSt.toLowerCase();
