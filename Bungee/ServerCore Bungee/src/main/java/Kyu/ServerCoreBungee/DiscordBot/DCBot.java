@@ -30,7 +30,6 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 
 public class DCBot implements EventListener {
@@ -138,14 +137,14 @@ public class DCBot implements EventListener {
 
         String language = "de";
 
-        TextComponent banInfo;
-        if (activeOnly) {
-            banInfo = new TextComponent(LanguageHelper.getMess("de", "BanInfoTemplateActiveHeader")
-                    .replace("%player", playerName));
-        } else {
-            banInfo = new TextComponent(LanguageHelper.getMess("de", "BanInfoTemplateHeader")
-                    .replace("%player", playerName));
-        }
+        // TextComponent banInfo;
+        // if (activeOnly) {
+        //     banInfo = new TextComponent(LanguageHelper.getMess("de", "BanInfoTemplateActiveHeader")
+        //             .replace("%player", playerName));
+        // } else {
+        //     banInfo = new TextComponent(LanguageHelper.getMess("de", "BanInfoTemplateHeader")
+        //             .replace("%player", playerName));
+        // }
 
         Map<String, List<BanInfo>> combinedBans = new HashMap<>();
         Map<BanInfo, String> bansThatAreCombined = new HashMap<>();
