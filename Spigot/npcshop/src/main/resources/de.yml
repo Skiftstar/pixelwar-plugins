@@ -1,3 +1,9 @@
 Errors:
   PlayerOnly: "&cNur für Spieler!"
   NEArgs: "&cNicht genug Argumente!"
+
+NPCGUI:
+  BuyItemName: "&aKaufen"
+  SellItemName: "&aVerkaufen"
+  AdminItemName: "&eEditieren"
+  NPCVillagerMainMenuTitle: "&c%VillName"
