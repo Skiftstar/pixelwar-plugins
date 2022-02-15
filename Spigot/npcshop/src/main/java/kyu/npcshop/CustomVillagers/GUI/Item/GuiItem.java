@@ -57,6 +57,13 @@ public class GuiItem {
         return parentWindow;
     }
 
+    public void setName(String name) {
+        ItemMeta meta = item.getItemMeta();
+        meta.displayName(Component.text(Util.color(name)));
+        item.setItemMeta(meta);
+        parentWindow.refreshWindow();
+    }
+
 
     public void setOnClick(Consumer<InventoryClickEvent> consumer) {
         function = consumer;

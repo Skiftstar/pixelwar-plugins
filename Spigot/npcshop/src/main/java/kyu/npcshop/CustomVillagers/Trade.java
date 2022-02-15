@@ -1,6 +1,6 @@
 package kyu.npcshop.CustomVillagers;
 
-import net.minecraft.world.item.ItemStack;
+import org.bukkit.inventory.ItemStack;
 
 public class Trade {
     private TradeType type;

@@ -2,6 +2,9 @@ package kyu.npcshop.CustomVillagers.GUI.Windows;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import kyu.npcshop.CustomVillagers.GUI.GUI;
@@ -32,5 +35,11 @@ public interface Window {
     GUI getGUI();
 
     void refreshWindow();
+
+    Inventory getInv();
+
+    public void handleInvClick(InventoryClickEvent e);
+
+    public void handleClose(InventoryCloseEvent e);
 
 }

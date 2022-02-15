@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -23,6 +24,7 @@ import kyu.npcshop.Util.Util;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.*;
 
 public abstract class DefaultWindow implements Window {
@@ -42,6 +44,8 @@ public abstract class DefaultWindow implements Window {
     private TaskbarStyles taskbarStyle = TaskbarStyles.RIGHT;
 
     private List<GuiItem> relocatedItems = new ArrayList<>();
+
+    Consumer<InventoryCloseEvent> onClose = null;
 
     protected DefaultWindow(@Nullable String title, int rows, GUI gui, JavaPlugin plugin) {
         generateDefaultPlaceholders();
@@ -694,6 +698,14 @@ public abstract class DefaultWindow implements Window {
         return new AbstractMap.SimpleEntry<>(slot, page);
     }
 
+    /**
+     * Set function to execute on InvClose
+     * @param onClose Function to execute once Inv is closed
+     */
+    public void setOnClose(Consumer<InventoryCloseEvent> onClose) {
+        this.onClose = onClose;
+    }
+
 
     /*
     =============================================================================
@@ -800,7 +812,7 @@ public abstract class DefaultWindow implements Window {
         }
     }
 
-    void handleInvClick(InventoryClickEvent e) {
+    public void handleInvClick(InventoryClickEvent e) {
         if (e.getClickedInventory() == null || !e.getClickedInventory().equals(getInv())) {
             return;
         }
@@ -814,6 +826,9 @@ public abstract class DefaultWindow implements Window {
         if (e.getCurrentItem() == null || e.getCurrentItem().getType().equals(Material.AIR)) {
             return;
         }
+        if (!e.getWhoClicked().getOpenInventory().getTopInventory().equals(getInv())) {
+            return;
+        }
         if (isPreventItemGrab()) {
             e.setCancelled(true);
         }
@@ -822,6 +837,7 @@ public abstract class DefaultWindow implements Window {
         if (item == null) {
             return;
         }
+        // getHolder().sendMessage(Component.text("Click triggered from Inv with size " + getInv().getSize()));
         item.executeOnClick(e);
     }
 
@@ -862,6 +878,21 @@ public abstract class DefaultWindow implements Window {
     GuiItem replaceItemAtPage(ItemStack item, int slot, int page) {
         forceRemoveItem(slot, page);
         return setItemAtPage(item, slot, page, false);
+    }
+
+    public void handleClose(InventoryCloseEvent e) {
+        // getHolder().sendMessage(Component.text("Start Handle Close of inv with size" + e.getInventory().getSize()));
+        if (e.getInventory() == null || !e.getInventory().equals(getInv())) {
+            return;
+        }
+        if (!e.getPlayer().equals(getHolder())) {
+            return;
+        }
+        // getHolder().sendMessage(Component.text("Handling close Inv with size" + e.getInventory().getSize()));
+        gui.setCurrentWindow(null);
+        if (onClose != null) {
+            onClose.accept(e);
+        }
     }
 
 }
