@@ -1,6 +1,11 @@
 package kyu.npcshop.Listeners;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -107,7 +112,7 @@ public class ClickListener implements Listener {
                     0);
             addTradeItem.setOnClick(ev -> {
                 final int[] tradeTypeIndex = new int[] { 0 };
-                final int[] amount = new int[] { 1 };
+                final double[] price = new double[] { 1.0 };
                 final ItemStack[] item = new ItemStack[] { null };
 
                 ChestWindow addTradeWindow = gui
@@ -117,45 +122,46 @@ public class ClickListener implements Listener {
                     gui.openWindow(adminWindow);
                 });
 
-                // #region Amount Item
-                GuiItem amountItem = addTradeWindow.setItem(Material.FEATHER,
-                        Main.helper().getMess(p, "AmountItemName").replace("%amount", "" + amount[0]), 1);
-                amountItem.setOnClick(ev1 -> {
-                    ChestWindow changeAmountWindow = gui.createChestWindow(
-                            Main.helper().getMess(p, "NPCVillagerAddTradeChangeAmountTitle").replace("%VillName",
+                // #region Price Item
+                GuiItem priceItem = addTradeWindow.setItem(Material.GOLD_NUGGET,
+                        Main.helper().getMess(p, "PriceItemName").replace("%price", "" + price[0]), 1);
+                        priceItem.setOnClick(ev1 -> {
+                    ChestWindow changePriceWindow = gui.createChestWindow(
+                            Main.helper().getMess(p, "NPCVillagerAddTradeChangePriceTitle").replace("%VillName",
                                     e.getRightClicked().getCustomName()),
                             1);
-                    changeAmountWindow.setOnClose(ev2 -> {
+                            changePriceWindow.setOnClose(ev2 -> {
                         gui.openWindow(addTradeWindow);
                     });
 
-                    GuiItem displayItem = changeAmountWindow.setItem(Material.FEATHER,
-                            Main.helper().getMess(p, "AmountItemName").replace("%amount", "" + amount[0]), 4);
-                    int[] values = new int[] { -64, -10, -1, 1, 10, 64 };
-                    for (int i = 0; i < 6; i++) {
-                        GuiItem button = changeAmountWindow.setItem(Material.STONE_BUTTON, "" + values[i],
-                                i < 3 ? i : i + 3);
+                    GuiItem displayItem = changePriceWindow.setItem(Material.GOLD_NUGGET,
+                            Main.helper().getMess(p, "PriceItemName").replace("%price", "" + price[0]), 4);
+                    double[] values = new double[] { -100, -10, -1, -0.1, 0.1, 1, 10, 100 };
+                    for (int i = 0; i < 8; i++) {
+                        GuiItem button = changePriceWindow.setItem(Material.STONE_BUTTON, "" + values[i],
+                                i < 4 ? i : i + 1);
                         final int finalI = i;
                         button.setOnClick(ev2 -> {
-                            amount[0] += values[finalI];
-                            if (amount[0] < 1)
-                                amount[0] = 1;
+                            price[0] += values[finalI];
+                            price[0] = round(price[0], 1);
+                            if (price[0] < 0.1)
+                            price[0] = 0.1;
                             displayItem.setName(
-                                    Main.helper().getMess(p, "AmountItemName").replace("%amount", "" + amount[0]));
-                            amountItem.setName(
-                                    Main.helper().getMess(p, "AmountItemName").replace("%amount", "" + amount[0]));
+                                    Main.helper().getMess(p, "AmountItemName").replace("%amount", "" + price[0]));
+                                    priceItem.setName(
+                                    Main.helper().getMess(p, "AmountItemName").replace("%amount", "" + price[0]));
                         });
                     }
-                    gui.openWindow(changeAmountWindow);
+                    gui.openWindow(changePriceWindow);
                 });
-                // #endregion Amount Item
+                // #endregion Price Item
 
                 // #region TradeItem Item
                 GuiItem tradeItemItem = addTradeWindow.setItem(Material.BARRIER,
                         Main.helper().getMess(p, "TradeItemItemName").replace("%itemType",
                                 item[0] == null ? Main.helper().getMess(p, "NoneItem")
                                         : (item[0].getItemMeta().hasDisplayName()
-                                                ? item[0].getItemMeta().displayName().toString()
+                                                ? ((TextComponent) item[0].getItemMeta().displayName()).content()
                                                 : item[0].getType().toString())),
                         0);
 
@@ -168,7 +174,62 @@ public class ClickListener implements Listener {
                         gui.openWindow(addTradeWindow);
                     });
 
-                    //TODO: Add Item via own inv and add Item via Material List
+                    //TODO: ItemName not displaying correctly
+                    tradeItemWindow.setOnPInvClick(ev2 -> {
+                        item[0] = ev2.getCurrentItem();
+                        tradeItemItem.setItemStack(ev2.getCurrentItem());
+                        tradeItemItem.setName(Main.helper().getMess(p, "TradeItemItemName").replace("%itemType",
+                                item[0] == null ? Main.helper().getMess(p, "NoneItem")
+                                        : (item[0].getItemMeta().hasDisplayName()
+                                                ? ((TextComponent) item[0].getItemMeta().displayName()).content()
+                                                : item[0].getType().toString())));
+                        gui.openWindow(addTradeWindow);
+                    });
+
+                    GuiItem helpItem = tradeItemWindow.setItem(Material.PAPER, Main.helper().getMess(p, "HelpItemName"),
+                            8);
+                    helpItem.setBasicLore(Main.helper().getLore(p, "TradeAddItemHelpDescription"));
+
+                    // #region Add from Material List Item
+                    GuiItem fromMaterials = tradeItemWindow.setItem(Material.BOOK,
+                            Main.helper().getMess(p, "TradeItemAddFromMaterialsName"), 0);
+                    fromMaterials.setOnClick(ev2 -> {
+                        ChestWindow fromMaterialsWindow = gui
+                                .createChestWindow(Main.helper().getMess(p, "SelectItemFromMaterialsTitle"), 6);
+                        fromMaterialsWindow.setMultiPage(true);
+                        fromMaterialsWindow.setTaskBarEnabled(true);
+                        fromMaterialsWindow.setTaskbarStyle(TaskbarStyles.MIDDLE);
+                        fromMaterialsWindow.setOnClose(ev3 -> {
+                            gui.openWindow(tradeItemWindow);
+                        });
+                        List<Material> list = new ArrayList<>(Arrays.asList(Material.values()));
+                        Collections.sort(list, new Comparator<Material>() {
+                            @Override
+                            public int compare(Material o1, Material o2) {
+                                return o1.toString().compareTo(o2.toString());
+                            }
+                        });
+                        for (Material mat : list) {
+                            ItemStack is = new ItemStack(mat);
+                            // TODO: Fix Items without actual Item getting added as
+                            if (is.getItemMeta() == null)
+                                continue;
+                            GuiItem matItem = fromMaterialsWindow.addItem(is);
+                            matItem.setOnClick(ev3 -> {
+                                item[0] = new ItemStack(mat);
+                                tradeItemItem.setItemStack(is);
+                                tradeItemItem.setName(Main.helper().getMess(p, "TradeItemItemName").replace("%itemType",
+                                        item[0] == null ? Main.helper().getMess(p, "NoneItem")
+                                                : (item[0].getItemMeta().hasDisplayName()
+                                                        ? ((TextComponent) item[0].getItemMeta().displayName()).content()
+                                                        : item[0].getType().toString())));
+                                gui.openWindow(addTradeWindow);
+                            });
+                        }
+
+                        gui.openWindow(fromMaterialsWindow);
+                    });
+                    // #endregion Add from Material List Item
 
                     gui.openWindow(tradeItemWindow);
                 });
@@ -186,6 +247,8 @@ public class ClickListener implements Listener {
                             TradeType.values()[tradeTypeIndex[0]].toString()));
                 });
                 // #endregion Trade Type Item
+
+                //TODO: Confirm add Trade Item
 
                 gui.openWindow(addTradeWindow);
             });
@@ -206,5 +269,14 @@ public class ClickListener implements Listener {
     private void onVillDamage(EntityDamageEvent e) {
         if (villagers.containsKey(e.getEntity().getUniqueId()))
             e.setCancelled(true);
+    }
+
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+    
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
     }
 }

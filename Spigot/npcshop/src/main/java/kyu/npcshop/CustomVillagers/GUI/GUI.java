@@ -45,7 +45,7 @@ public class GUI implements Listener {
     @EventHandler
     private void onInvCLick(InventoryClickEvent e) {
         // holder.sendMessage(Component.text("InvClick Triggered!"));
-        if (!e.getInventory().equals(currWindow.getInv())) {
+        if (!(e.getInventory().equals(currWindow.getInv()) || e.getInventory().equals(holder.getInventory()))) {
             return;
         }
         // holder.sendMessage(Component.text("Handling InvClick!"));

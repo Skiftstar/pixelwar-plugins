@@ -10,6 +10,7 @@ import kyu.npcshop.CustomVillagers.GUI.Windows.Window;
 import kyu.npcshop.Util.Util;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
@@ -53,8 +54,21 @@ public class GuiItem {
         this.slot = slot;
     }
 
+    @SuppressWarnings("deprecation")
+    public void setBasicLore(List<String> lore) {
+        ItemMeta im = item.getItemMeta();
+        im.setLore(lore);
+        item.setItemMeta(im);
+        parentWindow.refreshWindow();
+    }
+
     public Window getParentWindow() {
         return parentWindow;
+    }
+
+    public void setItemStack(ItemStack is) {
+        this.item = is;
+        parentWindow.refreshWindow();
     }
 
     public void setName(String name) {

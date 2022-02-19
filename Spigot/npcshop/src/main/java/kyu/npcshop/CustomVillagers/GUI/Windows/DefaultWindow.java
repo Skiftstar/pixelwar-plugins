@@ -45,7 +45,8 @@ public abstract class DefaultWindow implements Window {
 
     private List<GuiItem> relocatedItems = new ArrayList<>();
 
-    Consumer<InventoryCloseEvent> onClose = null;
+    private Consumer<InventoryCloseEvent> onClose = null;
+    private Consumer<InventoryClickEvent> onPInvClick = null;
 
     protected DefaultWindow(@Nullable String title, int rows, GUI gui, JavaPlugin plugin) {
         generateDefaultPlaceholders();
@@ -706,6 +707,14 @@ public abstract class DefaultWindow implements Window {
         this.onClose = onClose;
     }
 
+    /**
+     * Set function to execute on Player Inventory Click
+     * @param onClose Function to execute once Player Inv is Clicked
+     */
+    public void setOnPInvClick(Consumer<InventoryClickEvent> onPInvClick) {
+        this.onPInvClick = onPInvClick;
+    }
+
 
     /*
     =============================================================================
@@ -813,7 +822,7 @@ public abstract class DefaultWindow implements Window {
     }
 
     public void handleInvClick(InventoryClickEvent e) {
-        if (e.getClickedInventory() == null || !e.getClickedInventory().equals(getInv())) {
+        if (e.getClickedInventory() == null || !(e.getClickedInventory().equals(getInv()) || e.getClickedInventory().equals(getHolder().getInventory()))) {
             return;
         }
         if (!e.getWhoClicked().equals(getHolder())) {
@@ -831,6 +840,10 @@ public abstract class DefaultWindow implements Window {
         }
         if (isPreventItemGrab()) {
             e.setCancelled(true);
+        }
+        if (e.getClickedInventory().equals(getHolder().getInventory())) {
+            if (onPInvClick != null) onPInvClick.accept(e);
+            return;
         }
         int slot = e.getSlot();
         GuiItem item = getPages().get(getCurrentPage())[slot];
