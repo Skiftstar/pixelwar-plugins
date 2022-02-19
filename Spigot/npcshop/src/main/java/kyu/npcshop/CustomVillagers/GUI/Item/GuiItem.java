@@ -111,7 +111,7 @@ public class GuiItem {
         PLACEHOLDER, DEFAULT;
     }
 
-    public void setLoreRedo(int max, String string) {
+    public void setLore(int max, String string) {
         //Max is for the maximum amount of characters you want to have on one line (Javadoc when done with this)
         long startTime = System.currentTimeMillis();
         String stringWithColor = Util.color(string);
@@ -189,52 +189,6 @@ public class GuiItem {
         long usedTime = endTime - startTime;
 
         System.out.println(usedTime);
-
-        ItemMeta meta = item.getItemMeta();
-        meta.lore(lore);
-        item.setItemMeta(meta);
-    }
-
-    //TODO: Fix internal error if u go under 5
-    public void setLore(int max, String s) {
-
-        String patternStr = "\n";
-        String[] paras = Pattern.compile(patternStr, Pattern.MULTILINE).split(s);
-        ArrayList<Component> lore = new ArrayList<>();
-
-        for(String string : paras){
-            int length = string.length();
-            int temp = 0;
-
-            for(int i = 0; i < length - max; i = temp){
-                int y = i + max;
-
-                if(y >= length){
-                    y = length - 1;
-                }
-
-                boolean reached = false;
-
-                while(!Character.isWhitespace(string.charAt(y))){
-                    y -= 1;
-                    if(temp + y < i + max - (max/4)){
-                        y = i + max;
-                        reached = true;
-                        break;
-                    }
-                }
-
-                String subS = string.substring(temp, y);
-                temp = y + 1; //Remove the space
-                if(reached){
-                    subS = subS + "-";
-                    temp = y; //No space so we don't need to remove the first char
-                }
-
-                lore.add(Component.text(Util.color(subS)));
-            }
-            lore.add(Component.text(Util.color(string.substring(temp))));
-        }
 
         ItemMeta meta = item.getItemMeta();
         meta.lore(lore);

@@ -42,9 +42,16 @@ public class NPCCommand implements CommandExecutor {
             villager.setPersistent(true);
             villager.setRemoveWhenFarAway(false);
             villager.setSilent(true);
-            villager.setCustomName(args[1]);
-            ClickListener.villagers.put(villager.getUniqueId(), new CstmVillager(villager.getUniqueId()));
-            Main.getInstance().getConfig().set("Villagers." + villager.getUniqueId(), true);
+            StringBuilder name = new StringBuilder();
+            for (int i = 1; i < args.length; i++) {
+                name.append(args[i]);
+                if (i < args.length - 1) {
+                    name.append(" ");
+                }
+            }
+            villager.setCustomName(name.toString());
+            ClickListener.villagers.put(villager.getUniqueId(), new CstmVillager(villager.getUniqueId(), name.toString()));
+            Main.getInstance().getConfig().set("Villagers." + villager.getUniqueId() + ".name", name.toString());
             Main.getInstance().saveConfig();
         }
 

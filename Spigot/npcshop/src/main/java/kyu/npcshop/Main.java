@@ -62,7 +62,8 @@ public class Main extends JavaPlugin {
 
         if (getConfig().get("Villagers") != null) {
             for (String uuid : getConfig().getConfigurationSection("Villagers").getKeys(false)) {
-                ClickListener.villagers.put(UUID.fromString(uuid), new CstmVillager(UUID.fromString(uuid)));
+                String name = getConfig().getString("Villagers." + uuid + ".name");
+                ClickListener.villagers.put(UUID.fromString(uuid), new CstmVillager(UUID.fromString(uuid), name));
             }
         }
 

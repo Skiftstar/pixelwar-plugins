@@ -1,6 +1,10 @@
 Errors:
   PlayerOnly: "&cNur für Spieler!"
   NEArgs: "&cNicht genug Argumente!"
+  AddTradeItemMissingError: "&cDu hast noch kein Item gesetzt!"
+
+Info:
+  TradeAddSuccess: "&aHandle erfolgreich hinzugefügt!"
 
 NPCGUI:
   BuyItemName: "&aKaufen"
@@ -13,6 +17,7 @@ NPCGUI:
   HelpItemName: "Hilfe"
   TradeItemItemName: "&eItem: %itemType"
   NoneItem: "&cKeins"
+  ConfirmAddTradeItem: "&aHandel hinzufügen"
   TradeItemAddFromMaterialsName: "Von Materials"
   NPCVillagerMainMenuTitle: "&c%VillName"
   NPCVillagerSellMenuTitle: "&cVerkaufen an %VillName"

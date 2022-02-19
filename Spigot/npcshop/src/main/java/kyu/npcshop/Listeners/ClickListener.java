@@ -1,5 +1,7 @@
 package kyu.npcshop.Listeners;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,6 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import kyu.npcshop.Main;
 import kyu.npcshop.CustomVillagers.CstmVillager;
@@ -59,14 +62,6 @@ public class ClickListener implements Listener {
             gui.openWindow(mainMenu);
         });
 
-        for (Trade trade : vill.getSells()) {
-            GuiItem item = buyWindow.addItem(trade.getItem());
-            // Check if player has money, add to inv, etc.
-            item.setOnClick(buyAction -> {
-
-            });
-        }
-
         // Window where players can SELL items
         ChestWindow sellWindow = gui.createChestWindow(Main.helper().getMess(p, "NPCVillagerSellMenuTitle")
                 .replace("%VillName", e.getRightClicked().getCustomName()), 6);
@@ -77,27 +72,32 @@ public class ClickListener implements Listener {
             gui.openWindow(mainMenu);
         });
 
-        GuiItem testItem = sellWindow.setItem(Material.BARRIER, "abc", 0);
-        testItem.setOnClick(ev -> {
-            gui.openWindow(mainMenu);
-        });
-
-        for (Trade trade : vill.getBuys()) {
-            GuiItem item = sellWindow.addItem(trade.getItem());
-            // Check if player has item, remove from inventory, etc.
-            item.setOnClick(sellAction -> {
-
-            });
-        }
-
         GuiItem buyItem = mainMenu.setItem(Material.DIAMOND_BLOCK, Main.helper().getMess(p, "BuyItemName"), 0);
         buyItem.setOnClick(ev -> {
+            buyWindow.clearAllPages();
+            for (Trade trade : vill.getSells()) {
+                GuiItem item = buyWindow.addItem(trade.getItem());
+                // Check if player has money, add to inv, etc.
+                item.setOnClick(buyAction -> {
+    
+                });
+            }
             gui.openWindow(buyWindow);
         });
         GuiItem sellItem = mainMenu.setItem(Material.GOLD_BLOCK, Main.helper().getMess(p, "SellItemName"), 8);
         sellItem.setOnClick(ev -> {
+            sellWindow.clearAllPages();
+            for (Trade trade : vill.getBuys()) {
+                GuiItem item = sellWindow.addItem(trade.getItem());
+                // Check if player has item, remove from inventory, etc.
+                item.setOnClick(sellAction -> {
+    
+                });
+            }
             gui.openWindow(sellWindow);
         });
+
+        //#region AdminMenu
 
         if (p.hasPermission("npcshop.admin")) {
 
@@ -238,7 +238,7 @@ public class ClickListener implements Listener {
                 // #region Trade Type Item
                 GuiItem tradeTypeItem = addTradeWindow.setItem(Material.REDSTONE, Main.helper()
                         .getMess(p, "TradeTypeItem").replace("%type", TradeType.values()[tradeTypeIndex[0]].toString()),
-                        3);
+                        2);
                 tradeTypeItem.setOnClick(ev1 -> {
                     tradeTypeIndex[0]++;
                     if (tradeTypeIndex[0] > TradeType.values().length - 1)
@@ -248,7 +248,21 @@ public class ClickListener implements Listener {
                 });
                 // #endregion Trade Type Item
 
-                //TODO: Confirm add Trade Item
+                // #region Save Trade Item
+
+                GuiItem saveTradeItem = addTradeWindow.setItem(Material.GREEN_WOOL, Main.helper().getMess(p, "ConfirmAddTradeItem"), 8);
+                saveTradeItem.setOnClick(ev1 -> {
+                    if (item[0] == null) {
+                        p.sendMessage(Component.text(Main.helper().getMess(p, "AddTradeItemMissingError", true)));
+                        return;
+                    }
+                    Trade trade = new Trade(TradeType.values()[tradeTypeIndex[0]], item[0], price[0]);
+                    vill.addTrade(trade);
+                    p.sendMessage(Component.text(Main.helper().getMess(p, "TradeAddSuccess", true)));
+                    gui.openWindow(adminWindow);
+                });
+
+                //#endregion Save Trade Item
 
                 gui.openWindow(addTradeWindow);
             });
@@ -259,8 +273,10 @@ public class ClickListener implements Listener {
             adminItem.setOnClick(ev -> {
                 gui.openWindow(adminWindow);
             });
-
+            
         }
+
+        //#endregion AdminMeun
 
         gui.openWindow(mainMenu);
     }
@@ -274,9 +290,8 @@ public class ClickListener implements Listener {
     public static double round(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
     
-        long factor = (long) Math.pow(10, places);
-        value = value * factor;
-        long tmp = Math.round(value);
-        return (double) tmp / factor;
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 }
