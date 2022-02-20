@@ -1,5 +1,5 @@
 package kyu.npcshop.CustomVillagers;
 
 public enum TradeType {
-    BUY, SELL;
+    VILLAGER_BUYS, VILLAGER_SELLS;
 }

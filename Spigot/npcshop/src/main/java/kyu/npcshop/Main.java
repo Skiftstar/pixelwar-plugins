@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.util.UUID;
 
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,6 +17,7 @@ import kyu.npcshop.Commands.NPCCommand;
 import kyu.npcshop.CustomVillagers.CstmVillager;
 import kyu.npcshop.Listeners.ClickListener;
 import kyu.npcshop.Util.Util;
+import net.milkbowl.vault.economy.Economy;
 
 public class Main extends JavaPlugin {
 
@@ -23,14 +25,34 @@ public class Main extends JavaPlugin {
     private YamlConfiguration config;
     private File configFile;
     private static Main instance;
+    public static Economy econ = null;
 
     @Override
     public void onEnable() {
         instance = this;
+
+        if (!setupEconomy()) {
+            System.out.println("Vault dependency not found! disabling!");
+            return;
+        }
+
         loadConfigValues();
 
         new NPCCommand(this);
         new ClickListener(this);
+    }
+
+    
+    private boolean setupEconomy() {
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        econ = rsp.getProvider();
+        return econ != null;
     }
 
     private void loadConfigValues() {

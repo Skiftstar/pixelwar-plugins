@@ -1,5 +1,6 @@
 package kyu.npcshop.CustomVillagers;
 
+import java.io.ObjectInputFilter.Config;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -29,24 +30,26 @@ public class CstmVillager {
 
     private void loadTrades() {
         YamlConfiguration config = Main.getInstance().getConfig();
-        if (config.get("Villagers." + uuid.toString() + ".Trades.buy") != null) {
-            for (String tradeUUID : config.getConfigurationSection("Villagers." + uuid.toString() + ".Trades.buy")
+        if (config.get("Villagers." + uuid.toString() + ".Trades.villager_sells") != null) {
+            for (String tradeUUID : config.getConfigurationSection("Villagers." + uuid.toString() + ".Trades.villager_sells")
                     .getKeys(false)) {
-                String key = "Villagers." + uuid.toString() + ".Trades.buy." + tradeUUID;
+                String key = "Villagers." + uuid.toString() + ".Trades.villager_sells." + tradeUUID;
                 double price = config.getDouble(key + ".money");
                 ItemStack item = itemFromConf(config, key + ".item");
-                Trade trade = new Trade(TradeType.BUY, item, price);
+                Trade trade = new Trade(TradeType.VILLAGER_BUYS, item, price);
+                trade.setUUID(UUID.fromString(tradeUUID));
                 sells.add(trade);
             }
         }
 
-        if (config.get("Villagers." + uuid.toString() + ".Trades.sell") != null) {
-            for (String tradeUUID : config.getConfigurationSection("Villagers." + uuid.toString() + ".Trades.sell")
+        if (config.get("Villagers." + uuid.toString() + ".Trades.villager_buys") != null) {
+            for (String tradeUUID : config.getConfigurationSection("Villagers." + uuid.toString() + ".Trades.villager_buys")
                     .getKeys(false)) {
-                String key = "Villagers." + uuid.toString() + ".Trades.sell." + tradeUUID;
+                String key = "Villagers." + uuid.toString() + ".Trades.villager_buys." + tradeUUID;
                 double price = config.getDouble(key + ".money");
                 ItemStack item = itemFromConf(config, key + ".item");
-                Trade trade = new Trade(TradeType.SELL, item, price);
+                Trade trade = new Trade(TradeType.VILLAGER_SELLS, item, price);
+                trade.setUUID(UUID.fromString(tradeUUID));
                 buys.add(trade);
             }
         }
@@ -70,7 +73,7 @@ public class CstmVillager {
         Material mat = Material.getMaterial(config.getString(key + ".type"));
         ItemStack is = new ItemStack(mat);
         ItemMeta im = is.getItemMeta();
-        if (config.get(key + ".enchatnts") != null) {
+        if (config.get(key + ".enchants") != null) {
             for (String enchant : config.getConfigurationSection(key + ".enchants").getKeys(false)) {
                 Enchantment ench = Enchantment.getByName(enchant);
                 int level = config.getInt(key + ".enchants." + enchant);
@@ -83,6 +86,7 @@ public class CstmVillager {
         if (config.get(key + ".lore") != null) {
             im.setLore(config.getStringList(key + ".lore"));
         }
+        is.setItemMeta(im);
         return is;
     }
 
@@ -94,6 +98,8 @@ public class CstmVillager {
             uuid = UUID.randomUUID();
         } while (config.get("Villagers" + this.uuid.toString() + ".Trades." + trade.getType().toString().toLowerCase() + "." + uuid.toString()) != null);
         String key = "Villagers." + this.uuid.toString() + ".Trades." + trade.getType().toString().toLowerCase() + "." + uuid.toString() + ".";
+
+        trade.setUUID(uuid);
 
         // Save Money
         config.set(key + "money", trade.getMoney());
@@ -112,17 +118,32 @@ public class CstmVillager {
         }
         if (item.getItemMeta().hasEnchants()) {
             for (Enchantment ench : item.getItemMeta().getEnchants().keySet()) {
-                config.set(key + "item.enchants." + ench.toString(), item.getItemMeta().getEnchants().get(ench));
+                config.set(key + "item.enchants." + ench.getName().toString(), item.getItemMeta().getEnchants().get(ench));
             }
         }
         Main.getInstance().saveConfig();
 
-        if (trade.getType().equals(TradeType.BUY)) {
-            sells.add(trade);
-        } else {
+        if (trade.getType().equals(TradeType.VILLAGER_BUYS)) {
             buys.add(trade);
+        } else {
+            sells.add(trade);
         }
 
     }
+
+    public void removeFromBuys(Trade trade) {
+        buys.remove(trade);
+        YamlConfiguration config = Main.getInstance().getConfig();
+        config.set("Villagers." + uuid.toString() + ".Trades.villager_buys." + trade.getUuid().toString(), null);
+        Main.getInstance().saveConfig();
+    }
+
+    public void removeFromSells(Trade trade) {
+        sells.remove(trade);
+        YamlConfiguration config = Main.getInstance().getConfig();
+        config.set("Villagers." + uuid.toString() + ".Trades.villager_sells." + trade.getUuid().toString(), null);
+        Main.getInstance().saveConfig();
+    }
+
 
 }

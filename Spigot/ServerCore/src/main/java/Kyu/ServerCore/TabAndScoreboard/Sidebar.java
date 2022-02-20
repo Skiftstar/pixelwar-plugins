@@ -10,6 +10,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 public class Sidebar {
@@ -58,7 +61,7 @@ public class Sidebar {
                 team = sb.getTeam("moneyCounter");
                 Economy econ = Main.econ;
                 double money = econ.getBalance(p);
-                line = line.replace("%money", "" + money);
+                line = line.replace("%money", "" + round(money, 2));
                 obj.getScore(ChatColor.YELLOW + "" + ChatColor.WHITE).setScore(index);
             }
             if (team != null) {
@@ -81,6 +84,15 @@ public class Sidebar {
 
     public void kill() {
         Bukkit.getScheduler().cancelTask(task);
+    }
+
+    public static double round(double value, int places) {
+        if (places < 0)
+            throw new IllegalArgumentException();
+
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 
 }

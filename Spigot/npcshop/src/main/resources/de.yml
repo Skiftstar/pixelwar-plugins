@@ -2,23 +2,35 @@ Errors:
   PlayerOnly: "&cNur für Spieler!"
   NEArgs: "&cNicht genug Argumente!"
   AddTradeItemMissingError: "&cDu hast noch kein Item gesetzt!"
+  SellItemNotInInv: "&cDu hast das Item nicht in deinem Inventar!"
+  SellItemNotEnoughItems: "&cSo viele Items hast du nicht!"
 
 Info:
   TradeAddSuccess: "&aHandle erfolgreich hinzugefügt!"
+  ItemSoldSuccess: "&aErfolgreich %count items für %money Pixel verkauft!"
 
 NPCGUI:
   BuyItemName: "&aKaufen"
   SellItemName: "&aVerkaufen"
   AdminItemName: "&eEditieren"
   AddTradeItem: "&aHandel hinzufügen"
+  RemoveTradeItem: "&cHandel löschen"
   TradeTypeItem: "&eTrade Typ %type"
   PriceItemName: "&ePreis: %price"
   TradeItemItemName: "Item: %itemType"
   HelpItemName: "Hilfe"
+  AllOfKindItemName: "&eAlle im Inventar"
+  OnlyOneItemName: "1x"
+  OneStackItemName: "64x"
   TradeItemItemName: "&eItem: %itemType"
   NoneItem: "&cKeins"
+  ItemsThatVillBuysItenName: "&eItems die Händler kauft"
+  ItemsThatVillSellsItenName: "&eItems die Händler verkauft"
   ConfirmAddTradeItem: "&aHandel hinzufügen"
   TradeItemAddFromMaterialsName: "Von Materials"
+  ItemBuyDescription: "&ePreis pro item: %price Pixel"
+  ItemSellDescription: "&eVerkaufspreis pro Item: %price Pixel"
+  ItemTypeDescription: "&eTyp: %type"
   NPCVillagerMainMenuTitle: "&c%VillName"
   NPCVillagerSellMenuTitle: "&cVerkaufen an %VillName"
   NPCVillagerBuyMenuTitle: "&cKaufen von %VillName"
@@ -27,6 +39,8 @@ NPCGUI:
   NPCVillagerAddTradeChangePriceTitle: "&eItem Preis anpassen (Handel zu %VillName hinzufügen)"
   NPCVillagerChangeTradeItemTitle: "&eHandel Item anpassen (Handel zu %Villname hinzufügen)"
   SelectItemFromMaterialsTitle: "&eItem aus Materials auswählen"
+  NPCVillagerRemoveTradeTitle: "&eHandel von %VillName entfernen"
+  NPCVillagerSellMenuTitle: "&eWie viele Items willst du verkaufen?"
 
 NPCGUILores:
   TradeAddItemHelpDescription:
