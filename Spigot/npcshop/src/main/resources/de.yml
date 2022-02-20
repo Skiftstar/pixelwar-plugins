@@ -4,10 +4,13 @@ Errors:
   AddTradeItemMissingError: "&cDu hast noch kein Item gesetzt!"
   SellItemNotInInv: "&cDu hast das Item nicht in deinem Inventar!"
   SellItemNotEnoughItems: "&cSo viele Items hast du nicht!"
+  NotEnoughMoney: "&cDu hast nicht genug Geld!"
+  NotEnoughInvSpace: "&cDu hast nicht genug Platz im Inventar!"
 
 Info:
   TradeAddSuccess: "&aHandle erfolgreich hinzugefügt!"
   ItemSoldSuccess: "&aErfolgreich %count items für %money Pixel verkauft!"
+  ItemBuySuccess: "&aErfolgreich %count items für %money Pixel gekauft!"
 
 NPCGUI:
   BuyItemName: "&aKaufen"
@@ -19,6 +22,8 @@ NPCGUI:
   PriceItemName: "&ePreis: %price"
   TradeItemItemName: "Item: %itemType"
   HelpItemName: "Hilfe"
+  ChangeProfessionItemName: "&eBeruf ändern"
+  FullInventoryItemName: "&eKomplettes Inventar füllen"
   AllOfKindItemName: "&eAlle im Inventar"
   OnlyOneItemName: "1x"
   OneStackItemName: "64x"
@@ -41,6 +46,8 @@ NPCGUI:
   SelectItemFromMaterialsTitle: "&eItem aus Materials auswählen"
   NPCVillagerRemoveTradeTitle: "&eHandel von %VillName entfernen"
   NPCVillagerSellMenuTitle: "&eWie viele Items willst du verkaufen?"
+  NPCVillagerBuyMenuTitle: "&eWie viele Items willst du kaufen?"
+  NPCVillagerChangeProfessionTitle: "&eBeruf von %VillName ändern"
 
 NPCGUILores:
   TradeAddItemHelpDescription:

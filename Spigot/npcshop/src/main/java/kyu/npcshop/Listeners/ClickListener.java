@@ -13,6 +13,8 @@ import java.util.UUID;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
+import org.bukkit.entity.Villager.Profession;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -32,6 +34,14 @@ import net.kyori.adventure.text.TextComponent;
 
 public class ClickListener implements Listener {
 
+    /*
+     * TODO: List of Todos:
+     * - Custom Amount for Buy/Sell
+     * - Delete Villager (in Admin Menu)
+     * - Select Villager
+     * - Move Selected Villager
+     * - Rename Selected Villager
+     */
     public static Map<UUID, CstmVillager> villagers = new HashMap<>();
 
     public ClickListener(Main plugin) {
@@ -51,29 +61,17 @@ public class ClickListener implements Listener {
         ChestWindow mainMenu = gui.createChestWindow(Main.helper().getMess(p, "NPCVillagerMainMenuTitle")
                 .replace("%VillName", e.getRightClicked().getCustomName()), 1);
 
-        // Window where players can BUY items
-        ChestWindow buyWindow = gui.createChestWindow(Main.helper().getMess(p, "NPCVillagerBuyMenuTitle")
-                .replace("%VillName", e.getRightClicked().getCustomName()), 6);
-        buyWindow.setMultiPage(true);
-        buyWindow.setTaskBarEnabled(true);
-        buyWindow.setTaskbarStyle(TaskbarStyles.BOTH);
-        buyWindow.setOnClose(ev -> {
-            gui.openWindow(mainMenu);
-        });
-
-        // Window where players can SELL items
-        ChestWindow sellWindow = gui.createChestWindow(Main.helper().getMess(p, "NPCVillagerSellMenuTitle")
-                .replace("%VillName", e.getRightClicked().getCustomName()), 6);
-        sellWindow.setMultiPage(true);
-        sellWindow.setTaskBarEnabled(true);
-        sellWindow.setTaskbarStyle(TaskbarStyles.BOTH);
-        sellWindow.setOnClose(ev -> {
-            gui.openWindow(mainMenu);
-        });
-
+        // #region Buy Item
         GuiItem buyItem = mainMenu.setItem(Material.DIAMOND_BLOCK, Main.helper().getMess(p, "BuyItemName"), 0);
         buyItem.setOnClick(ev -> {
-            buyWindow.clearAllPages();
+            ChestWindow buyWindow = gui.createChestWindow(Main.helper().getMess(p, "NPCVillagerBuyMenuTitle")
+                    .replace("%VillName", e.getRightClicked().getCustomName()), 6);
+            buyWindow.setMultiPage(true);
+            buyWindow.setTaskBarEnabled(true);
+            buyWindow.setTaskbarStyle(TaskbarStyles.BOTH);
+            buyWindow.setOnClose(ev1 -> {
+                gui.openWindow(mainMenu);
+            });
             for (Trade trade : vill.getSells()) {
                 GuiItem item = buyWindow.addItem(new ItemStack(trade.getItem()));
                 String Pricelore = Main.helper().getMess(p, "ItemBuyDescription").replace("%price",
@@ -83,14 +81,132 @@ public class ClickListener implements Listener {
                 item.setBasicLore(lore);
                 // Check if player has money, add to inv, etc.
                 item.setOnClick(buyAction -> {
+                    ChestWindow buySelectionWindow = gui
+                            .createChestWindow(Main.helper().getMess(p, "NPCVillagerBuyMenuTitle"), 1);
 
+                    buySelectionWindow.setOnClose(ev2 -> {
+                        gui.openWindow(buyWindow);
+                    });
+
+                    // #region BuyMaxItem
+                    GuiItem maxItem = buySelectionWindow.setItem(Material.OAK_SIGN,
+                            Main.helper().getMess(p, "FullInventoryItemName"), 3);
+                    maxItem.setOnClick(ev2 -> {
+                        int totalItems = 0;
+                        for (int i = 0; i < 36; i++) {
+                            ItemStack itemStack = p.getInventory().getItem(i);
+                            if (itemStack == null) {
+                                totalItems += trade.getItem().getType().getMaxStackSize();
+                                continue;
+                            }
+                            if (itemStack.getType().equals(trade.getItem().getType())) {
+                                if (!itemStack.getItemMeta().equals(trade.getItem().getItemMeta()))
+                                    continue;
+                                totalItems += itemStack.getType().getMaxStackSize() - itemStack.getAmount();
+                            }
+                        }
+                        double pBal = Main.econ.getBalance(p);
+                        if (pBal < totalItems * trade.getMoney()) {
+                            p.sendMessage(Component.text(Main.helper().getMess(p, "NotEnoughMoney", true)));
+                            return;
+                        }
+                        Main.econ.withdrawPlayer(p, totalItems * trade.getMoney());
+                        p.sendMessage(Component.text(Main.helper().getMess(p, "ItemBuySuccess", true)
+                                .replace("%money", "" + totalItems * trade.getMoney())
+                                .replace("%count", "" + totalItems)));
+                        for (int i = 0; i < totalItems; i++) {
+                            p.getInventory().addItem(trade.getItem());
+                        }
+                    });
+                    // #endregion BuyMaxItem
+
+                    // #region BuyOneItem
+                    GuiItem oneItem = buySelectionWindow.setItem(Material.OAK_SIGN,
+                            Main.helper().getMess(p, "OnlyOneItemName"), 0);
+                    oneItem.setOnClick(ev2 -> {
+                        if (p.getInventory().firstEmpty() == -1) {
+                            boolean itemThere = false;
+                            Map<Integer, ? extends ItemStack> map = p.getInventory().all(trade.getItem().getType());
+                            for (int i : map.keySet()) {
+                                ItemStack itemStack = p.getInventory().getItem(i);
+                                if (!itemStack.getItemMeta().equals(trade.getItem().getItemMeta()))
+                                    continue;
+                                if (itemStack.getAmount() < itemStack.getType().getMaxStackSize()) {
+                                    itemThere = true;
+                                    break;
+                                }
+                            }
+                            if (!itemThere) {
+                                p.sendMessage(Component.text(Main.helper().getMess(p, "NotEnoughInvSpace", true)));
+                                return;
+                            }
+                        }
+                        double pBal = Main.econ.getBalance(p);
+                        if (pBal < trade.getMoney()) {
+                            p.sendMessage(Component.text(Main.helper().getMess(p, "NotEnoughMoney", true)));
+                            return;
+                        }
+                        Main.econ.withdrawPlayer(p, trade.getMoney());
+                        p.sendMessage(Component.text(Main.helper().getMess(p, "ItemBuySuccess", true)
+                                .replace("%money", "" + trade.getMoney())
+                                .replace("%count", "" + 1)));
+                        p.getInventory().addItem(trade.getItem());
+                    });
+                    // #endregion BuyOneItem
+
+                    // #region BuyStackItem
+                    GuiItem stackItem = buySelectionWindow.setItem(Material.OAK_SIGN,
+                            Main.helper().getMess(p, "OneStackItemName"), 1);
+                    stackItem.setOnClick(ev2 -> {
+                        if (p.getInventory().firstEmpty() == -1) {
+                            int spaceLeft = 0;
+                            Map<Integer, ? extends ItemStack> map = p.getInventory().all(trade.getItem().getType());
+                            for (int i : map.keySet()) {
+                                ItemStack itemStack = p.getInventory().getItem(i);
+                                if (!itemStack.getItemMeta().equals(trade.getItem().getItemMeta()))
+                                    continue;
+                                if (itemStack.getAmount() < itemStack.getType().getMaxStackSize()) {
+                                    spaceLeft += itemStack.getType().getMaxStackSize() - itemStack.getAmount();
+                                }
+                            }
+                            if (spaceLeft < 64) {
+                                p.sendMessage(Component.text(Main.helper().getMess(p, "NotEnoughInvSpace", true)));
+                                return;
+                            }
+                        }
+                        double pBal = Main.econ.getBalance(p);
+                        if (pBal < 64 * trade.getMoney()) {
+                            p.sendMessage(Component.text(Main.helper().getMess(p, "NotEnoughMoney", true)));
+                            return;
+                        }
+                        Main.econ.withdrawPlayer(p, trade.getMoney());
+                        p.sendMessage(Component.text(Main.helper().getMess(p, "ItemBuySuccess", true)
+                                .replace("%money", "" + 64 * trade.getMoney())
+                                .replace("%count", "" + 64)));
+                        for (int i = 0; i < 64; i++) {
+                            p.getInventory().addItem(trade.getItem());
+                        }
+                    });
+                    // #endregion BuyStackItem
+
+                    gui.openWindow(buySelectionWindow);
                 });
             }
             gui.openWindow(buyWindow);
         });
+        // #endregion Buy Item
+
+        // #region Sell Item
         GuiItem sellItem = mainMenu.setItem(Material.GOLD_BLOCK, Main.helper().getMess(p, "SellItemName"), 8);
         sellItem.setOnClick(ev -> {
-            sellWindow.clearAllPages();
+            ChestWindow sellWindow = gui.createChestWindow(Main.helper().getMess(p, "NPCVillagerSellMenuTitle")
+                    .replace("%VillName", e.getRightClicked().getCustomName()), 6);
+            sellWindow.setMultiPage(true);
+            sellWindow.setTaskBarEnabled(true);
+            sellWindow.setTaskbarStyle(TaskbarStyles.BOTH);
+            sellWindow.setOnClose(ev1 -> {
+                gui.openWindow(mainMenu);
+            });
             for (Trade trade : vill.getBuys()) {
                 GuiItem item = sellWindow.addItem(new ItemStack(trade.getItem()));
                 String Pricelore = Main.helper().getMess(p, "ItemSellDescription").replace("%price",
@@ -128,7 +244,6 @@ public class ClickListener implements Listener {
                         p.sendMessage(Component.text(Main.helper().getMess(p, "ItemSoldSuccess", true)
                                 .replace("%money", "" + totalCount * trade.getMoney())
                                 .replace("%count", "" + totalCount)));
-                        gui.openWindow(sellWindow);
                     });
                     // #endregion SellMaxItem
 
@@ -188,6 +303,7 @@ public class ClickListener implements Listener {
             }
             gui.openWindow(sellWindow);
         });
+        // #endregion Sell Item
 
         // #region AdminMenu
 
@@ -198,6 +314,32 @@ public class ClickListener implements Listener {
             adminWindow.setOnClose(ev -> {
                 gui.openWindow(mainMenu);
             });
+
+            //#region Change Profession Item
+            GuiItem changeProfessionItem = adminWindow.setItem(Material.VILLAGER_SPAWN_EGG,
+                    Main.helper().getMess(p, "ChangeProfessionItemName"),
+                    3);
+
+            changeProfessionItem.setOnClick(ev -> {
+                ChestWindow changeProfessionWindow = gui
+                        .createChestWindow(Main.helper().getMess(p, "NPCVillagerChangeProfessionTitle")
+                                .replace("%VillName", e.getRightClicked().getCustomName()), 6);
+
+                changeProfessionWindow.setOnClose(ev1 -> {
+                    gui.openWindow(adminWindow);
+                });
+                changeProfessionWindow.setMultiPage(true);
+                for (Profession prof : Profession.values()) {
+                    GuiItem item = changeProfessionWindow.addItem(Material.PAPER, prof.name());
+                    item.setOnClick(ev1 -> {
+                        ((Villager) e.getRightClicked()).setProfession(prof);
+                        gui.openWindow(adminWindow);
+                    });
+                }
+
+                gui.openWindow(changeProfessionWindow);
+            });
+            //#endregion Change Profession Item
 
             // #region Add Trade Item
             GuiItem addTradeItem = adminWindow.setItem(Material.GREEN_WOOL, Main.helper().getMess(p, "AddTradeItem"),
@@ -360,6 +502,7 @@ public class ClickListener implements Listener {
             });
             // #endregion Add Trade Item
 
+            // #region Remove Trade Item
             GuiItem removeTradeItem = adminWindow.setItem(Material.RED_WOOL,
                     Main.helper().getMess(p, "RemoveTradeItem"),
                     8);
@@ -372,7 +515,8 @@ public class ClickListener implements Listener {
                     gui.openWindow(adminWindow);
                 });
 
-                GuiItem VillSellsItem = removeTradesMenu.setItem(Material.DIAMOND_BLOCK, Main.helper().getMess(p, "ItemsThatVillSellsItenName"),
+                GuiItem VillSellsItem = removeTradesMenu.setItem(Material.DIAMOND_BLOCK,
+                        Main.helper().getMess(p, "ItemsThatVillSellsItenName"),
                         0);
                 VillSellsItem.setOnClick(ev2 -> {
                     ChestWindow buysListWindow = gui
@@ -405,7 +549,8 @@ public class ClickListener implements Listener {
                     gui.openWindow(buysListWindow);
                 });
 
-                GuiItem VillBuysItem = removeTradesMenu.setItem(Material.GOLD_BLOCK, Main.helper().getMess(p, "ItemsThatVillBuysItenName"), 8);
+                GuiItem VillBuysItem = removeTradesMenu.setItem(Material.GOLD_BLOCK,
+                        Main.helper().getMess(p, "ItemsThatVillBuysItenName"), 8);
                 VillBuysItem.setOnClick(ev2 -> {
                     ChestWindow sellsListWindow = gui
                             .createChestWindow(Main.helper().getMess(p, "NPCVillagerRemoveTradeTitle")
@@ -429,7 +574,7 @@ public class ClickListener implements Listener {
                         lore.add(typelore);
                         item.setBasicLore(lore);
                         item.setOnClick(ev3 -> {
-                            //TODO: FIX
+                            // TODO: FIX
                             vill.removeFromBuys(trade);
                             gui.openWindow(removeTradesMenu);
                         });
@@ -440,6 +585,13 @@ public class ClickListener implements Listener {
 
                 gui.openWindow(removeTradesMenu);
             });
+            // #endregion Remove Trade Item
+
+            //#region Select Villager Item
+            //TODO: Change name to LangHelper
+            GuiItem selectVillagerItem = adminWindow.setItem(Material.STICK, "Das hier wird das select Vill Item lol.",
+                    5);
+            //#endregion Select Villager Item
 
             GuiItem adminItem = mainMenu.setItem(Material.REDSTONE_TORCH, Main.helper().getMess(p, "AdminItemName"), 4);
             adminItem.setOnClick(ev -> {
@@ -448,7 +600,7 @@ public class ClickListener implements Listener {
 
         }
 
-        // #endregion AdminMeun
+        // #endregion AdminMenu
 
         gui.openWindow(mainMenu);
     }
