@@ -70,4 +70,9 @@ public class GUI implements Listener {
     public void setCurrentWindow(Window window) {
         this.currWindow = window;
     }
+
+    public void close() {
+        currWindow = null;
+        holder.closeInventory();
+    }
 }

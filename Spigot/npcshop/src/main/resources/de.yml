@@ -1,16 +1,24 @@
 Errors:
   PlayerOnly: "&cNur für Spieler!"
   NEArgs: "&cNicht genug Argumente!"
+  NEPerms: "&cNicht genug Rechte!"
   AddTradeItemMissingError: "&cDu hast noch kein Item gesetzt!"
   SellItemNotInInv: "&cDu hast das Item nicht in deinem Inventar!"
   SellItemNotEnoughItems: "&cSo viele Items hast du nicht!"
   NotEnoughMoney: "&cDu hast nicht genug Geld!"
   NotEnoughInvSpace: "&cDu hast nicht genug Platz im Inventar!"
+  NoVillSelected: "&cFür alle subcommands außer create musst du einen Villager ausgewählt haben!"
+  NotAValidSubCommand: "&cDas ist kein SubCommand von diesem Command!"
 
 Info:
   TradeAddSuccess: "&aHandle erfolgreich hinzugefügt!"
   ItemSoldSuccess: "&aErfolgreich %count items für %money Pixel verkauft!"
   ItemBuySuccess: "&aErfolgreich %count items für %money Pixel gekauft!"
+  VillagerSelected: "&aErfolgreich %VillName &aausgewählt!"
+  VillagerRenamed: "&aVillager erfolgreich zu %name &aumbenannt!"
+  VillerCreated: "&aErfolgreich %name &aerstellt!"
+  VillagerTeleported: "&aErfolgreich Villager %name &azu dir teleportiert!"
+  VillagerDeleted: "&a%VillName &aerfolgreich gelöscht!"
 
 NPCGUI:
   BuyItemName: "&aKaufen"
@@ -22,7 +30,11 @@ NPCGUI:
   PriceItemName: "&ePreis: %price"
   TradeItemItemName: "Item: %itemType"
   HelpItemName: "Hilfe"
+  ConfirmItem: "&aBestätigen"
+  WhoopsItem: "&cWhoops..."
   ChangeProfessionItemName: "&eBeruf ändern"
+  SelectVillagerItemName: "&eVillager auswählen"
+  DeleteVillagerItemName: "&c%VillName &clöschen"
   FullInventoryItemName: "&eKomplettes Inventar füllen"
   AllOfKindItemName: "&eAlle im Inventar"
   OnlyOneItemName: "1x"
@@ -40,14 +52,15 @@ NPCGUI:
   NPCVillagerSellMenuTitle: "&cVerkaufen an %VillName"
   NPCVillagerBuyMenuTitle: "&cKaufen von %VillName"
   NPCVillagerAdminMenuTitle: "&eEditiere: %VillName"
-  NPCVillagerAddTradeMenuTitle: "&eHandel zu %VillName hinzufügen"
-  NPCVillagerAddTradeChangePriceTitle: "&eItem Preis anpassen (Handel zu %VillName hinzufügen)"
-  NPCVillagerChangeTradeItemTitle: "&eHandel Item anpassen (Handel zu %Villname hinzufügen)"
+  NPCVillagerAddTradeMenuTitle: "&eHandel zu %VillName &ehinzufügen"
+  NPCVillagerAddTradeChangePriceTitle: "&eItem Preis anpassen (Handel zu %VillName &ehinzufügen)"
+  NPCVillagerChangeTradeItemTitle: "&eHandel Item anpassen (Handel zu %Villname &ehinzufügen)"
   SelectItemFromMaterialsTitle: "&eItem aus Materials auswählen"
-  NPCVillagerRemoveTradeTitle: "&eHandel von %VillName entfernen"
+  NPCVillagerRemoveTradeTitle: "&eHandel von %VillName &eentfernen"
   NPCVillagerSellMenuTitle: "&eWie viele Items willst du verkaufen?"
   NPCVillagerBuyMenuTitle: "&eWie viele Items willst du kaufen?"
-  NPCVillagerChangeProfessionTitle: "&eBeruf von %VillName ändern"
+  NPCVillagerChangeProfessionTitle: "&eBeruf von %VillName &eändern"
+  DeleteVillTitle: "&cWillst du %VillName &clöschen?"
 
 NPCGUILores:
   TradeAddItemHelpDescription:

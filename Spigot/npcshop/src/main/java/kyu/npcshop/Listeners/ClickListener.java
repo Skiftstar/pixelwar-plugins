@@ -22,6 +22,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
 import kyu.npcshop.Main;
+import kyu.npcshop.Commands.NPCCommand;
 import kyu.npcshop.CustomVillagers.CstmVillager;
 import kyu.npcshop.CustomVillagers.Trade;
 import kyu.npcshop.CustomVillagers.TradeType;
@@ -38,9 +39,6 @@ public class ClickListener implements Listener {
      * TODO: List of Todos:
      * - Custom Amount for Buy/Sell
      * - Delete Villager (in Admin Menu)
-     * - Select Villager
-     * - Move Selected Villager
-     * - Rename Selected Villager
      */
     public static Map<UUID, CstmVillager> villagers = new HashMap<>();
 
@@ -158,21 +156,24 @@ public class ClickListener implements Listener {
                     GuiItem stackItem = buySelectionWindow.setItem(Material.OAK_SIGN,
                             Main.helper().getMess(p, "OneStackItemName"), 1);
                     stackItem.setOnClick(ev2 -> {
-                        if (p.getInventory().firstEmpty() == -1) {
-                            int spaceLeft = 0;
-                            Map<Integer, ? extends ItemStack> map = p.getInventory().all(trade.getItem().getType());
-                            for (int i : map.keySet()) {
-                                ItemStack itemStack = p.getInventory().getItem(i);
-                                if (!itemStack.getItemMeta().equals(trade.getItem().getItemMeta()))
-                                    continue;
-                                if (itemStack.getAmount() < itemStack.getType().getMaxStackSize()) {
-                                    spaceLeft += itemStack.getType().getMaxStackSize() - itemStack.getAmount();
-                                }
+                        int spaceLeft = 0;
+                        for (int index = 0; index < 36; index++) {
+                            ItemStack i = p.getInventory().getItem(index);
+                            if (i == null || i.getType().equals(Material.AIR)) {
+                                spaceLeft += trade.getItem().getType().getMaxStackSize();
+                                p.sendMessage("Empty Spot found!");
+                                continue;
                             }
-                            if (spaceLeft < 64) {
-                                p.sendMessage(Component.text(Main.helper().getMess(p, "NotEnoughInvSpace", true)));
-                                return;
+                            if (!i.getItemMeta().equals(trade.getItem().getItemMeta()))
+                                continue;
+                            if (i.getAmount() < i.getType().getMaxStackSize()) {
+                                spaceLeft += i.getType().getMaxStackSize() - i.getAmount();
+                                p.sendMessage("Slot found! addding " + (i.getType().getMaxStackSize() - i.getAmount()));
                             }
+                        }
+                        if (spaceLeft < 64) {
+                            p.sendMessage(Component.text(Main.helper().getMess(p, "NotEnoughInvSpace", true)));
+                            return;
                         }
                         double pBal = Main.econ.getBalance(p);
                         if (pBal < 64 * trade.getMoney()) {
@@ -315,7 +316,7 @@ public class ClickListener implements Listener {
                 gui.openWindow(mainMenu);
             });
 
-            //#region Change Profession Item
+            // #region Change Profession Item
             GuiItem changeProfessionItem = adminWindow.setItem(Material.VILLAGER_SPAWN_EGG,
                     Main.helper().getMess(p, "ChangeProfessionItemName"),
                     3);
@@ -339,7 +340,7 @@ public class ClickListener implements Listener {
 
                 gui.openWindow(changeProfessionWindow);
             });
-            //#endregion Change Profession Item
+            // #endregion Change Profession Item
 
             // #region Add Trade Item
             GuiItem addTradeItem = adminWindow.setItem(Material.GREEN_WOOL, Main.helper().getMess(p, "AddTradeItem"),
@@ -587,11 +588,50 @@ public class ClickListener implements Listener {
             });
             // #endregion Remove Trade Item
 
-            //#region Select Villager Item
-            //TODO: Change name to LangHelper
-            GuiItem selectVillagerItem = adminWindow.setItem(Material.STICK, "Das hier wird das select Vill Item lol.",
+            // #region Select Villager Item
+            GuiItem selectVillagerItem = adminWindow.setItem(Material.STICK,
+                    Main.helper().getMess("SelectVillagerItemName"),
                     5);
-            //#endregion Select Villager Item
+            selectVillagerItem.setOnClick(ev1 -> {
+                NPCCommand.setSelectedVill(p, e.getRightClicked());
+                p.sendMessage(Component.text(Main.helper().getMess(p, "VillagerSelected", true).replace("%VillName",
+                        e.getRightClicked().getCustomName())));
+                gui.close();
+            });
+            // #endregion Select Villager Item
+
+            // #region Delete Villager Item
+            GuiItem deleteVillagerItem = adminWindow.setItem(Material.BARRIER,
+                    Main.helper().getMess("DeleteVillagerItemName").replace("%VillName",
+                            e.getRightClicked().getCustomName()),
+                    4);
+            deleteVillagerItem.setOnClick(ev1 -> {
+                ChestWindow confirmWindow = gui
+                        .createChestWindow(Main.helper().getMess(p, "DeleteVillTitle").replace("%VillName",
+                                e.getRightClicked().getCustomName()), 1);
+                confirmWindow.setOnClose(ev2 -> {
+                    gui.openWindow(adminWindow);
+                });
+
+                GuiItem confirmItem = confirmWindow.setItem(Material.GREEN_WOOL,
+                        Main.helper().getMess(p, "ConfirmItem"), 0);
+                confirmItem.setOnClick(ev2 -> {
+                    NPCCommand.removeVill(e.getRightClicked());
+                    gui.close();
+                    e.getRightClicked().remove();
+                    p.sendMessage(Component.text(Main.helper().getMess(p, "VillagerDeleted", true).replace("%VillName",
+                            e.getRightClicked().getCustomName())));
+                });
+
+                GuiItem whoopsItem = confirmWindow.setItem(Material.RED_WOOL, Main.helper().getMess(p, "WhoopsItem"),
+                        8);
+                whoopsItem.setOnClick(ev2 -> {
+                    gui.openWindow(adminWindow);
+                });
+
+                gui.openWindow(confirmWindow);
+            });
+            // #endregion Delete Villager Item
 
             GuiItem adminItem = mainMenu.setItem(Material.REDSTONE_TORCH, Main.helper().getMess(p, "AdminItemName"), 4);
             adminItem.setOnClick(ev -> {
