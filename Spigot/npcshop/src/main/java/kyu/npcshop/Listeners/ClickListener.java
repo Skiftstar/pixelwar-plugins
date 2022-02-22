@@ -20,7 +20,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
-
 import kyu.npcshop.Main;
 import kyu.npcshop.Commands.NPCCommand;
 import kyu.npcshop.CustomVillagers.CstmVillager;
@@ -38,7 +37,6 @@ public class ClickListener implements Listener {
     /*
      * TODO: List of Todos:
      * - Custom Amount for Buy/Sell
-     * - Delete Villager (in Admin Menu)
      */
     public static Map<UUID, CstmVillager> villagers = new HashMap<>();
 
@@ -308,6 +306,8 @@ public class ClickListener implements Listener {
 
         // #region AdminMenu
 
+        p.getServer().getName();
+
         if (p.hasPermission("npcshop.admin")) {
 
             ChestWindow adminWindow = gui.createChestWindow(Main.helper().getMess(p, "NPCVillagerAdminMenuTitle")
@@ -575,7 +575,6 @@ public class ClickListener implements Listener {
                         lore.add(typelore);
                         item.setBasicLore(lore);
                         item.setOnClick(ev3 -> {
-                            // TODO: FIX
                             vill.removeFromBuys(trade);
                             gui.openWindow(removeTradesMenu);
                         });

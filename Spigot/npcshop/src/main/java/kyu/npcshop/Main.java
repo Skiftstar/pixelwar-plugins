@@ -6,6 +6,9 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.UUID;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -26,6 +29,7 @@ public class Main extends JavaPlugin {
     private File configFile;
     private static Main instance;
     public static Economy econ = null;
+    private ProtocolManager protocolManager;
 
     @Override
     public void onEnable() {
@@ -35,11 +39,16 @@ public class Main extends JavaPlugin {
             System.out.println("Vault dependency not found! disabling!");
             return;
         }
+        protocolManager = ProtocolLibrary.getProtocolManager();
 
         loadConfigValues();
 
         new NPCCommand(this);
         new ClickListener(this);
+    }
+
+    public ProtocolManager getProtocolManager() {
+        return protocolManager;
     }
 
     

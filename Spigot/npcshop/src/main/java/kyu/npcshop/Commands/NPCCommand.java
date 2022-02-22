@@ -6,6 +6,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.ChunkPosition;
+import com.comphenix.protocol.wrappers.WrappedBlockData;
+
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -25,7 +33,7 @@ import kyu.npcshop.Util.Util;
 import net.kyori.adventure.text.Component;
 
 public class NPCCommand implements CommandExecutor, TabCompleter {
-    
+
     public static Map<Player, Entity> selectedVills = new HashMap<>();
 
     public NPCCommand(Main plugin) {
@@ -52,12 +60,37 @@ public class NPCCommand implements CommandExecutor, TabCompleter {
             return false;
         }
 
+        if (args[0].equalsIgnoreCase("test")) {
+            ProtocolManager manager = Main.getInstance().getProtocolManager();
+
+            PacketContainer signPlacePacket = manager.createPacket(PacketType.Play.Server.BLOCK_CHANGE);
+            ChunkPosition pos = new ChunkPosition(p.getLocation().getBlockX(), p.getLocation().getBlockY(),
+                    p.getLocation().getBlockZ());
+            WrappedBlockData data = WrappedBlockData.createData(Material.OAK_SIGN);
+            signPlacePacket.getPositionModifier().write(0, pos);
+            signPlacePacket.getBlockData().write(0, data);
+
+            PacketContainer signGUIPacket = manager.createPacket(PacketType.Play.Server.OPEN_SIGN_EDITOR);
+            signGUIPacket.getPositionModifier().write(0, pos);
+            try {
+                manager.sendServerPacket(p, signPlacePacket);
+                manager.sendServerPacket(p, signGUIPacket);
+            } catch (Exception e) {
+
+            }
+            //TODO: Packet Listener
+            // https://wiki.vg/Protocol -- Update Sign Packet
+            // https://github.com/dmulloy2/ProtocolLib
+            return true;
+        }
+
         if (args[0].equalsIgnoreCase("create")) {
             if (args.length < 2) {
                 p.sendMessage(Component.text(Main.helper().getMess(p, "NEArgs", true)));
                 return false;
             }
-            Villager villager = (Villager) p.getWorld().spawnEntity(p.getLocation(), EntityType.VILLAGER, CreatureSpawnEvent.SpawnReason.CUSTOM);
+            Villager villager = (Villager) p.getWorld().spawnEntity(p.getLocation(), EntityType.VILLAGER,
+                    CreatureSpawnEvent.SpawnReason.CUSTOM);
             villager.setAI(false);
             villager.setInvulnerable(true);
             villager.setCollidable(false);
@@ -72,10 +105,12 @@ public class NPCCommand implements CommandExecutor, TabCompleter {
                 }
             }
             villager.setCustomName(Util.color(name.toString()));
-            ClickListener.villagers.put(villager.getUniqueId(), new CstmVillager(villager.getUniqueId(), name.toString()));
+            ClickListener.villagers.put(villager.getUniqueId(),
+                    new CstmVillager(villager.getUniqueId(), name.toString()));
             Main.getInstance().getConfig().set("Villagers." + villager.getUniqueId() + ".name", name.toString());
             Main.getInstance().saveConfig();
-            p.sendMessage(Component.text(Main.helper().getMess(p, "VillerCreated", true).replace("%name", name.toString())));
+            p.sendMessage(
+                    Component.text(Main.helper().getMess(p, "VillerCreated", true).replace("%name", name.toString())));
             return true;
         }
 
@@ -100,14 +135,16 @@ public class NPCCommand implements CommandExecutor, TabCompleter {
             vill.setCustomName(Util.color(name.toString()));
             Main.getInstance().getConfig().set("Villagers." + vill.getUniqueId() + ".name", name.toString());
             Main.getInstance().saveConfig();
-            p.sendMessage(Component.text(Main.helper().getMess(p, "VillagerRenamed", true).replace("%name", name.toString())));
+            p.sendMessage(Component
+                    .text(Main.helper().getMess(p, "VillagerRenamed", true).replace("%name", name.toString())));
             return true;
         }
 
         if (args[0].equalsIgnoreCase("tphere")) {
             Entity vill = selectedVills.get(p);
             vill.teleport(p);
-            p.sendMessage(Component.text(Main.helper().getMess(p, "VillagerTeleported", true).replace("%name", vill.getCustomName())));
+            p.sendMessage(Component
+                    .text(Main.helper().getMess(p, "VillagerTeleported", true).replace("%name", vill.getCustomName())));
             return true;
         }
         p.sendMessage(Component.text(Main.helper().getMess(p, "NotAValidSubCommand", true)));
@@ -121,7 +158,8 @@ public class NPCCommand implements CommandExecutor, TabCompleter {
 
     public static void removeVill(Entity e) {
         for (Player p : selectedVills.keySet()) {
-            if (selectedVills.get(p).equals(e)) selectedVills.remove(p);
+            if (selectedVills.get(p).equals(e))
+                selectedVills.remove(p);
         }
         Main.getInstance().getConfig().set("Villagers." + e.getUniqueId(), null);
         Main.getInstance().saveConfig();

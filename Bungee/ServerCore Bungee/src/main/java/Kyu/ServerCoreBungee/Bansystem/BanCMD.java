@@ -104,7 +104,6 @@ public class BanCMD extends Command {
                 String banner = sender instanceof ProxiedPlayer ? ((ProxiedPlayer) sender).getUniqueId().toString()
                         : "CONSOLE";
                 Util.putInDB(uuid, banner, reasonSt, bantime, unbanOn, banUUID, banTime);
-                // TODO: Logging on Discord
 
                 if (p != null) {
                     String kickMessage;
