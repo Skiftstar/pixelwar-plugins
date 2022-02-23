@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
@@ -28,6 +29,7 @@ import kyu.npcshop.CustomVillagers.TradeType;
 import kyu.npcshop.CustomVillagers.GUI.GUI;
 import kyu.npcshop.CustomVillagers.GUI.Item.GuiItem;
 import kyu.npcshop.CustomVillagers.GUI.Windows.ChestWindow;
+import kyu.npcshop.CustomVillagers.GUI.Windows.SignWindow;
 import kyu.npcshop.CustomVillagers.GUI.Windows.TaskbarStyles;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -187,6 +189,23 @@ public class ClickListener implements Listener {
                         }
                     });
                     // #endregion BuyStackItem
+
+                    // #region BuyCustomAmountItem
+                    GuiItem customAmountItem = buySelectionWindow.setItem(Material.OAK_SIGN,
+                            Main.helper().getMess(p, "CustomAmountItemName"), 2);
+                    customAmountItem.setOnClick(ev1 -> {
+                        SignWindow window = gui.createSignWindow(new String[] { "a", "b", "c", "d" });
+                        window.setOnFinish(ev2 -> {
+                            //TODO: Actual buy process
+                            String[] lines = ev2.getPacket().getStringArrays().read(0);
+                            p.sendMessage(lines[0]);
+                            Bukkit.getScheduler().runTask(Main.getInstance(), r -> {
+                                gui.openWindow(buyWindow);
+                            });
+                        });
+                        gui.openWindow(window);
+                    });
+                    // #endregion BuyCustomAmountItem
 
                     gui.openWindow(buySelectionWindow);
                 });

@@ -9,7 +9,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import kyu.npcshop.CustomVillagers.GUI.Errors.SignLineException;
 import kyu.npcshop.CustomVillagers.GUI.Windows.ChestWindow;
+import kyu.npcshop.CustomVillagers.GUI.Windows.SignWindow;
 import kyu.npcshop.CustomVillagers.GUI.Windows.Window;
 
 public class GUI implements Listener {
@@ -27,6 +29,13 @@ public class GUI implements Listener {
     public ChestWindow createChestWindow(String title, int rows) {
         ChestWindow window = new ChestWindow(title, rows, this, plugin);
         return window;
+    }
+
+    public SignWindow createSignWindow(String[] lines) {
+        if (lines.length < 4) {
+            throw new SignLineException();
+        }
+        return new SignWindow(lines, this, plugin);
     }
 
     public void openWindow(Window window) {

@@ -7,13 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.ChunkPosition;
-import com.comphenix.protocol.wrappers.WrappedBlockData;
-
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -58,30 +51,6 @@ public class NPCCommand implements CommandExecutor, TabCompleter {
         if (args.length < 1) {
             p.sendMessage(Component.text(Main.helper().getMess(p, "NEArgs", true)));
             return false;
-        }
-
-        if (args[0].equalsIgnoreCase("test")) {
-            ProtocolManager manager = Main.getInstance().getProtocolManager();
-
-            PacketContainer signPlacePacket = manager.createPacket(PacketType.Play.Server.BLOCK_CHANGE);
-            ChunkPosition pos = new ChunkPosition(p.getLocation().getBlockX(), p.getLocation().getBlockY(),
-                    p.getLocation().getBlockZ());
-            WrappedBlockData data = WrappedBlockData.createData(Material.OAK_SIGN);
-            signPlacePacket.getPositionModifier().write(0, pos);
-            signPlacePacket.getBlockData().write(0, data);
-
-            PacketContainer signGUIPacket = manager.createPacket(PacketType.Play.Server.OPEN_SIGN_EDITOR);
-            signGUIPacket.getPositionModifier().write(0, pos);
-            try {
-                manager.sendServerPacket(p, signPlacePacket);
-                manager.sendServerPacket(p, signGUIPacket);
-            } catch (Exception e) {
-
-            }
-            //TODO: Packet Listener
-            // https://wiki.vg/Protocol -- Update Sign Packet
-            // https://github.com/dmulloy2/ProtocolLib
-            return true;
         }
 
         if (args[0].equalsIgnoreCase("create")) {
