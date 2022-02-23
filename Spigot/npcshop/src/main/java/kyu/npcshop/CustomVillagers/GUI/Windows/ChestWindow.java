@@ -39,18 +39,7 @@ public class ChestWindow extends DefaultWindow {
 
     @Override
     public void open() {
-        if (!getHolder().getOpenInventory().getTopInventory().equals(getInv())) {
             super.open();
-            // getHolder().sendMessage(Component.text("Opening..."));
-        } else {
-            // getHolder().sendMessage(Component.text("NOT opening..."));
-        }
-
-        // super.getHolder().sendMessage(Component.text("Open inv with size " + getInv().getSize()));
-        // System.out.println(Arrays.toString(HandlerList.getRegisteredListeners(plugin).toArray()));
-        
-        
-
     }
 
     /*

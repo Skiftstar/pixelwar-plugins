@@ -36,10 +36,6 @@ import net.kyori.adventure.text.TextComponent;
 
 public class ClickListener implements Listener {
 
-    /*
-     * TODO: List of Todos:
-     * - Custom Amount for Buy/Sell
-     */
     public static Map<UUID, CstmVillager> villagers = new HashMap<>();
 
     public ClickListener(Main plugin) {
@@ -77,7 +73,6 @@ public class ClickListener implements Listener {
                 List<String> lore = new ArrayList<>();
                 lore.add(Pricelore);
                 item.setBasicLore(lore);
-                // Check if player has money, add to inv, etc.
                 item.setOnClick(buyAction -> {
                     ChestWindow buySelectionWindow = gui
                             .createChestWindow(Main.helper().getMess(p, "NPCVillagerBuyMenuTitle"), 1);
@@ -90,19 +85,7 @@ public class ClickListener implements Listener {
                     GuiItem maxItem = buySelectionWindow.setItem(Material.OAK_SIGN,
                             Main.helper().getMess(p, "FullInventoryItemName"), 3);
                     maxItem.setOnClick(ev2 -> {
-                        int totalItems = 0;
-                        for (int i = 0; i < 36; i++) {
-                            ItemStack itemStack = p.getInventory().getItem(i);
-                            if (itemStack == null) {
-                                totalItems += trade.getItem().getType().getMaxStackSize();
-                                continue;
-                            }
-                            if (itemStack.getType().equals(trade.getItem().getType())) {
-                                if (!itemStack.getItemMeta().equals(trade.getItem().getItemMeta()))
-                                    continue;
-                                totalItems += itemStack.getType().getMaxStackSize() - itemStack.getAmount();
-                            }
-                        }
+                        int totalItems = getFreeSpace(trade.getItem(), p);
                         double pBal = Main.econ.getBalance(p);
                         if (pBal < totalItems * trade.getMoney()) {
                             p.sendMessage(Component.text(Main.helper().getMess(p, "NotEnoughMoney", true)));
@@ -122,22 +105,10 @@ public class ClickListener implements Listener {
                     GuiItem oneItem = buySelectionWindow.setItem(Material.OAK_SIGN,
                             Main.helper().getMess(p, "OnlyOneItemName"), 0);
                     oneItem.setOnClick(ev2 -> {
-                        if (p.getInventory().firstEmpty() == -1) {
-                            boolean itemThere = false;
-                            Map<Integer, ? extends ItemStack> map = p.getInventory().all(trade.getItem().getType());
-                            for (int i : map.keySet()) {
-                                ItemStack itemStack = p.getInventory().getItem(i);
-                                if (!itemStack.getItemMeta().equals(trade.getItem().getItemMeta()))
-                                    continue;
-                                if (itemStack.getAmount() < itemStack.getType().getMaxStackSize()) {
-                                    itemThere = true;
-                                    break;
-                                }
-                            }
-                            if (!itemThere) {
-                                p.sendMessage(Component.text(Main.helper().getMess(p, "NotEnoughInvSpace", true)));
-                                return;
-                            }
+                        if (p.getInventory().firstEmpty() == -1 && getFreeSpace(trade.getItem(), p) == 0) {
+                            p.sendMessage(Component.text(Main.helper().getMess(p, "NotEnoughInvSpace", true)));
+                            return;
+
                         }
                         double pBal = Main.econ.getBalance(p);
                         if (pBal < trade.getMoney()) {
@@ -156,21 +127,7 @@ public class ClickListener implements Listener {
                     GuiItem stackItem = buySelectionWindow.setItem(Material.OAK_SIGN,
                             Main.helper().getMess(p, "OneStackItemName"), 1);
                     stackItem.setOnClick(ev2 -> {
-                        int spaceLeft = 0;
-                        for (int index = 0; index < 36; index++) {
-                            ItemStack i = p.getInventory().getItem(index);
-                            if (i == null || i.getType().equals(Material.AIR)) {
-                                spaceLeft += trade.getItem().getType().getMaxStackSize();
-                                p.sendMessage("Empty Spot found!");
-                                continue;
-                            }
-                            if (!i.getItemMeta().equals(trade.getItem().getItemMeta()))
-                                continue;
-                            if (i.getAmount() < i.getType().getMaxStackSize()) {
-                                spaceLeft += i.getType().getMaxStackSize() - i.getAmount();
-                                p.sendMessage("Slot found! addding " + (i.getType().getMaxStackSize() - i.getAmount()));
-                            }
-                        }
+                        int spaceLeft = getFreeSpace(trade.getItem(), p);
                         if (spaceLeft < 64) {
                             p.sendMessage(Component.text(Main.helper().getMess(p, "NotEnoughInvSpace", true)));
                             return;
@@ -194,14 +151,48 @@ public class ClickListener implements Listener {
                     GuiItem customAmountItem = buySelectionWindow.setItem(Material.OAK_SIGN,
                             Main.helper().getMess(p, "CustomAmountItemName"), 2);
                     customAmountItem.setOnClick(ev1 -> {
-                        SignWindow window = gui.createSignWindow(new String[] { "a", "b", "c", "d" });
+                        SignWindow window = gui
+                                .createSignWindow(Main.helper().getLore(p, "BuySignText").toArray(new String[0]));
                         window.setOnFinish(ev2 -> {
-                            //TODO: Actual buy process
                             String[] lines = ev2.getPacket().getStringArrays().read(0);
-                            p.sendMessage(lines[0]);
+                            int count;
+                            try {
+                                count = Integer.parseInt(lines[0]);
+                            } catch (Exception ex) {
+                                p.sendMessage(Component.text(Main.helper().getMess(p, "NotANumber", true)));
+                                Bukkit.getScheduler().runTask(Main.getInstance(), r -> {
+                                    gui.openWindow(buySelectionWindow);
+                                });
+                                return;
+                            }
+
+                            int spaceLeft = getFreeSpace(trade.getItem(), p);
+                            if (spaceLeft < count) {
+                                p.sendMessage(Component.text(Main.helper().getMess(p, "NotEnoughInvSpace", true)));
+                                Bukkit.getScheduler().runTask(Main.getInstance(), r -> {
+                                    gui.openWindow(buySelectionWindow);
+                                });
+                                return;
+                            }
+                            double pBal = Main.econ.getBalance(p);
+                            if (pBal < count * trade.getMoney()) {
+                                p.sendMessage(Component.text(Main.helper().getMess(p, "NotEnoughMoney", true)));
+                                Bukkit.getScheduler().runTask(Main.getInstance(), r -> {
+                                    gui.openWindow(buySelectionWindow);
+                                });
+                                return;
+                            }
+                            Main.econ.withdrawPlayer(p, trade.getMoney());
+                            p.sendMessage(Component.text(Main.helper().getMess(p, "ItemBuySuccess", true)
+                                    .replace("%money", "" + count * trade.getMoney())
+                                    .replace("%count", "" + count)));
+                            for (int i = 0; i < count; i++) {
+                                p.getInventory().addItem(trade.getItem());
+                            }
                             Bukkit.getScheduler().runTask(Main.getInstance(), r -> {
-                                gui.openWindow(buyWindow);
+                                gui.openWindow(buySelectionWindow);
                             });
+
                         });
                         gui.openWindow(window);
                     });
@@ -232,7 +223,7 @@ public class ClickListener implements Listener {
                 List<String> lore = new ArrayList<>();
                 lore.add(Pricelore);
                 item.setBasicLore(lore);
-                // Check if player has item, remove from inventory, etc.
+                
                 item.setOnClick(sellAction -> {
                     if (!p.getInventory().containsAtLeast(trade.getItem(), 1)) {
                         p.sendMessage(Component.text(Main.helper().getMess(p, "SellItemNotInInv", true)));
@@ -315,6 +306,61 @@ public class ClickListener implements Listener {
                                 .replace("%count", "" + 64)));
                     });
                     // #endregion SellStackItem
+
+                    // #region SellCustomAmountItem
+                    GuiItem sellCustomAmountItem = sellSelectionWindow.setItem(Material.OAK_SIGN,
+                            Main.helper().getMess(p, "CustomAmountItemName"), 2);
+                    sellCustomAmountItem.setOnClick(ev2 -> {
+                        SignWindow window = gui
+                                .createSignWindow(Main.helper().getLore(p, "SellSignText").toArray(new String[0]));
+                        window.setOnFinish(ev3 -> {
+                            String[] lines = ev3.getPacket().getStringArrays().read(0);
+
+                            int sellCount;
+                            try {
+                                sellCount = Integer.parseInt(lines[0]);
+                            } catch (Exception ex) {
+                                p.sendMessage(Component.text(Main.helper().getMess(p, "NotANumber", true)));
+                                Bukkit.getScheduler().runTask(Main.getInstance(), r -> {
+                                    gui.openWindow(sellSelectionWindow);
+                                });
+                                return;
+                            }
+                            if (!p.getInventory().containsAtLeast(trade.getItem(), sellCount)) {
+                                p.sendMessage(Component.text(Main.helper().getMess(p, "SellItemNotEnoughItems", true)));
+                                Bukkit.getScheduler().runTask(Main.getInstance(), r -> {
+                                    gui.openWindow(sellSelectionWindow);
+                                });
+                                return;
+                            }
+                            Map<Integer, ? extends ItemStack> map = p.getInventory().all(trade.getItem().getType());
+                            int countToRemove = sellCount;
+                            for (int i : map.keySet()) {
+                                ItemStack itemStack = p.getInventory().getItem(i);
+                                if (!itemStack.getItemMeta().equals(trade.getItem().getItemMeta()))
+                                    continue;
+                                int count = itemStack.getAmount();
+                                p.sendMessage("" + count);
+                                if (count >= countToRemove) {
+                                    itemStack.subtract(countToRemove);
+                                    countToRemove = 0;
+                                    break;
+                                } else {
+                                    itemStack.subtract(count);
+                                    countToRemove -= count;
+                                }
+                            }
+                            Main.econ.depositPlayer(p, sellCount * trade.getMoney());
+                            p.sendMessage(Component.text(Main.helper().getMess(p, "ItemSoldSuccess", true)
+                                    .replace("%money", "" + sellCount * trade.getMoney())
+                                    .replace("%count", "" + sellCount)));
+                            Bukkit.getScheduler().runTask(Main.getInstance(), r -> {
+                                gui.openWindow(sellSelectionWindow);
+                            });
+                        });
+                        gui.openWindow(window);
+                    });
+                    // #endregion SellCustomAmountItem
 
                     gui.openWindow(sellSelectionWindow);
                 });
@@ -676,5 +722,22 @@ public class ClickListener implements Listener {
         BigDecimal bd = BigDecimal.valueOf(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
+    }
+
+    private int getFreeSpace(ItemStack item, Player p) {
+        int count = 0;
+        for (int i = 0; i < 36; i++) {
+            ItemStack itemStack = p.getInventory().getItem(i);
+            if (itemStack == null) {
+                count += item.getType().getMaxStackSize();
+                continue;
+            }
+            if (itemStack.getType().equals(item.getType())) {
+                if (!itemStack.getItemMeta().equals(item.getItemMeta()))
+                    continue;
+                count += itemStack.getType().getMaxStackSize() - itemStack.getAmount();
+            }
+        }
+        return count;
     }
 }

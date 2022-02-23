@@ -9,6 +9,7 @@ Errors:
   NotEnoughInvSpace: "&cDu hast nicht genug Platz im Inventar!"
   NoVillSelected: "&cFür alle subcommands außer create musst du einen Villager ausgewählt haben!"
   NotAValidSubCommand: "&cDas ist kein SubCommand von diesem Command!"
+  NotANumber: "&cGib bitte eine Zahl ein!"
 
 Info:
   TradeAddSuccess: "&aHandle erfolgreich hinzugefügt!"
@@ -39,6 +40,7 @@ NPCGUI:
   AllOfKindItemName: "&eAlle im Inventar"
   OnlyOneItemName: "1x"
   OneStackItemName: "64x"
+  CustomAmountItemName: "Menge selber eingeben"
   TradeItemItemName: "&eItem: %itemType"
   NoneItem: "&cKeins"
   ItemsThatVillBuysItenName: "&eItems die Händler kauft"
@@ -69,3 +71,13 @@ NPCGUILores:
     - "oder Enchantments haben willst)"
     - "Oder wähle 'Von Materials' aus um aus einer alphabetischen"
     - "Liste aller Items zu wählen"
+  BuySignText:
+    - ""
+    - "---------"
+    - "Wie viele Items"
+    - "willst du kaufen?"
+  SellSignText:
+    - ""
+    - "---------"
+    - "Wie viele Items"
+    - "willst du verkaufen?"
