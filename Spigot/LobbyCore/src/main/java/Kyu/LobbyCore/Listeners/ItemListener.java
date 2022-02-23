@@ -42,7 +42,7 @@ public class ItemListener implements Listener {
 
     public void openServerGUI(Player p) {
         GUI gui = new GUI(p, plugin);
-        ChestWindow window = gui.createChestWindow(Util.color("&aServers"), 6);
+        ChestWindow window = gui.createChestWindow(Util.color(Main.navigatorTitle), Main.navigatorRows);
         for (Server server : Main.servers) {
             GuiItem item = window.setItem(server.getGuiBlock(), server.getGuiName(), server.getSlot());
             item.setLore(server.getDescription());

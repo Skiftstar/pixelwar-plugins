@@ -1,6 +1,7 @@
 defaultGamemode: "ADVENTURE"
 resetOnVoid: true
 serverInterfaceTitle: "&aServers"
+navigatorRows: 6
 servers:
   ExampleServer:
     name: "Example Server"

@@ -31,6 +31,8 @@ public final class Main extends JavaPlugin {
     private YamlConfiguration config;
     private File configFile;
     public static ItemListener itemListener;
+    public static int navigatorRows = 6;
+    public static String navigatorTitle;
 
 
     @Override
@@ -107,6 +109,8 @@ public final class Main extends JavaPlugin {
         }
         JoinListener.defaultMode = gamemode;
 
+        navigatorRows = getConfig().getInt("navigatorRows");
+        navigatorTitle = getConfig().getString("serverInterfaceTitle");
         VoidListener.voidReset = getConfig().getBoolean("resetOnVoid");
 
         if (config.get("spawnLoc") != null) {
