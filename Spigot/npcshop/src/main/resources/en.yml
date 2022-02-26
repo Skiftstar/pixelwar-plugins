@@ -1,0 +1,78 @@
+Errors:
+  PlayerOnly: '&cPlayer only!'
+  NEArgs: '&cNot enough arguments!'
+  AddTradeItemMissingError: '&cYou need to select an item first!'
+  SellItemNotInInv: "&cYou don't have this item in your inventory!"
+  SellItemNotEnoughItems: "&cYou don't have enough items!"
+  NotEnoughMoney: "&cYou don't have enough money!"
+  NotEnoughInvSpace: "&cYour inventory is full!"
+  NoVillSelected: '&cYou must have selected a Villager for all subcommands except create'
+  NotAValidSubCommand: '&cThis is not a subcommand of the command!'
+  NEPerms: '&cNot enough Permissions!'
+  NotANumber: '&cPlease enter a Number!'
+Info:
+  TradeAddSuccess: '&aTrade added successfully!'
+  ItemSoldSuccess: '&aSuccessfully sold %count items for %money pixel!'
+  ItemSoldSuccess: '&aSuccessfully bought %count items for %money pixel!'
+  VillagerSelected: '&aSuccessfully selected %VillName!'
+  VillagerRenamed: '&aSuccessfully renamed Villager to %name!'
+  VillerCreated: '&aSuccessfully created %name!'
+  VillagerTeleported: '&aSuccessfully teleported Villager %name &ato you!'
+  VillagerDeleted: '&aSuccessfully deleted %VillName!'
+NPCGUI:
+  BuyItemName: '&aBuy'
+  SellItemName: '&aSell'
+  AdminItemName: '&eEdit'
+  AddTradeItem: '&aAdd Trade'
+  RemoveTradeItem: '&cRemove Trade'
+  TradeTypeItem: '&eTrade Type %type'
+  PriceItemName: '&ePrice: %price'
+  HelpItemName: "&eHelp"
+  AllOfKindItemName: '&eAll in Inventory'
+  OnlyOneItemName: "&e1x"
+  OneStackItemName: "&e64x"
+  TradeItemItemName: '&eItem: %itemType'
+  NoneItem: '&cNone'
+  ItemsThatVillBuysItenName: '&eItems that Villager buys'
+  ItemsThatVillSellsItenName: '&eItems that Villager sells'
+  ConfirmAddTradeItem: '&aAdd Trade'
+  TradeItemAddFromMaterialsName: "&eOf Material"
+  ItemBuyDescription: '&ePrice per item: %price Pixel'
+  ItemSellDescription: '&eSellprice per Item: %price Pixel'
+  ItemTypeDescription: '&eType: %type'
+  NPCVillagerMainMenuTitle: '&c%VillName'
+  NPCVillagerBuyMenuTitle: '&eBuy from %VillName'
+  NPCVillagerAdminMenuTitle: '&eEdit: %VillName'
+    NPCVillagerSellTitle: "&eSell to %VillName"
+  NPCVillagerAddTradeMenuTitle: '&eAdd trade to %VillName'
+  NPCVillagerAddTradeChangePriceTitle: '&eEdit Item price (Adding trade to %VillName)'
+  NPCVillagerChangeTradeItemTitle: '&eEdit Item (Adding trade to %VillName)'
+  SelectItemFromMaterialsTitle: '&eSelect Item from Material'
+  NPCVillagerRemoveTradeTitle: '&eRemove trade from %VillName'
+  NPCVillagerSellMenuTitle: '&eHow many Items do you want to sell?'
+  ChangeProfessionItemName: '&eChange Profession'
+  SelectVillagerItemName: '&eSelect Villager'
+  FullInventoryItemName: '&eFill Inventory'
+  NPCVillagerChangeProfessionTitle: '&eChange Profession of %VillName'
+  ConfirmItem: '&aSubmit'
+  WhoopsItem: '&cWhoops...'
+  DeleteVillagerItemName: '&cdelete %VillName'
+  DeleteVillTitle: '&cDo you want to delete %VillName?'
+  CustomAmountItemName: "&eEnter custom Amount"
+NPCGUILores:
+  TradeAddItemHelpDescription:
+  - "&eYou can either add an item from your Inventory"
+  - "&eby clicking on it (useful for items with e.g. custom name"
+  - "&eor enchantments)"
+  - "&eor select 'Of Material' to receive an alphabetical list"
+  - "&eof all items"
+  BuySignText:
+  - ''
+  - '---------'
+  - How many Items
+  - do you want to buy?
+  SellSignText:
+  - ''
+  - '---------'
+  - How many Items
+  - do you want to sell?

@@ -18,6 +18,7 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -48,6 +49,7 @@ public final class Main extends JavaPlugin implements PluginMessageListener{
     private File configFile;
     public static long cacheDelay;
     public static Economy econ = null;
+    public static Location spawnPos = null;
 
     @Override
     public void onEnable() {

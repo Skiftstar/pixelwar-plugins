@@ -1,0 +1,16 @@
+name: pixessentials
+version: 1.0-SNAPSHOT
+author: Kyu
+main: kyu.pixesssentials.Main
+softdepend: [Multiverse-Core]
+
+
+commands:
+  setSpawn:
+    description: Sets the Spawn
+  spawn:
+    description: Teleports to the spawn
+  cb:
+    description: Gives a description of the CityBuild mode and all important mechanics/commands
+  eReload:
+    description: Reloads the plugin configs

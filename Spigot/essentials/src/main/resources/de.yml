@@ -1,0 +1,10 @@
+Error:
+  PlayerOnly: "Nur für Spieler!"
+  NEPerms: "&cNicht genug Rechte!"
+  NEArgs: "&cNicht genug Argumente!"
+
+FirstTimeJoin:
+  WelcomeMessage: "&6Hey! &aWillkommen auf &6CityBuild!\n&aAlle wichtigen Befehle und Infos findest du unter &6/cb\n&aJoine doch auch unserem Discord &6/discord!\n&6Viel Spaß!"
+
+CBInfoMess:
+  CBInfoMessage: "&a-Unseren &6Item Shop &afindest du bei &6/spawn. &aHier kannst du &6Items kaufen und verkaufen &aindem du mit den Händlern in ihren Ständen redest (Rechtsklick)!\n&a- In die &6anderen Welten &akommst du mit &6Warps &aeine Liste aller Warps findest du mit &6/warp list &aund teleportieren kannst du dich mit &6/warp warpName!\n&a- Die &6Farmwelt &awird immer mal wieder &6zurückgesetzt &ahier also &c&nnicht&r&a bauen da dies gelöscht wird!\n&a- &6Grundstücke &ain der Plotwelt kannst du mit &6/plot auto &abekommen. Du kannst bis zu 4 Grundsücke haben!"

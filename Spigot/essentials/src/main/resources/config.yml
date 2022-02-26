@@ -1,10 +1,4 @@
-chatPrefix: "&6[PixelCore]"
-serverName: "&aPixel&cWar"
-ScoreboardRefreshDelay: 5
-filterFromPrefixForScoreboard: "|"
-discordLink: "https://discord.gg/Fce224eSzf"
-cacheTimeout: 30
-enableEssentials: false
+chatPrefix: "&6[PixEssentials]"
 
 database:
   host: localhost # host of your database

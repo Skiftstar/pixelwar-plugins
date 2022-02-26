@@ -75,7 +75,7 @@ public class ClickListener implements Listener {
                 item.setBasicLore(lore);
                 item.setOnClick(buyAction -> {
                     ChestWindow buySelectionWindow = gui
-                            .createChestWindow(Main.helper().getMess(p, "NPCVillagerBuyMenuTitle"), 1);
+                            .createChestWindow(Main.helper().getMess(p, "NPCVillagerBuyMenuAmountTitle"), 1);
 
                     buySelectionWindow.setOnClose(ev2 -> {
                         gui.openWindow(buyWindow);
@@ -137,7 +137,7 @@ public class ClickListener implements Listener {
                             p.sendMessage(Component.text(Main.helper().getMess(p, "NotEnoughMoney", true)));
                             return;
                         }
-                        Main.econ.withdrawPlayer(p, trade.getMoney());
+                        Main.econ.withdrawPlayer(p, 64 * trade.getMoney());
                         p.sendMessage(Component.text(Main.helper().getMess(p, "ItemBuySuccess", true)
                                 .replace("%money", "" + 64 * trade.getMoney())
                                 .replace("%count", "" + 64)));
@@ -182,7 +182,7 @@ public class ClickListener implements Listener {
                                 });
                                 return;
                             }
-                            Main.econ.withdrawPlayer(p, trade.getMoney());
+                            Main.econ.withdrawPlayer(p, count * trade.getMoney());
                             p.sendMessage(Component.text(Main.helper().getMess(p, "ItemBuySuccess", true)
                                     .replace("%money", "" + count * trade.getMoney())
                                     .replace("%count", "" + count)));
@@ -230,7 +230,7 @@ public class ClickListener implements Listener {
                         return;
                     }
                     ChestWindow sellSelectionWindow = gui
-                            .createChestWindow(Main.helper().getMess(p, "NPCVillagerSellMenuTitle"), 1);
+                            .createChestWindow(Main.helper().getMess(p, "NPCVillagerSellMenuAmountTitle"), 1);
 
                     sellSelectionWindow.setOnClose(ev2 -> {
                         gui.openWindow(sellWindow);
@@ -447,9 +447,9 @@ public class ClickListener implements Listener {
                             if (price[0] < 0.1)
                                 price[0] = 0.1;
                             displayItem.setName(
-                                    Main.helper().getMess(p, "AmountItemName").replace("%amount", "" + price[0]));
+                                    Main.helper().getMess(p, "PriceItemName").replace("%price", "" + price[0]));
                             priceItem.setName(
-                                    Main.helper().getMess(p, "AmountItemName").replace("%amount", "" + price[0]));
+                                    Main.helper().getMess(p, "PriceItemName").replace("%price", "" + price[0]));
                         });
                     }
                     gui.openWindow(changePriceWindow);
