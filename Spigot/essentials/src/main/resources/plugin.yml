@@ -14,3 +14,11 @@ commands:
     description: Gives a description of the CityBuild mode and all important mechanics/commands
   eReload:
     description: Reloads the plugin configs
+  sethome:
+    description: set a home at your location
+  home:
+    description: teleport to your home
+  tpa:
+    description: send a tp request to someone
+  tpaccept:
+    description: accept the most recent tp request

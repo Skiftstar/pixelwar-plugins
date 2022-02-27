@@ -23,12 +23,13 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 public class Main extends JavaPlugin{
 
-    private YamlConfiguration config, joinedPlayersConfig;
-    private File configFile, joinedPlayersFile;
+    private YamlConfiguration config, joinedPlayersConfig, playerHomeConfig;
+    private File configFile, joinedPlayersFile, playerHomeFile;
     public static Location spawnPos = null;
     public static LanguageHelper helper;
     private static Main instance;
     public static List<SCommand> commands = new ArrayList<>();
+    public static int tpaTimeout = 0;
 
 
 
@@ -47,6 +48,7 @@ public class Main extends JavaPlugin{
         if (!getDataFolder().exists()) getDataFolder().mkdirs();
         configFile = new File(getDataFolder(), "config.yml");
         joinedPlayersFile = new File(getDataFolder(), "joinedPlayers.yml");
+        playerHomeFile = new File(getDataFolder(), "playerHomes.yml");
         try {
             if (!configFile.exists()) {
                 InputStream in = getResource("config.yml");
@@ -55,12 +57,18 @@ public class Main extends JavaPlugin{
             if (!joinedPlayersFile.exists()) {
                 joinedPlayersFile.createNewFile();
             }
+            if (!playerHomeFile.exists()) {
+                playerHomeFile.createNewFile();
+            }
             config = YamlConfiguration.loadConfiguration(configFile);
+            playerHomeConfig = YamlConfiguration.loadConfiguration(playerHomeFile);
             joinedPlayersConfig = YamlConfiguration.loadConfiguration(joinedPlayersFile);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        tpaTimeout = config.getInt("tpaTimeout");
 
         if (config.get("Essentials.Spawn") != null) {
             double x = config.getDouble("Essentials.Spawn.X");
@@ -111,6 +119,23 @@ public class Main extends JavaPlugin{
     public void saveJoinedPlayersConfig() {
         try {
             joinedPlayersConfig.save(joinedPlayersFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public YamlConfiguration getPlayerHomeConfig() {
+        return playerHomeConfig;
+    }
+
+    public void save(YamlConfiguration config) {
+        try {
+            if (config.equals(playerHomeConfig)) {
+                playerHomeConfig.save(playerHomeFile);
+            }
+            else if (config.equals(joinedPlayersConfig)) {
+                joinedPlayersConfig.save(joinedPlayersFile);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

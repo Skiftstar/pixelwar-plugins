@@ -1,13 +1,24 @@
 package kyu.pixesssentials;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import Kyu.SCommand;
+import kyu.pixesssentials.Util.Pair;
 import kyu.pixesssentials.Util.Util;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 
 public class SmallCommands {
+
+    public static Map<Player, Pair<Integer, Player>> tpaRequests = new HashMap<>();
+
     public static void init(Main plugin) {
         SCommand setSpawnCMD = new SCommand(plugin, "setSpawn", Main.helper);
         setSpawnCMD.playerOnly(true);
@@ -47,9 +58,88 @@ public class SmallCommands {
             e.sender().sendMessage(Util.color("&aReload done"));
         });
 
+        SCommand setHome = new SCommand(plugin, "sethome", Main.helper);
+        setHome.execPerm("core.essentials.sethome");
+        setHome.playerOnly(true);
+        setHome.exec(e -> {
+            YamlConfiguration config = Main.getInstance().getPlayerHomeConfig();
+            Location loc = e.player().getLocation();
+            config.set(e.player().getUniqueId().toString() + ".X", loc.getX());
+            config.set(e.player().getUniqueId().toString() + ".Y", loc.getY());
+            config.set(e.player().getUniqueId().toString() + ".Z", loc.getZ());
+            config.set(e.player().getUniqueId().toString() + ".Pitch", loc.getPitch());
+            config.set(e.player().getUniqueId().toString() + ".Yaw", loc.getYaw());
+            config.set(e.player().getUniqueId().toString() + ".World", loc.getWorld().getUID().toString());
+            Main.getInstance().save(config);
+            e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "HomeSetSuccess", true)));
+        });
+
+        SCommand home = new SCommand(plugin, "home", Main.helper);
+        home.execPerm("core.essentials.home");
+        home.playerOnly(true);
+        home.exec(e -> {
+            YamlConfiguration config = Main.getInstance().getPlayerHomeConfig();
+            if (config.get(e.player().getUniqueId().toString()) == null) {
+                e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "NoHomeSet", true)));
+                return;
+            }
+            double x = config.getDouble(e.player().getUniqueId().toString() + ".X");
+            double y = config.getDouble(e.player().getUniqueId().toString() + ".Y");
+            double z = config.getDouble(e.player().getUniqueId().toString() + ".Z");
+            float pitch = (float) config.getDouble(e.player().getUniqueId().toString() + ".Pitch");
+            float yaw = (float) config.getDouble(e.player().getUniqueId().toString() + ".Yaw");
+            UUID world = UUID.fromString(config.getString(e.player().getUniqueId().toString() + ".World"));
+            Location loc = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
+            e.player().teleport(loc);
+            e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "HomeTeleportSuccess", true)));
+        });
+
+        SCommand tpa = new SCommand(plugin, "tpa", Main.helper);
+        tpa.execPerm("core.essentials.tpa");
+        tpa.playerOnly(true);
+        tpa.minArgs(1);
+        tpa.exec(e -> {
+            String playerName = e.args()[0];
+            Player recipent = Bukkit.getPlayer(playerName);
+            if (recipent == null) {
+                e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "PlayerNotOnline", true)));
+                return;
+            }
+            recipent.sendMessage(Component.text(Main.helper.getMess(recipent, "TPARequestReceived", true)
+                    .replace("%player", ((TextComponent) e.player().displayName()).content())
+                    .replace("%time", Main.tpaTimeout + "")));
+            e.player().sendMessage(Component
+                    .text(Main.helper.getMess(e.player(), "TPARequestSent", true).replace("%player", playerName))); 
+                    
+            int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
+                tpaRequests.remove(recipent);
+                e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "TPATimeout", true)));
+            }, Main.tpaTimeout * 20);
+            tpaRequests.remove(recipent);
+            tpaRequests.put(recipent, new Pair<Integer,Player>(taskId, e.player()));
+        });
+
+        SCommand tpaccept = new SCommand(plugin, "tpaccept", Main.helper);
+        tpaccept.execPerm("core.essentials.tpaccept");
+        tpaccept.playerOnly(true);
+        tpaccept.exec(e -> {
+            if (!tpaRequests.containsKey(e.player())) {
+                e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "NoOpenTpaRequests", true)));
+                return;
+            }
+            Pair<Integer, Player> pair = tpaRequests.get(e.player());
+            tpaRequests.remove(e.player());
+            Bukkit.getScheduler().cancelTask(pair.first);
+            pair.second.teleport(e.player());
+        });
+
         Main.commands.add(setSpawnCMD);
         Main.commands.add(spawnCMD);
         Main.commands.add(cbCMD);
+        Main.commands.add(setHome);
+        Main.commands.add(home);
+        Main.commands.add(tpa);
+        Main.commands.add(tpaccept);
         Main.commands.add(eReload);
     }
 }

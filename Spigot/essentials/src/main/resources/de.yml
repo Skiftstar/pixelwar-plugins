@@ -1,7 +1,19 @@
-Error:
+GeneralErrors:
   PlayerOnly: "Nur für Spieler!"
   NEPerms: "&cNicht genug Rechte!"
   NEArgs: "&cNicht genug Argumente!"
+  PlayerNotOnline: "&cSpieler ist nicht online!"
+
+Homes:
+  HomeSetSuccess: "&aDein Zuhause wurde erfolgreich gesetzt!"
+  NoHomeSet: "&cDu hast noch kein Zuhause gesetzt!"
+  HomeTeleportSuccess: "&aErfolgreich zu deinem Zuhause teleportiert!"
+
+TPA:
+  TPARequestReceived: "&b%player &awill sich zu dir teleportieren!\nDu hast %time Sekunden um mit &b/tpaccept &aanzunehmen!"
+  TPARequestSent: "&aTPA Anfrage an &b%player &agesendet!"
+  TPATimeout: "&cAnfrage ist ausgelaufen!"
+  NoOpenTpaRequests: "&cDu hast keine offenen TPA Anfragen!"
 
 FirstTimeJoin:
   WelcomeMessage: "&6Hey! &aWillkommen auf &6CityBuild!\n&aAlle wichtigen Befehle und Infos findest du unter &6/cb\n&aJoine doch auch unserem Discord &6/discord!\n&6Viel Spaß!"

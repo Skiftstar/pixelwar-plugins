@@ -1,5 +1,7 @@
 chatPrefix: "&6[PixEssentials]"
 
+tpaTimeout: 30
+
 database:
   host: localhost # host of your database
   port: 3306 # default port for MySQL
