@@ -14,6 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import Kyu.SCommand;
 import Kyu.LangSupport.DB;
 import Kyu.LangSupport.LanguageHelper;
+import kyu.pixesssentials.Commands.EnchantCmd;
+import kyu.pixesssentials.Commands.SmallCommands;
 import kyu.pixesssentials.Listeners.EssentialsListener;
 import kyu.pixesssentials.Util.Util;
 
@@ -40,6 +42,7 @@ public class Main extends JavaPlugin{
         loadConfigValues();
 
         SmallCommands.init(this);
+        new EnchantCmd(this);
         new EssentialsListener(this);
     }
 
