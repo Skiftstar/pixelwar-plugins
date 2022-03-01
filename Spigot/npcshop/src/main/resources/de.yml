@@ -10,6 +10,7 @@ Errors:
   NoVillSelected: "&cFür alle subcommands außer create musst du einen Villager ausgewählt haben!"
   NotAValidSubCommand: "&cDas ist kein SubCommand von diesem Command!"
   NotANumber: "&cGib bitte eine Zahl ein!"
+  NotAValidTradeType: "&cBitte gib einen richtigen Trade Typ an!"
 
 Info:
   TradeAddSuccess: "&aHandle erfolgreich hinzugefügt!"
@@ -20,6 +21,9 @@ Info:
   VillerCreated: "&aErfolgreich %name &aerstellt!"
   VillagerTeleported: "&aErfolgreich Villager %name &azu dir teleportiert!"
   VillagerDeleted: "&a%VillName &aerfolgreich gelöscht!"
+  VillTradesTopTitle: "&a%VillName Top 10 Handel pro Kategorie"
+  VillTradesTopCategoryTitle: "&6%Category:"
+  VillTradesTopEntry: "&a- %itemName für %pixel Pixel: &b%amount"
 
 NPCGUI:
   BuyItemName: "&aKaufen"

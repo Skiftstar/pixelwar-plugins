@@ -98,6 +98,7 @@ public class ClickListener implements Listener {
                         for (int i = 0; i < totalItems; i++) {
                             p.getInventory().addItem(trade.getItem());
                         }
+                        vill.logTrade(trade, totalItems);
                     });
                     // #endregion BuyMaxItem
 
@@ -120,6 +121,7 @@ public class ClickListener implements Listener {
                                 .replace("%money", "" + trade.getMoney())
                                 .replace("%count", "" + 1)));
                         p.getInventory().addItem(trade.getItem());
+                        vill.logTrade(trade, 1);
                     });
                     // #endregion BuyOneItem
 
@@ -144,6 +146,7 @@ public class ClickListener implements Listener {
                         for (int i = 0; i < 64; i++) {
                             p.getInventory().addItem(trade.getItem());
                         }
+                        vill.logTrade(trade, 64);
                     });
                     // #endregion BuyStackItem
 
@@ -189,6 +192,7 @@ public class ClickListener implements Listener {
                             for (int i = 0; i < count; i++) {
                                 p.getInventory().addItem(trade.getItem());
                             }
+                            vill.logTrade(trade, count);
                             Bukkit.getScheduler().runTask(Main.getInstance(), r -> {
                                 gui.openWindow(buySelectionWindow);
                             });
@@ -253,6 +257,7 @@ public class ClickListener implements Listener {
                         p.sendMessage(Component.text(Main.helper().getMess(p, "ItemSoldSuccess", true)
                                 .replace("%money", "" + totalCount * trade.getMoney())
                                 .replace("%count", "" + totalCount)));
+                        vill.logTrade(trade, totalCount);
                     });
                     // #endregion SellMaxItem
 
@@ -272,6 +277,7 @@ public class ClickListener implements Listener {
                         p.sendMessage(Component.text(Main.helper().getMess(p, "ItemSoldSuccess", true)
                                 .replace("%money", "" + trade.getMoney())
                                 .replace("%count", "" + 1)));
+                        vill.logTrade(trade, 1);
                     });
                     // #endregion SellOneItem
 
@@ -304,6 +310,7 @@ public class ClickListener implements Listener {
                         p.sendMessage(Component.text(Main.helper().getMess(p, "ItemSoldSuccess", true)
                                 .replace("%money", "" + 64 * trade.getMoney())
                                 .replace("%count", "" + 64)));
+                        vill.logTrade(trade, 64);
                     });
                     // #endregion SellStackItem
 
@@ -354,6 +361,7 @@ public class ClickListener implements Listener {
                             p.sendMessage(Component.text(Main.helper().getMess(p, "ItemSoldSuccess", true)
                                     .replace("%money", "" + sellCount * trade.getMoney())
                                     .replace("%count", "" + sellCount)));
+                            vill.logTrade(trade, sellCount);
                             Bukkit.getScheduler().runTask(Main.getInstance(), r -> {
                                 gui.openWindow(sellSelectionWindow);
                             });

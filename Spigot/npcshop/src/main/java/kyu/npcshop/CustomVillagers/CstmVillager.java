@@ -144,5 +144,20 @@ public class CstmVillager {
         Main.getInstance().saveConfig();
     }
 
+    public void logTrade(Trade trade, int amount) {
+        YamlConfiguration config = Main.getInstance().getConfig();
+        String key = "Villagers." + uuid.toString() + ".Trades." + trade.getType().toString().toLowerCase() + "." + trade.getUuid().toString() + ".usedSoFar";
+        int amountBeforeAdd = 0;
+        if (config.get(key) != null) {
+            amountBeforeAdd = config.getInt(key);
+        }
+        int amountAfterAdd = amountBeforeAdd + amount;
+        config.set(key, amountAfterAdd);
+        Main.getInstance().saveConfig();
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
 
 }
