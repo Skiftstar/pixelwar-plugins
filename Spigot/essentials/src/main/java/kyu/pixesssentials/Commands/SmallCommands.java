@@ -1,4 +1,4 @@
-package kyu.pixesssentials;
+package kyu.pixesssentials.Commands;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +10,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import Kyu.SCommand;
+import kyu.pixesssentials.Main;
 import kyu.pixesssentials.Util.Pair;
 import kyu.pixesssentials.Util.Util;
 import net.kyori.adventure.text.Component;
@@ -109,14 +110,14 @@ public class SmallCommands {
                     .replace("%player", ((TextComponent) e.player().displayName()).content())
                     .replace("%time", Main.tpaTimeout + "")));
             e.player().sendMessage(Component
-                    .text(Main.helper.getMess(e.player(), "TPARequestSent", true).replace("%player", playerName))); 
-                    
+                    .text(Main.helper.getMess(e.player(), "TPARequestSent", true).replace("%player", playerName)));
+
             int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
                 tpaRequests.remove(recipent);
                 e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "TPATimeout", true)));
             }, Main.tpaTimeout * 20);
             tpaRequests.remove(recipent);
-            tpaRequests.put(recipent, new Pair<Integer,Player>(taskId, e.player()));
+            tpaRequests.put(recipent, new Pair<Integer, Player>(taskId, e.player()));
         });
 
         SCommand tpaccept = new SCommand(plugin, "tpaccept", Main.helper);
@@ -133,6 +134,75 @@ public class SmallCommands {
             pair.second.teleport(e.player());
         });
 
+        SCommand tps = new SCommand(plugin, "tps", Main.helper);
+        tps.execPerm("core.essentials.tps");
+        tps.exec(e -> {
+            double[] tpsArr = Bukkit.getServer().getTPS();
+
+            if (!e.isPlayer()) {
+                String message = Main.helper.getMess("tpsCommand")
+                        .replace("%tps1", tpsArr[0] + "")
+                        .replace("%tps2", tpsArr[1] + "")
+                        .replace("%tps3", tpsArr[2] + "");
+                e.sender().sendMessage(message);
+            } else {
+                String message = Main.helper.getMess(e.player(), "tpsCommand", true)
+                        .replace("%tps1", tpsArr[0] + "")
+                        .replace("%tps2", tpsArr[1] + "")
+                        .replace("%tps3", tpsArr[2] + "");
+                e.player().sendMessage(Component.text(message));
+            }
+        });
+
+        SCommand vanish = new SCommand(plugin, "vanish", Main.helper);
+        vanish.execPerm("core.essentials.vanish");
+        vanish.playerOnly(true);
+        vanish.exec(e -> {
+            e.player().setInvisible(!e.player().isInvisible());
+            if (e.player().isInvisible()) {
+                e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "VanishNowActive", true)));
+            } else {
+                e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "VanishNowDeactivated", true)));
+            }
+        });
+
+        SCommand invsee = new SCommand(plugin, "invsee", Main.helper);
+        invsee.execPerm("core.essentials.invsee");
+        invsee.playerOnly(true);
+        invsee.minArgs(1);
+        invsee.exec(e -> {
+            String playerName = e.args()[0];
+            Player target = Bukkit.getPlayer(playerName);
+            if (target == null) {
+                e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "PlayerNotOnline", true)));
+                return;
+            }
+            e.player().openInventory(target.getInventory());
+        });
+
+        SCommand ping = new SCommand(plugin, "ping", Main.helper);
+        ping.execPerm("core.essentials.ping");
+        ping.playerOnly(true);
+        ping.exec(e -> {
+            e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "pingMessage", true)
+            .replace("%ping", e.player().getPing() + "")));
+        });
+
+        SCommand smite = new SCommand(plugin, "smite", Main.helper);
+        smite.execPerm("core.essentials.smite");
+        smite.playerOnly(true);
+        smite.minArgs(1);
+        smite.exec(e -> {
+            String playerName = e.args()[0];
+            Player target = Bukkit.getPlayer(playerName);
+            if (target == null) {
+                e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "PlayerNotOnline", true)));
+                return;
+            }
+            target.getLocation().getWorld().strikeLightning(target.getLocation());
+            e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "SmiteMessage", true)));
+        });
+
         Main.commands.add(setSpawnCMD);
         Main.commands.add(spawnCMD);
         Main.commands.add(cbCMD);
@@ -140,6 +210,11 @@ public class SmallCommands {
         Main.commands.add(home);
         Main.commands.add(tpa);
         Main.commands.add(tpaccept);
+        Main.commands.add(tps);
+        Main.commands.add(vanish);
+        Main.commands.add(invsee);
+        Main.commands.add(ping);
+        Main.commands.add(smite);
         Main.commands.add(eReload);
     }
 }

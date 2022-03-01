@@ -3,6 +3,7 @@ package kyu.pixesssentials.Listeners;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 import kyu.pixesssentials.Main;
 import net.kyori.adventure.text.Component;
@@ -11,6 +12,16 @@ public class EssentialsListener implements Listener {
 
     public EssentialsListener(Main plugin) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+
+    @EventHandler
+    private void onRespawn(PlayerRespawnEvent e) {
+        if (e.getPlayer().getBedSpawnLocation() != null) {
+            return;
+        }
+        if (Main.spawnPos != null) {
+            e.getPlayer().teleport(Main.spawnPos);
+        }
     }
 
     @EventHandler
