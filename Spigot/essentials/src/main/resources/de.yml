@@ -4,6 +4,9 @@ GeneralErrors:
   NEArgs: "&cNicht genug Argumente!"
   PlayerNotOnline: "&cSpieler ist nicht online!"
 
+Spawn:
+  SpawnSetMess: "&aSpawn erfolgreich gesetzt!"
+
 Homes:
   HomeSetSuccess: "&aDein Zuhause wurde erfolgreich gesetzt!"
   NoHomeSet: "&cDu hast noch kein Zuhause gesetzt!"
@@ -14,6 +17,25 @@ TPA:
   TPARequestSent: "&aTPA Anfrage an &b%player &agesendet!"
   TPATimeout: "&cAnfrage ist ausgelaufen!"
   NoOpenTpaRequests: "&cDu hast keine offenen TPA Anfragen!"
+
+TPS:
+  tpsCommand: "TPS\n&a1min: &b%tps1 &a5min: &b%tps2 &a15min: &b%tps3"
+
+Vanish:
+  VanishNowActive: "&aDu bist nun unsichtbar!"
+  VanishNowDeactivated: "&cDu bist nun nicht mehr unsichtbar!"
+
+Ping:
+  pingMessage: "&aDein Ping: &b%pingms"
+
+Enchant:
+  NoItemInMainHand: "&cDu musst dafür ein Item in der Hand haben!"
+  EnchantmentNotFound: "&cEnchantment wurde nicht gefunden!"
+  NoNumberForLevel: "&cGib eine Zahl als Enchantment Level an!"
+  ItemEnchantSuccess: "&aItem erfolgreich enchanted!"
+
+Smite:
+  SmiteMessage: "&aZap!"
 
 FirstTimeJoin:
   WelcomeMessage: "&6Hey! &aWillkommen auf &6CityBuild!\n&aAlle wichtigen Befehle und Infos findest du unter &6/cb\n&aJoine doch auch unserem Discord &6/discord!\n&6Viel Spaß!"

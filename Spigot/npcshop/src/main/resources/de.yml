@@ -12,7 +12,7 @@ Errors:
   NotANumber: "&cGib bitte eine Zahl ein!"
 
 Info:
-  TradeAddSuccess: "&aHandle erfolgreich hinzugefügt!"
+  TradeAddSuccess: "&aHandel erfolgreich hinzugefügt!"
   ItemSoldSuccess: "&aErfolgreich %count items für %money Pixel verkauft!"
   ItemBuySuccess: "&aErfolgreich %count items für %money Pixel gekauft!"
   VillagerSelected: "&aErfolgreich %VillName &aausgewählt!"
@@ -20,6 +20,9 @@ Info:
   VillerCreated: "&aErfolgreich %name &aerstellt!"
   VillagerTeleported: "&aErfolgreich Villager %name &azu dir teleportiert!"
   VillagerDeleted: "&a%VillName &aerfolgreich gelöscht!"
+  VillTradesTopTitle: "&a%VillName &aTop 10 Handel pro Kategorie"
+  VillTradesTopCategoryTitle: "&6%Category:"
+  VillTradesTopEntry: "&a- %itemName für %pixel Pixel: &b%amount"
 
 NPCGUI:
   BuyItemName: "&aKaufen"

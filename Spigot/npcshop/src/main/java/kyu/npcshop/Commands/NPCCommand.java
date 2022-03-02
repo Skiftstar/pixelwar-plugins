@@ -3,6 +3,7 @@ package kyu.npcshop.Commands;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,10 @@ import org.jetbrains.annotations.Nullable;
 
 import kyu.npcshop.Main;
 import kyu.npcshop.CustomVillagers.CstmVillager;
+import kyu.npcshop.CustomVillagers.Trade;
+import kyu.npcshop.CustomVillagers.TradeType;
 import kyu.npcshop.Listeners.ClickListener;
+import kyu.npcshop.Util.Pair;
 import kyu.npcshop.Util.Util;
 import net.kyori.adventure.text.Component;
 
@@ -109,6 +113,67 @@ public class NPCCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        if (args[0].equalsIgnoreCase("top")) {
+            CstmVillager vill = ClickListener.villagers.get(selectedVills.get(p).getUniqueId());
+            List<Pair<Trade, Integer>> villagerSells = new ArrayList<>();
+            List<Pair<Trade, Integer>> villagerBuys = new ArrayList<>();
+
+            for (Trade trade : vill.getSells()) {
+                String key = "Villagers." + vill.getUuid().toString() + ".Trades."
+                        + trade.getType().toString().toLowerCase() + "." + trade.getUuid().toString() + ".usedSoFar";
+                int amount = 0;
+                if (Main.getInstance().getConfig().get(key) != null) {
+                    amount = Main.getInstance().getConfig().getInt(key);
+                }
+                villagerSells.add(new Pair<Trade, Integer>(trade, amount));
+            }
+            for (Trade trade : vill.getBuys()) {
+                String key = "Villagers." + vill.getUuid().toString() + ".Trades."
+                        + trade.getType().toString().toLowerCase() + "." + trade.getUuid().toString() + ".usedSoFar";
+                int amount = 0;
+                if (Main.getInstance().getConfig().get(key) != null) {
+                    amount = Main.getInstance().getConfig().getInt(key);
+                }
+                villagerBuys.add(new Pair<Trade, Integer>(trade, amount));
+            }
+
+            Collections.sort(villagerSells, new Comparator<Pair<Trade, Integer>>() {
+                public int compare(Pair<Trade, Integer> o1, Pair<Trade, Integer> o2) {
+                    return o2.second - o1.second;
+                }
+            });
+            Collections.sort(villagerBuys, new Comparator<Pair<Trade, Integer>>() {
+                public int compare(Pair<Trade, Integer> o1, Pair<Trade, Integer> o2) {
+                    return o2.second - o1.second;
+                }
+            });
+
+            StringBuilder builder = new StringBuilder(Main.helper().getMess(p, "VillTradesTopTitle", true)
+                    .replace("%VillName", Util.color(vill.getName())));
+            int amount = villagerSells.size() >= 10 ? 10 : villagerSells.size();
+            builder.append("\n").append(Main.helper().getMess(p, "VillTradesTopCategoryTitle")
+                    .replace("%Category", TradeType.VILLAGER_SELLS.toString().toLowerCase()));
+
+            for (int i = 0; i < amount; i++) {
+                builder.append("\n").append(Main.helper().getMess(p, "VillTradesTopEntry")
+                        .replace("%itemName", villagerSells.get(i).first.getItem().getType().toString())
+                        .replace("%pixel", villagerSells.get(i).first.getMoney() + "")
+                        .replace("%amount", villagerSells.get(i).second + ""));
+            }
+            builder.append("\n");
+            amount = villagerBuys.size() >= 10 ? 10 : villagerBuys.size();
+            builder.append("\n").append(Main.helper().getMess(p, "VillTradesTopCategoryTitle")
+                    .replace("%Category", TradeType.VILLAGER_BUYS.toString().toLowerCase()));
+            for (int i = 0; i < amount; i++) {
+                builder.append("\n").append(Main.helper().getMess(p, "VillTradesTopEntry")
+                        .replace("%itemName", villagerBuys.get(i).first.getItem().getType().toString())
+                        .replace("%pixel", villagerBuys.get(i).first.getMoney() + "")
+                        .replace("%amount", villagerBuys.get(i).second + ""));
+            }
+            p.sendMessage(Component.text(builder.toString()));
+            return true;
+        }
+
         if (args[0].equalsIgnoreCase("tphere")) {
             Entity vill = selectedVills.get(p);
             vill.teleport(p);
@@ -138,7 +203,7 @@ public class NPCCommand implements CommandExecutor, TabCompleter {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender arg0, @NotNull Command arg1,
             @NotNull String arg2, @NotNull String[] arg3) {
         if (arg3.length == 1) {
-            List<String> list = new ArrayList<>(Arrays.asList("create", "rename", "tphere"));
+            List<String> list = new ArrayList<>(Arrays.asList("create", "rename", "tphere", "top"));
             return list;
         }
         return Collections.emptyList();

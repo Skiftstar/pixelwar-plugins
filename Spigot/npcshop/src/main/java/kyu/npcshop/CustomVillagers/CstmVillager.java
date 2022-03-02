@@ -35,7 +35,7 @@ public class CstmVillager {
                 String key = "Villagers." + uuid.toString() + ".Trades.villager_sells." + tradeUUID;
                 double price = config.getDouble(key + ".money");
                 ItemStack item = itemFromConf(config, key + ".item");
-                Trade trade = new Trade(TradeType.VILLAGER_BUYS, item, price);
+                Trade trade = new Trade(TradeType.VILLAGER_SELLS, item, price);
                 trade.setUUID(UUID.fromString(tradeUUID));
                 sells.add(trade);
             }
@@ -47,7 +47,7 @@ public class CstmVillager {
                 String key = "Villagers." + uuid.toString() + ".Trades.villager_buys." + tradeUUID;
                 double price = config.getDouble(key + ".money");
                 ItemStack item = itemFromConf(config, key + ".item");
-                Trade trade = new Trade(TradeType.VILLAGER_SELLS, item, price);
+                Trade trade = new Trade(TradeType.VILLAGER_BUYS, item, price);
                 trade.setUUID(UUID.fromString(tradeUUID));
                 buys.add(trade);
             }
@@ -144,5 +144,20 @@ public class CstmVillager {
         Main.getInstance().saveConfig();
     }
 
+    public void logTrade(Trade trade, int amount) {
+        YamlConfiguration config = Main.getInstance().getConfig();
+        String key = "Villagers." + uuid.toString() + ".Trades." + trade.getType().toString().toLowerCase() + "." + trade.getUuid().toString() + ".usedSoFar";
+        int amountBeforeAdd = 0;
+        if (config.get(key) != null) {
+            amountBeforeAdd = config.getInt(key);
+        }
+        int amountAfterAdd = amountBeforeAdd + amount;
+        config.set(key, amountAfterAdd);
+        Main.getInstance().saveConfig();
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
 
 }
