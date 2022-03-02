@@ -206,11 +206,6 @@ public class NPCCommand implements CommandExecutor, TabCompleter {
             List<String> list = new ArrayList<>(Arrays.asList("create", "rename", "tphere", "top"));
             return list;
         }
-        if (arg3.length == 2 && arg3[0].equalsIgnoreCase("top")) {
-            List<String> list = new ArrayList<>(Arrays.asList(TradeType.VILLAGER_BUYS.toString().toLowerCase(),
-                    TradeType.VILLAGER_SELLS.toString().toLowerCase()));
-            return list;
-        }
         return Collections.emptyList();
     }
 }

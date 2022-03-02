@@ -10,7 +10,6 @@ Errors:
   NoVillSelected: "&cFür alle subcommands außer create musst du einen Villager ausgewählt haben!"
   NotAValidSubCommand: "&cDas ist kein SubCommand von diesem Command!"
   NotANumber: "&cGib bitte eine Zahl ein!"
-  NotAValidTradeType: "&cBitte gib einen richtigen Trade Typ an!"
 
 Info:
   TradeAddSuccess: "&aHandle erfolgreich hinzugefügt!"
