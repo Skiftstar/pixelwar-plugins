@@ -12,7 +12,7 @@ Errors:
   NotANumber: "&cGib bitte eine Zahl ein!"
 
 Info:
-  TradeAddSuccess: "&aHandle erfolgreich hinzugefügt!"
+  TradeAddSuccess: "&aHandel erfolgreich hinzugefügt!"
   ItemSoldSuccess: "&aErfolgreich %count items für %money Pixel verkauft!"
   ItemBuySuccess: "&aErfolgreich %count items für %money Pixel gekauft!"
   VillagerSelected: "&aErfolgreich %VillName &aausgewählt!"
