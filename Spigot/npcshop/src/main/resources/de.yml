@@ -20,7 +20,7 @@ Info:
   VillerCreated: "&aErfolgreich %name &aerstellt!"
   VillagerTeleported: "&aErfolgreich Villager %name &azu dir teleportiert!"
   VillagerDeleted: "&a%VillName &aerfolgreich gelöscht!"
-  VillTradesTopTitle: "&a%VillName Top 10 Handel pro Kategorie"
+  VillTradesTopTitle: "&a%VillName &aTop 10 Handel pro Kategorie"
   VillTradesTopCategoryTitle: "&6%Category:"
   VillTradesTopEntry: "&a- %itemName für %pixel Pixel: &b%amount"
 

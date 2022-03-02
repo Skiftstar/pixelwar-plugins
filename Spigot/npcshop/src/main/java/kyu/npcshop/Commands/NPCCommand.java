@@ -149,7 +149,7 @@ public class NPCCommand implements CommandExecutor, TabCompleter {
             });
 
             StringBuilder builder = new StringBuilder(Main.helper().getMess(p, "VillTradesTopTitle", true)
-                    .replace("%VillName", vill.getName()));
+                    .replace("%VillName", Util.color(vill.getName())));
             int amount = villagerSells.size() >= 10 ? 10 : villagerSells.size();
             builder.append("\n").append(Main.helper().getMess(p, "VillTradesTopCategoryTitle")
                     .replace("%Category", TradeType.VILLAGER_SELLS.toString().toLowerCase()));

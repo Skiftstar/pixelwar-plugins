@@ -20,7 +20,7 @@ public class EssentialsListener implements Listener {
             return;
         }
         if (Main.spawnPos != null) {
-            e.getPlayer().teleport(Main.spawnPos);
+            e.setRespawnLocation(Main.spawnPos);
         }
     }
 

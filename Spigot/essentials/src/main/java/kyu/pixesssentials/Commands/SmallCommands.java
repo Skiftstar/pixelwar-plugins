@@ -1,5 +1,7 @@
 package kyu.pixesssentials.Commands;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -35,6 +37,7 @@ public class SmallCommands {
             config.set("Essentials.Spawn.Yaw", loc.getYaw());
             config.set("Essentials.Spawn.World", loc.getWorld().getUID().toString());
             Main.getInstance().saveConfig();
+            e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "SpawnSetMess", true)));
         });
 
         SCommand spawnCMD = new SCommand(plugin, "spawn", Main.helper);
@@ -147,9 +150,9 @@ public class SmallCommands {
                 e.sender().sendMessage(message);
             } else {
                 String message = Main.helper.getMess(e.player(), "tpsCommand", true)
-                        .replace("%tps1", tpsArr[0] + "")
-                        .replace("%tps2", tpsArr[1] + "")
-                        .replace("%tps3", tpsArr[2] + "");
+                        .replace("%tps1", round(tpsArr[0], 2) + "")
+                        .replace("%tps2", round(tpsArr[1], 2) + "")
+                        .replace("%tps3", round(tpsArr[2], 2) + "");
                 e.player().sendMessage(Component.text(message));
             }
         });
@@ -216,5 +219,14 @@ public class SmallCommands {
         Main.commands.add(ping);
         Main.commands.add(smite);
         Main.commands.add(eReload);
+    }
+
+    public static double round(double value, int places) {
+        if (places < 0)
+            throw new IllegalArgumentException();
+
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 }

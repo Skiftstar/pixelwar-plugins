@@ -2,6 +2,7 @@ name: pixessentials
 version: 1.0-SNAPSHOT
 author: Kyu
 main: kyu.pixesssentials.Main
+api-version: 1.18
 softdepend: [Multiverse-Core]
 
 

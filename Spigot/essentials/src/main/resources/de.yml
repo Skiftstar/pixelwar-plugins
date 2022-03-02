@@ -4,6 +4,9 @@ GeneralErrors:
   NEArgs: "&cNicht genug Argumente!"
   PlayerNotOnline: "&cSpieler ist nicht online!"
 
+Spawn:
+  SpawnSetMess: "&aSpawn erfolgreich gesetzt!"
+
 Homes:
   HomeSetSuccess: "&aDein Zuhause wurde erfolgreich gesetzt!"
   NoHomeSet: "&cDu hast noch kein Zuhause gesetzt!"
@@ -16,7 +19,7 @@ TPA:
   NoOpenTpaRequests: "&cDu hast keine offenen TPA Anfragen!"
 
 TPS:
-  tpsCommand: "&a1min: &b%tps1 &a5min: &b%tps2 &a15min: &b%tps3"
+  tpsCommand: "TPS\n&a1min: &b%tps1 &a5min: &b%tps2 &a15min: &b%tps3"
 
 Vanish:
   VanishNowActive: "&aDu bist nun unsichtbar!"
