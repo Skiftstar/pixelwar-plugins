@@ -1,6 +1,10 @@
 chatPrefix: "&6[PixEssentials]"
 
 tpaTimeout: 30
+enableHomeModule: true
+enableInfoCommandModule: true
+enableSpawnModule: true
+enableTpaModule: true
 
 database:
   host: localhost # host of your database

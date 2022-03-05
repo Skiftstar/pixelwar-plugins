@@ -2,7 +2,9 @@ package kyu.pixesssentials.Commands;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -21,39 +23,48 @@ import net.kyori.adventure.text.TextComponent;
 public class SmallCommands {
 
     public static Map<Player, Pair<Integer, Player>> tpaRequests = new HashMap<>();
+    public static List<Player> vanishedPlayers = new ArrayList<>();
 
     public static void init(Main plugin) {
-        SCommand setSpawnCMD = new SCommand(plugin, "setSpawn", Main.helper);
-        setSpawnCMD.playerOnly(true);
-        setSpawnCMD.execPerm("core.essentials.setSpawn");
-        setSpawnCMD.exec(e -> {
-            Location loc = e.player().getLocation();
-            Main.spawnPos = loc;
-            YamlConfiguration config = Main.getInstance().getConfig();
-            config.set("Essentials.Spawn.X", loc.getX());
-            config.set("Essentials.Spawn.Y", loc.getY());
-            config.set("Essentials.Spawn.Z", loc.getZ());
-            config.set("Essentials.Spawn.Pitch", loc.getPitch());
-            config.set("Essentials.Spawn.Yaw", loc.getYaw());
-            config.set("Essentials.Spawn.World", loc.getWorld().getUID().toString());
-            Main.getInstance().saveConfig();
-            e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "SpawnSetMess", true)));
-        });
 
-        SCommand spawnCMD = new SCommand(plugin, "spawn", Main.helper);
-        spawnCMD.playerOnly(true);
-        spawnCMD.execPerm("core.essentials.spawn");
-        spawnCMD.exec(e -> {
-            if (Main.spawnPos != null) {
-                e.player().teleport(Main.spawnPos);
-            }
-        });
+        if (Main.enableSpawnModule) {
+            SCommand setSpawnCMD = new SCommand(plugin, "setSpawn", Main.helper);
+            setSpawnCMD.playerOnly(true);
+            setSpawnCMD.execPerm("core.essentials.setSpawn");
+            setSpawnCMD.exec(e -> {
+                Location loc = e.player().getLocation();
+                Main.spawnPos = loc;
+                YamlConfiguration config = Main.getInstance().getConfig();
+                config.set("Essentials.Spawn.X", loc.getX());
+                config.set("Essentials.Spawn.Y", loc.getY());
+                config.set("Essentials.Spawn.Z", loc.getZ());
+                config.set("Essentials.Spawn.Pitch", loc.getPitch());
+                config.set("Essentials.Spawn.Yaw", loc.getYaw());
+                config.set("Essentials.Spawn.World", loc.getWorld().getUID().toString());
+                Main.getInstance().saveConfig();
+                e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "SpawnSetMess", true)));
+            });
 
-        SCommand cbCMD = new SCommand(plugin, "cb", Main.helper);
-        cbCMD.playerOnly(true);
-        cbCMD.exec(e -> {
-            e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "CBInfoMessage")));
-        });
+            SCommand spawnCMD = new SCommand(plugin, "spawn", Main.helper);
+            spawnCMD.playerOnly(true);
+            spawnCMD.execPerm("core.essentials.spawn");
+            spawnCMD.exec(e -> {
+                if (Main.spawnPos != null) {
+                    e.player().teleport(Main.spawnPos);
+                }
+            });
+            Main.commands.add(setSpawnCMD);
+            Main.commands.add(spawnCMD);
+        }
+
+        if (Main.enableInfoCommandModule) {
+            SCommand cbCMD = new SCommand(plugin, "cb", Main.helper);
+            cbCMD.playerOnly(true);
+            cbCMD.exec(e -> {
+                e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "CBInfoMessage")));
+            });
+            Main.commands.add(cbCMD);
+        }
 
         SCommand eReload = new SCommand(plugin, "eReload", Main.helper);
         eReload.execPerm("core.essentials.reload");
@@ -62,80 +73,88 @@ public class SmallCommands {
             e.sender().sendMessage(Util.color("&aReload done"));
         });
 
-        SCommand setHome = new SCommand(plugin, "sethome", Main.helper);
-        setHome.execPerm("core.essentials.sethome");
-        setHome.playerOnly(true);
-        setHome.exec(e -> {
-            YamlConfiguration config = Main.getInstance().getPlayerHomeConfig();
-            Location loc = e.player().getLocation();
-            config.set(e.player().getUniqueId().toString() + ".X", loc.getX());
-            config.set(e.player().getUniqueId().toString() + ".Y", loc.getY());
-            config.set(e.player().getUniqueId().toString() + ".Z", loc.getZ());
-            config.set(e.player().getUniqueId().toString() + ".Pitch", loc.getPitch());
-            config.set(e.player().getUniqueId().toString() + ".Yaw", loc.getYaw());
-            config.set(e.player().getUniqueId().toString() + ".World", loc.getWorld().getUID().toString());
-            Main.getInstance().save(config);
-            e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "HomeSetSuccess", true)));
-        });
+        if (Main.enableHomeModule) {
+            SCommand setHome = new SCommand(plugin, "sethome", Main.helper);
+            setHome.execPerm("core.essentials.sethome");
+            setHome.playerOnly(true);
+            setHome.exec(e -> {
+                YamlConfiguration config = Main.getInstance().getPlayerHomeConfig();
+                Location loc = e.player().getLocation();
+                config.set(e.player().getUniqueId().toString() + ".X", loc.getX());
+                config.set(e.player().getUniqueId().toString() + ".Y", loc.getY());
+                config.set(e.player().getUniqueId().toString() + ".Z", loc.getZ());
+                config.set(e.player().getUniqueId().toString() + ".Pitch", loc.getPitch());
+                config.set(e.player().getUniqueId().toString() + ".Yaw", loc.getYaw());
+                config.set(e.player().getUniqueId().toString() + ".World", loc.getWorld().getUID().toString());
+                Main.getInstance().save(config);
+                e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "HomeSetSuccess", true)));
+            });
 
-        SCommand home = new SCommand(plugin, "home", Main.helper);
-        home.execPerm("core.essentials.home");
-        home.playerOnly(true);
-        home.exec(e -> {
-            YamlConfiguration config = Main.getInstance().getPlayerHomeConfig();
-            if (config.get(e.player().getUniqueId().toString()) == null) {
-                e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "NoHomeSet", true)));
-                return;
-            }
-            double x = config.getDouble(e.player().getUniqueId().toString() + ".X");
-            double y = config.getDouble(e.player().getUniqueId().toString() + ".Y");
-            double z = config.getDouble(e.player().getUniqueId().toString() + ".Z");
-            float pitch = (float) config.getDouble(e.player().getUniqueId().toString() + ".Pitch");
-            float yaw = (float) config.getDouble(e.player().getUniqueId().toString() + ".Yaw");
-            UUID world = UUID.fromString(config.getString(e.player().getUniqueId().toString() + ".World"));
-            Location loc = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
-            e.player().teleport(loc);
-            e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "HomeTeleportSuccess", true)));
-        });
+            SCommand home = new SCommand(plugin, "home", Main.helper);
+            home.execPerm("core.essentials.home");
+            home.playerOnly(true);
+            home.exec(e -> {
+                YamlConfiguration config = Main.getInstance().getPlayerHomeConfig();
+                if (config.get(e.player().getUniqueId().toString()) == null) {
+                    e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "NoHomeSet", true)));
+                    return;
+                }
+                double x = config.getDouble(e.player().getUniqueId().toString() + ".X");
+                double y = config.getDouble(e.player().getUniqueId().toString() + ".Y");
+                double z = config.getDouble(e.player().getUniqueId().toString() + ".Z");
+                float pitch = (float) config.getDouble(e.player().getUniqueId().toString() + ".Pitch");
+                float yaw = (float) config.getDouble(e.player().getUniqueId().toString() + ".Yaw");
+                UUID world = UUID.fromString(config.getString(e.player().getUniqueId().toString() + ".World"));
+                Location loc = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
+                e.player().teleport(loc);
+                e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "HomeTeleportSuccess", true)));
+            });
+            Main.commands.add(setHome);
+            Main.commands.add(home);
+        }
 
-        SCommand tpa = new SCommand(plugin, "tpa", Main.helper);
-        tpa.execPerm("core.essentials.tpa");
-        tpa.playerOnly(true);
-        tpa.minArgs(1);
-        tpa.exec(e -> {
-            String playerName = e.args()[0];
-            Player recipent = Bukkit.getPlayer(playerName);
-            if (recipent == null) {
-                e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "PlayerNotOnline", true)));
-                return;
-            }
-            recipent.sendMessage(Component.text(Main.helper.getMess(recipent, "TPARequestReceived", true)
-                    .replace("%player", ((TextComponent) e.player().displayName()).content())
-                    .replace("%time", Main.tpaTimeout + "")));
-            e.player().sendMessage(Component
-                    .text(Main.helper.getMess(e.player(), "TPARequestSent", true).replace("%player", playerName)));
+        if (Main.enableTpaModule) {
+            SCommand tpa = new SCommand(plugin, "tpa", Main.helper);
+            tpa.execPerm("core.essentials.tpa");
+            tpa.playerOnly(true);
+            tpa.minArgs(1);
+            tpa.exec(e -> {
+                String playerName = e.args()[0];
+                Player recipent = Bukkit.getPlayer(playerName);
+                if (recipent == null) {
+                    e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "PlayerNotOnline", true)));
+                    return;
+                }
+                recipent.sendMessage(Component.text(Main.helper.getMess(recipent, "TPARequestReceived", true)
+                        .replace("%player", ((TextComponent) e.player().displayName()).content())
+                        .replace("%time", Main.tpaTimeout + "")));
+                e.player().sendMessage(Component
+                        .text(Main.helper.getMess(e.player(), "TPARequestSent", true).replace("%player", playerName)));
 
-            int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
+                int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
+                    tpaRequests.remove(recipent);
+                    e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "TPATimeout", true)));
+                }, Main.tpaTimeout * 20);
                 tpaRequests.remove(recipent);
-                e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "TPATimeout", true)));
-            }, Main.tpaTimeout * 20);
-            tpaRequests.remove(recipent);
-            tpaRequests.put(recipent, new Pair<Integer, Player>(taskId, e.player()));
-        });
+                tpaRequests.put(recipent, new Pair<Integer, Player>(taskId, e.player()));
+            });
 
-        SCommand tpaccept = new SCommand(plugin, "tpaccept", Main.helper);
-        tpaccept.execPerm("core.essentials.tpaccept");
-        tpaccept.playerOnly(true);
-        tpaccept.exec(e -> {
-            if (!tpaRequests.containsKey(e.player())) {
-                e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "NoOpenTpaRequests", true)));
-                return;
-            }
-            Pair<Integer, Player> pair = tpaRequests.get(e.player());
-            tpaRequests.remove(e.player());
-            Bukkit.getScheduler().cancelTask(pair.first);
-            pair.second.teleport(e.player());
-        });
+            SCommand tpaccept = new SCommand(plugin, "tpaccept", Main.helper);
+            tpaccept.execPerm("core.essentials.tpaccept");
+            tpaccept.playerOnly(true);
+            tpaccept.exec(e -> {
+                if (!tpaRequests.containsKey(e.player())) {
+                    e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "NoOpenTpaRequests", true)));
+                    return;
+                }
+                Pair<Integer, Player> pair = tpaRequests.get(e.player());
+                tpaRequests.remove(e.player());
+                Bukkit.getScheduler().cancelTask(pair.first);
+                pair.second.teleport(e.player());
+            });
+            Main.commands.add(tpa);
+            Main.commands.add(tpaccept);
+        }
 
         SCommand tps = new SCommand(plugin, "tps", Main.helper);
         tps.execPerm("core.essentials.tps");
@@ -161,10 +180,21 @@ public class SmallCommands {
         vanish.execPerm("core.essentials.vanish");
         vanish.playerOnly(true);
         vanish.exec(e -> {
-            e.player().setInvisible(!e.player().isInvisible());
-            if (e.player().isInvisible()) {
+            if (!vanishedPlayers.contains(e.player())) {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    p.hidePlayer(plugin, e.player());
+                    p.sendMessage(Component.text(Main.helper.getMess(p, "FakeLeaveMessage", false)
+                        .replace("%player", ((TextComponent) e.player().name()).content())));
+                }
+                vanishedPlayers.add(e.player());
                 e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "VanishNowActive", true)));
             } else {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    p.showPlayer(plugin, e.player());
+                    p.sendMessage(Component.text(Main.helper.getMess(p, "FakeJoinMessage", false)
+                        .replace("%player", ((TextComponent) e.player().name()).content())));
+                }
+                vanishedPlayers.remove(e.player());
                 e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "VanishNowDeactivated", true)));
             }
         });
@@ -188,7 +218,7 @@ public class SmallCommands {
         ping.playerOnly(true);
         ping.exec(e -> {
             e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "pingMessage", true)
-            .replace("%ping", e.player().getPing() + "")));
+                    .replace("%ping", e.player().getPing() + "")));
         });
 
         SCommand smite = new SCommand(plugin, "smite", Main.helper);
@@ -206,13 +236,6 @@ public class SmallCommands {
             e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "SmiteMessage", true)));
         });
 
-        Main.commands.add(setSpawnCMD);
-        Main.commands.add(spawnCMD);
-        Main.commands.add(cbCMD);
-        Main.commands.add(setHome);
-        Main.commands.add(home);
-        Main.commands.add(tpa);
-        Main.commands.add(tpaccept);
         Main.commands.add(tps);
         Main.commands.add(vanish);
         Main.commands.add(invsee);

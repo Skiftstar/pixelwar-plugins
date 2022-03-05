@@ -24,6 +24,8 @@ TPS:
 Vanish:
   VanishNowActive: "&aDu bist nun unsichtbar!"
   VanishNowDeactivated: "&cDu bist nun nicht mehr unsichtbar!"
+  FakeLeaveMessage: "&8[&c-&8] &7%player"
+  FakeJoinMessage: "&8[&a+&8] &7%player"
 
 Ping:
   pingMessage: "&aDein Ping: &b%pingms"
