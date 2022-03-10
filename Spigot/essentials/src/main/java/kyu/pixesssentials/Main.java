@@ -27,7 +27,7 @@ public class Main extends JavaPlugin{
 
     private YamlConfiguration config, joinedPlayersConfig, playerHomeConfig;
     private File configFile, joinedPlayersFile, playerHomeFile;
-    public static boolean enableTpaModule, enableHomeModule, enableSpawnModule, enableInfoCommandModule;
+    public static boolean enableTpaModule, enableHomeModule, enableSpawnModule, enableInfoCommandModule, enableWarpsModule;
     public static Location spawnPos = null;
     public static LanguageHelper helper;
     private static Main instance;
@@ -77,6 +77,7 @@ public class Main extends JavaPlugin{
         enableInfoCommandModule = config.getBoolean("enableInfoCommandModule");
         enableSpawnModule = config.getBoolean("enableSpawnModule");
         enableTpaModule = config.getBoolean("enableTpaModule");
+        enableWarpsModule = config.getBoolean("enableWarpsModule");
 
         if (config.get("Essentials.Spawn") != null) {
             double x = config.getDouble("Essentials.Spawn.X");

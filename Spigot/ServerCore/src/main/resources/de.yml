@@ -47,6 +47,15 @@ Mute:
   PermaMuteMessage: "&cDu wurdest &4PERMANENT &cgemutet!\n&cGrund: &4%reason"
   MuteMessage: "&cDu wurdest für &4%duration &cgemutet!\n&cGrund: &4%reason"
 
+Vanish:
+  VanishNowActive: "&aDu bist nun unsichtbar!"
+  VanishNowDeactivated: "&cDu bist nun nicht mehr unsichtbar!"
+  FakeLeaveMessage: "&8[&c-&8] &7%player"
+  FakeJoinMessage: "&8[&a+&8] &7%player"
+
+Ping:
+  pingMessage: "&aDein Ping: &b%pingms"
+
 Constants:
   "Days": "Tage"
   "Months": "Monate"

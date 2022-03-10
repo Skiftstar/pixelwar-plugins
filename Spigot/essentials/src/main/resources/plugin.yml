@@ -23,14 +23,8 @@ commands:
     description: send a tp request to someone
   tpaccept:
     description: accept the most recent tp request
-  invsee:
-    descriptions: lets you see the inventory of another player and interact with it
-  vanish:
-    description: hides you from other players
   tps:
     description: shows the tps of the servers
-  ping:
-    description: shows your ping in ms
   enchant:
     description: enchant your currently held item
   smite:

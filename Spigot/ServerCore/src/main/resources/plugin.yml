@@ -19,6 +19,12 @@ commands:
     description: Shows the discord link
   sReload:
     description: Reloads the plugin
+  ping:
+    description: shows your ping in ms
+  invsee:
+    descriptions: lets you see the inventory of another player and interact with it
+  vanish:
+    description: hides you from other players
 
 permissions:
   core.reload:
@@ -38,6 +44,19 @@ permissions:
     description: Allows teleporting other player, gives the teleport permission as well
     default: false
     children: [core.teleport]
+  core.essentials.vanish:
+    description: Allows the usage of the vanish command
+    default: false
+  core.essentials.invsee:
+    description: Allows the usage of the invsee command
+    default: false
+  core.essentials.ping:
+    descriptions: Allows the usageo of the ping command
+    default: false
+  core.essentials.*:
+    description: Allows all essentials commands
+    default: false
+    children: [core.essentials.vanish, core.essentials.invsee, core.essentials.ping]
   core.colorchat:
     description: Allows the user of color codes in chat
     default: false
@@ -56,3 +75,4 @@ permissions:
       - core.colorchat
       - core.mod
       - core.reload
+      - core.essentials.*

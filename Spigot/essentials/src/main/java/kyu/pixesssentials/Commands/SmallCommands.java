@@ -2,9 +2,7 @@ package kyu.pixesssentials.Commands;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -23,7 +21,6 @@ import net.kyori.adventure.text.TextComponent;
 public class SmallCommands {
 
     public static Map<Player, Pair<Integer, Player>> tpaRequests = new HashMap<>();
-    public static List<Player> vanishedPlayers = new ArrayList<>();
 
     public static void init(Main plugin) {
 
@@ -113,6 +110,10 @@ public class SmallCommands {
             Main.commands.add(home);
         }
 
+        if (Main.enableWarpsModule) {
+            
+        }
+
         if (Main.enableTpaModule) {
             SCommand tpa = new SCommand(plugin, "tpa", Main.helper);
             tpa.execPerm("core.essentials.tpa");
@@ -156,71 +157,6 @@ public class SmallCommands {
             Main.commands.add(tpaccept);
         }
 
-        SCommand tps = new SCommand(plugin, "tps", Main.helper);
-        tps.execPerm("core.essentials.tps");
-        tps.exec(e -> {
-            double[] tpsArr = Bukkit.getServer().getTPS();
-
-            if (!e.isPlayer()) {
-                String message = Main.helper.getMess("tpsCommand")
-                        .replace("%tps1", tpsArr[0] + "")
-                        .replace("%tps2", tpsArr[1] + "")
-                        .replace("%tps3", tpsArr[2] + "");
-                e.sender().sendMessage(message);
-            } else {
-                String message = Main.helper.getMess(e.player(), "tpsCommand", true)
-                        .replace("%tps1", round(tpsArr[0], 2) + "")
-                        .replace("%tps2", round(tpsArr[1], 2) + "")
-                        .replace("%tps3", round(tpsArr[2], 2) + "");
-                e.player().sendMessage(Component.text(message));
-            }
-        });
-
-        SCommand vanish = new SCommand(plugin, "vanish", Main.helper);
-        vanish.execPerm("core.essentials.vanish");
-        vanish.playerOnly(true);
-        vanish.exec(e -> {
-            if (!vanishedPlayers.contains(e.player())) {
-                for (Player p : Bukkit.getOnlinePlayers()) {
-                    p.hidePlayer(plugin, e.player());
-                    p.sendMessage(Component.text(Main.helper.getMess(p, "FakeLeaveMessage", false)
-                        .replace("%player", ((TextComponent) e.player().name()).content())));
-                }
-                vanishedPlayers.add(e.player());
-                e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "VanishNowActive", true)));
-            } else {
-                for (Player p : Bukkit.getOnlinePlayers()) {
-                    p.showPlayer(plugin, e.player());
-                    p.sendMessage(Component.text(Main.helper.getMess(p, "FakeJoinMessage", false)
-                        .replace("%player", ((TextComponent) e.player().name()).content())));
-                }
-                vanishedPlayers.remove(e.player());
-                e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "VanishNowDeactivated", true)));
-            }
-        });
-
-        SCommand invsee = new SCommand(plugin, "invsee", Main.helper);
-        invsee.execPerm("core.essentials.invsee");
-        invsee.playerOnly(true);
-        invsee.minArgs(1);
-        invsee.exec(e -> {
-            String playerName = e.args()[0];
-            Player target = Bukkit.getPlayer(playerName);
-            if (target == null) {
-                e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "PlayerNotOnline", true)));
-                return;
-            }
-            e.player().openInventory(target.getInventory());
-        });
-
-        SCommand ping = new SCommand(plugin, "ping", Main.helper);
-        ping.execPerm("core.essentials.ping");
-        ping.playerOnly(true);
-        ping.exec(e -> {
-            e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "pingMessage", true)
-                    .replace("%ping", e.player().getPing() + "")));
-        });
-
         SCommand smite = new SCommand(plugin, "smite", Main.helper);
         smite.execPerm("core.essentials.smite");
         smite.playerOnly(true);
@@ -236,10 +172,6 @@ public class SmallCommands {
             e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "SmiteMessage", true)));
         });
 
-        Main.commands.add(tps);
-        Main.commands.add(vanish);
-        Main.commands.add(invsee);
-        Main.commands.add(ping);
         Main.commands.add(smite);
         Main.commands.add(eReload);
     }
