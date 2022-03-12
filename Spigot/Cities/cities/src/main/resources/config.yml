@@ -1,0 +1,51 @@
+chatPrefix: "&6[Cities]"
+
+database:
+  host: localhost # host of your database
+  port: 3306 # default port for MySQL
+  database: db # name of your database. A database server can contain multiple databases
+  user: username
+  password: passy
+
+CityCost: 100000
+CityStartChunks: 1 # How many chunks a city has right after founding
+CityLevelsPerChunk: 2 # How many City Levelups you need for a new chunk
+CityEXPCurveType: exponential #Linear or Exponential
+CityEXPCurveLinear:
+  ExpPerLevel: 1500
+CityEXPCurveExponential:
+ #Calculates the following: Base ^ (exp + (multiplier * level))
+  Base: 100
+  exp: 1.01
+  multiplier: 0.1
+
+JobLevelCurveType: linear
+JobEXPCurveLinear:
+  ExpPerLevel: 1000
+JobEXPCurveExponential:
+ #Calculates the following: Base ^ (exp + (multiplier * level)) = exp;
+  Base: 100
+  exp: 1.01
+  multiplier: 0.1
+
+Jobs:
+  Miner:
+    BlocksExp:
+      Stone:
+        Job: 1
+        City: 0
+      Coal_ore:
+        Job: 5
+        City: 2
+      Iron_ore:
+        Job: 20
+        City: 5
+      Gold_ore:
+        Job: 30
+        City: 8
+      Diamond_ore:
+        Job: 50
+        City: 15
+      Emerald_ore:
+        Job: 100
+        City: 25

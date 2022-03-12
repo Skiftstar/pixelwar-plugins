@@ -1,0 +1,26 @@
+GeneralErrors:
+  PlayerOnly: "Nur für Spieler!"
+  NEPerms: "&cNicht genug Rechte!"
+  NEArgs: "&cNicht genug Argumente!"
+
+CitiesInfo:
+  CityCreated: "&aStadt %name erfolgreich erstellt!"
+  CityInfo: |-
+  &6[%name Info]
+  &6Level: &alevel
+  &6Beitritt: &a%entryReq
+  &6Bürgermeister: &a%mayor
+  &6Stadtrat (%count): &a%council
+  &6Stadtälteste (%count): &a%fullMembers
+  &6Neukömmlinge (%count): &a%newMembers
+CitiesErrors:
+  CityNameTaken: "&cDieser Name ist bereis vergeben!"
+  AlreadyInACity: "&cDu bist bereits in einer Stadt!"
+
+CityEntryRequirements:
+  NONE: "Keine Beschränkung"
+  INVITE_ONLY: "Nur über Einladung"
+  REQUEST: "Einladung oder Anfrage"
+
+JobTranslations:
+  Miner: "Minenarbeiter"
