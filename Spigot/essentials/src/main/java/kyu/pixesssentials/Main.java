@@ -25,14 +25,14 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 public class Main extends JavaPlugin{
 
-    private YamlConfiguration config, joinedPlayersConfig, playerHomeConfig;
-    private File configFile, joinedPlayersFile, playerHomeFile;
+    private YamlConfiguration config, joinedPlayersConfig, playerHomeConfig, warpConfig;
+    private File configFile, joinedPlayersFile, playerHomeFile, warpFile;
     public static boolean enableTpaModule, enableHomeModule, enableSpawnModule, enableInfoCommandModule, enableWarpsModule;
     public static Location spawnPos = null;
     public static LanguageHelper helper;
     private static Main instance;
     public static List<SCommand> commands = new ArrayList<>();
-    public static int tpaTimeout = 0;
+    public static int tpaTimeout = 0, warpDelay = 0;
 
 
 
@@ -53,6 +53,7 @@ public class Main extends JavaPlugin{
         configFile = new File(getDataFolder(), "config.yml");
         joinedPlayersFile = new File(getDataFolder(), "joinedPlayers.yml");
         playerHomeFile = new File(getDataFolder(), "playerHomes.yml");
+        warpFile = new File(getDataFolder(), "warps.yml");
         try {
             if (!configFile.exists()) {
                 InputStream in = getResource("config.yml");
@@ -64,15 +65,20 @@ public class Main extends JavaPlugin{
             if (!playerHomeFile.exists()) {
                 playerHomeFile.createNewFile();
             }
+            if (!warpFile.exists()) {
+                warpFile.createNewFile();
+            }
             config = YamlConfiguration.loadConfiguration(configFile);
             playerHomeConfig = YamlConfiguration.loadConfiguration(playerHomeFile);
             joinedPlayersConfig = YamlConfiguration.loadConfiguration(joinedPlayersFile);
+            warpConfig = YamlConfiguration.loadConfiguration(warpFile);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         tpaTimeout = config.getInt("tpaTimeout");
+        warpDelay = config.getInt("warpDelay");
         enableHomeModule = config.getBoolean("enableHomeModule");
         enableInfoCommandModule = config.getBoolean("enableInfoCommandModule");
         enableSpawnModule = config.getBoolean("enableSpawnModule");
@@ -137,6 +143,10 @@ public class Main extends JavaPlugin{
         return playerHomeConfig;
     }
 
+    public YamlConfiguration getWarpConfig() {
+        return warpConfig;
+    }
+
     public void save(YamlConfiguration config) {
         try {
             if (config.equals(playerHomeConfig)) {
@@ -144,6 +154,9 @@ public class Main extends JavaPlugin{
             }
             else if (config.equals(joinedPlayersConfig)) {
                 joinedPlayersConfig.save(joinedPlayersFile);
+            }
+            else if (config.equals(warpConfig)) {
+                warpConfig.save(warpFile);
             }
         } catch (IOException e) {
             e.printStackTrace();

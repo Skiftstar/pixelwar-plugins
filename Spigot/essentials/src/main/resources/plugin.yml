@@ -29,3 +29,11 @@ commands:
     description: enchant your currently held item
   smite:
     description: summon lightning at someones location
+  setWarp:
+    description: Sets a warp
+  warp:
+    description: Warps to a warp
+  delWarp:
+    description: Deletes a warp
+  listWarps:
+    description: Lists all warps

@@ -4,6 +4,19 @@ GeneralErrors:
   NEArgs: "&cNicht genug Argumente!"
   PlayerNotOnline: "&cSpieler ist nicht online!"
 
+General:
+  YouWillBeTeleported: "&aDu wirst in %sec Sekunden teleportiert!\n&aWenn du dich bewegst wird der Teleport abgebrochen!"
+  TeleportCanceled: "&cTeleport wurde abgebrochen!"
+
+Warps:
+  WarpAlreadyExists: "&cDieser Warp existiert bereits!"
+  WarpCreated: "&aWarp &b%name &aerfolgreich erstellt!"
+  WarpDoesNotExist: "&cWarp &4%name &cexistiert nicht!"
+  WarpDeleted: "&aWarp &b%name &aerfolgreich gelöscht!"
+  TeleportToWarp: "&aErfolgreich zu &b%name &ateleportiert!"
+  ListWarpHeader: "&6===Warps==="
+  ListWarpEntry: "&6- %name"
+
 Spawn:
   SpawnSetMess: "&aSpawn erfolgreich gesetzt!"
 

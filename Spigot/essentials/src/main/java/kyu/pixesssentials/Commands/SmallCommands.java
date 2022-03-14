@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -21,6 +22,7 @@ import net.kyori.adventure.text.TextComponent;
 public class SmallCommands {
 
     public static Map<Player, Pair<Integer, Player>> tpaRequests = new HashMap<>();
+    public static Map<Player, Integer> warpTaks = new HashMap<>();
 
     public static void init(Main plugin) {
 
@@ -111,7 +113,98 @@ public class SmallCommands {
         }
 
         if (Main.enableWarpsModule) {
-            
+            SCommand setWarp = new SCommand(plugin, "setwarp", Main.helper);
+            setWarp.execPerm("core.essentials.warp.admin");
+            setWarp.playerOnly(true);
+            setWarp.minArgs(1);
+            setWarp.exec(e -> {
+                Player p = e.player();
+                String warpName = e.args()[0];
+                YamlConfiguration warpConfig = Main.getInstance().getWarpConfig();
+                if (warpConfig.get(warpName.toLowerCase()) != null) {
+                    p.sendMessage(Component.text(Main.helper.getMess(p, "WarpAlreadyExists", true)));
+                    return;
+                }
+                Location loc = p.getLocation();
+                warpConfig.set(warpName.toLowerCase() + ".X", loc.getX());
+                warpConfig.set(warpName.toLowerCase() + ".Y", loc.getY());
+                warpConfig.set(warpName.toLowerCase() + ".Z", loc.getZ());
+                warpConfig.set(warpName.toLowerCase() + ".Yaw", loc.getYaw());
+                warpConfig.set(warpName.toLowerCase() + ".Pitch", loc.getPitch());
+                warpConfig.set(warpName.toLowerCase() + ".World", loc.getWorld().getName());
+                Main.getInstance().save(warpConfig);
+                p.sendMessage(Component.text(Main.helper.getMess(p, "WarpCreated", true)
+                    .replace("%name", warpName)));
+            });
+            Main.commands.add(setWarp);
+
+            SCommand delWarp = new SCommand(plugin, "delWarp", Main.helper);
+            delWarp.minArgs(1);
+            delWarp.execPerm("core.essentials.warp.admin");
+            delWarp.playerOnly(true);
+            delWarp.exec(e -> {
+                String warpName = e.args()[0];
+                YamlConfiguration warpConfig = Main.getInstance().getWarpConfig();
+                if (warpConfig.get(warpName.toLowerCase()) == null) {
+                    e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "WarpDoesNotExist", true)
+                        .replace("%name", warpName)));
+                    return;
+                }
+                warpConfig.set(warpName.toLowerCase(), null);
+                Main.getInstance().save(warpConfig);
+                e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "WarpDeleted", true)
+                    .replace("%name", warpName)));
+            });
+            Main.commands.add(delWarp);
+
+            SCommand listWarps = new SCommand(plugin, "listWarps", Main.helper);
+            listWarps.execPerm("core.essentials.warp");
+            listWarps.playerOnly(true);
+            listWarps.exec(e -> {
+                StringBuilder s = new StringBuilder(Main.helper.getMess(e.player(), "ListWarpHeader", true));
+                YamlConfiguration warpConfig = Main.getInstance().getWarpConfig();
+                for (String key : warpConfig.getKeys(false)) {
+                    s.append("\n").append(Main.helper.getMess(e.player(), "ListWarpEntry").replace("%name", key));
+                }
+                e.player().sendMessage(Component.text(s.toString()));
+            });
+            Main.commands.add(listWarps);
+
+            SCommand warp = new SCommand(plugin, "warp", Main.helper);
+            warp.playerOnly(true);
+            warp.minArgs(1);
+            warp.execPerm("core.essentials.warp");
+            warp.exec(e -> {
+                Player p = e.player();
+                String warpName = e.args()[0];
+                YamlConfiguration warpConfig = Main.getInstance().getWarpConfig();
+                if (warpConfig.get(warpName.toLowerCase()) == null) {
+                    p.sendMessage(Component.text(Main.helper.getMess(p, "WarpDoesNotExist", true)
+                        .replace("%name", warpName)));
+                    return;
+                }
+                double x = warpConfig.getDouble(warpName.toLowerCase() + ".X");
+                double y = warpConfig.getDouble(warpName.toLowerCase() + ".Y");
+                double z = warpConfig.getDouble(warpName.toLowerCase() + ".Z");
+                float yaw = (float) warpConfig.getDouble(warpName.toLowerCase() + ".Yaw");
+                float pitch = (float) warpConfig.getDouble(warpName.toLowerCase() + ".Pitch");
+                World world = Bukkit.getWorld(warpConfig.getString(warpName.toLowerCase() + ".World"));
+                Location loc = new Location(world, x, y, z, yaw, pitch);
+
+                int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                    p.teleport(loc);
+                    p.sendMessage(Component.text(Main.helper.getMess(p, "TeleportToWarp", true)
+                        .replace("%name", warpName)));
+                    warpTaks.remove(p);
+                }, Main.warpDelay * 20);
+
+                if (Main.warpDelay > 0) {
+                    warpTaks.put(p, taskId);
+                    p.sendMessage(Component.text(Main.helper.getMess(p, "YouWillBeTeleported", true)
+                        .replace("%sec", Main.warpDelay + "")));
+                }
+            });
+            Main.commands.add(warp);
         }
 
         if (Main.enableTpaModule) {
