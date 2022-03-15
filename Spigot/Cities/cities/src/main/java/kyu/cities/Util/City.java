@@ -15,6 +15,7 @@ public class City {
 
     private double exp;
     private String name;
+    private EntryRequirement entryRequirement;
     
     public City(String name) {
         this.name = name;
@@ -25,6 +26,7 @@ public class City {
     private void load() {
         YamlConfiguration cityConf = Main.getInstance().getCitiesConfig();
         exp = cityConf.getDouble(name.toLowerCase() + ".exp");
+        entryRequirement = EntryRequirement.valueOf(cityConf.getString(name.toLowerCase() + ".entryReq"));
     }
 
     public String getName() {
@@ -37,6 +39,14 @@ public class City {
         } else {
             return (int) Math.floor(exp / base);
         }
+    }
+
+    public void setEntryRequirement(EntryRequirement entryRequirement) {
+        this.entryRequirement = entryRequirement;
+    }
+
+    public EntryRequirement getEntryRequirement() {
+        return entryRequirement;
     }
 
 

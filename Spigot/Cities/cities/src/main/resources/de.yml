@@ -10,12 +10,14 @@ CitiesInfo:
   &6Level: &alevel
   &6Beitritt: &a%entryReq
   &6Bürgermeister: &a%mayor
-  &6Stadtrat (%count): &a%council
-  &6Stadtälteste (%count): &a%fullMembers
-  &6Neukömmlinge (%count): &a%newMembers
+  &6Stadtrat (%councilCount): &a%council
+  &6Stadtälteste (%fullCount): &a%fullMembers
+  &6Neukömmlinge (%newCount): &a%newMembers
 CitiesErrors:
   CityNameTaken: "&cDieser Name ist bereis vergeben!"
   AlreadyInACity: "&cDu bist bereits in einer Stadt!"
+  MustBeInCityForCMDExtended: "&cDu musst in einer Stadt sein um diesen Befehl ohne Argumente auszuführen!"
+  MustBeInCityForCMD: "&cDu musst in einer Stadt sein um diesen Befehl auszuführen!"
 
 CityEntryRequirements:
   NONE: "Keine Beschränkung"
