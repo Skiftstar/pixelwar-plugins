@@ -17,10 +17,16 @@ public class JoinLeaveListener implements Listener {
     @EventHandler
     private void onJoin(PlayerJoinEvent e) {
         new CPlayer(e.getPlayer());
+        Main.getInstance().getNameMapperConfig().set(e.getPlayer().getName().toLowerCase(), e.getPlayer().getUniqueId().toString());
+        Main.saveConfig(Main.getInstance().getNameMapperConfig());
     }
 
     @EventHandler
     private void onLeave(PlayerQuitEvent e) {
+        CPlayer p = CPlayer.players.get(e.getPlayer());
+        if (p.getCity() != null) {
+            p.getCity().removeOnlinePlayer(p);
+        }
         CPlayer.players.remove(e.getPlayer());
     }
     

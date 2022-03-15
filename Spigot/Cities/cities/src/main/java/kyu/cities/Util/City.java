@@ -1,6 +1,8 @@
 package kyu.cities.Util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -16,17 +18,27 @@ public class City {
     private double exp;
     private String name;
     private EntryRequirement entryRequirement;
+    private List<CPlayer> onlinePlayers = new ArrayList<>();
     
     public City(String name) {
         this.name = name;
         load();
-        cities.put(name, this);
+        cities.put(name.toLowerCase(), this);
     }
 
     private void load() {
         YamlConfiguration cityConf = Main.getInstance().getCitiesConfig();
+        name = cityConf.getString(name.toLowerCase() + ".caseSensitiveName");
         exp = cityConf.getDouble(name.toLowerCase() + ".exp");
         entryRequirement = EntryRequirement.valueOf(cityConf.getString(name.toLowerCase() + ".entryReq"));
+    }
+
+    public void removeJoinRequest(String playerName) {
+        YamlConfiguration cityConf = Main.getInstance().getCitiesConfig();
+        List<String> joinRequests = cityConf.getStringList(this.getName().toLowerCase() + ".joinRequests");
+        joinRequests.remove(playerName.toLowerCase());
+        cityConf.set(this.getName().toLowerCase() + ".joinRequests", joinRequests);
+        Main.saveConfig(cityConf);
     }
 
     public String getName() {
@@ -34,6 +46,10 @@ public class City {
     }
 
     public int getLevel() {
+        return City.getLevel(this.exp);
+    }
+
+    public static int getLevel(double exp) {
         if (expCurveType.equals(EXPCurveType.EXPONENTIAL)) {
             return (int) Math.floor(((Math.log(exp)/Math.log(base)) - exponent) / multiplier);
         } else {
@@ -49,10 +65,72 @@ public class City {
         return entryRequirement;
     }
 
+    public List<CPlayer> getOnlinePlayers() {
+        return onlinePlayers;
+    }
+
+    public void addOnlinePlayer(CPlayer p) {
+        if (!onlinePlayers.contains(p)) onlinePlayers.add(p);
+    }
+
+    public void removeOnlinePlayer(CPlayer p) {
+        onlinePlayers.remove(p);
+    }
+
 
     public static boolean exists(String name) {
         YamlConfiguration cityConf = Main.getInstance().getCitiesConfig();
         return cityConf.get(name.toLowerCase()) != null;
+    }
+
+    public static void joinCity(CPlayer p, String cityName) {
+        City city = getCity(cityName);
+        p.setCity(city);
+        city.onlinePlayers.add(p);
+
+        YamlConfiguration cityConf = Main.getInstance().getCitiesConfig();
+        List<String> newMembers = cityConf.getStringList(cityName.toLowerCase() + ".newMembers");
+        newMembers.add(p.getPlayer().getUniqueId().toString());
+        cityConf.set(cityName.toLowerCase() + ".newMembers", newMembers);
+        Main.saveConfig(cityConf);
+
+        YamlConfiguration playerConf = Main.getInstance().getPlayersConfig();
+        playerConf.set(p.getPlayer().getUniqueId().toString() + ".city", cityName.toLowerCase());
+        Main.saveConfig(playerConf);
+    }
+
+    public static void requestJoin(CPlayer p, String cityName) { 
+        if (cities.containsKey(cityName.toLowerCase())) {
+            City city = cities.get(cityName.toLowerCase());
+            for (CPlayer player : city.onlinePlayers) {
+                if (player.getRank().equals(CityRank.MAYOR) || player.getRank().equals(CityRank.CITY_COUNCIL)) {
+                    player.sendMessage(Main.helper.getMess(player.getPlayer(), "NewJoinRequest", true)
+                        .replace("%name", p.getPlayer().getName()));
+                }
+            }
+        }
+        YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();
+        List<String> joinRequests = new ArrayList<>();
+        if (cityConfig.get(cityName.toLowerCase() + ".joinRequests") != null) {
+            joinRequests = cityConfig.getStringList(cityName.toLowerCase() + ".joinRequests");
+        }
+        if (joinRequests.contains(p.getPlayer().getName().toLowerCase())) {
+            p.sendMessage(Main.helper.getMess(p.getPlayer(), "AlreadyRequestedJoin", true));
+            return;
+        }
+        joinRequests.add(p.getPlayer().getName().toLowerCase());
+        cityConfig.set(cityName.toLowerCase() + ".joinRequests", joinRequests);
+        Main.saveConfig(cityConfig);
+    }
+
+    public static City getCity(String cityName) {
+        City city;
+        if (!cities.containsKey(cityName.toLowerCase())) {
+            city = new City(cityName);
+        } else {
+            city = cities.get(cityName.toLowerCase());
+        }
+        return city;
     }
     
 }

@@ -19,8 +19,8 @@ import kyu.cities.Util.Util;
 
 public class Main extends JavaPlugin {
 
-  private YamlConfiguration config, playersConfig, citiesConfig;
-  private File configFile, playersFile, citiesFile;
+  private YamlConfiguration config, playersConfig, citiesConfig, nameMapperConfig;
+  private File configFile, playersFile, citiesFile, nameMapperFile;
   public static LanguageHelper helper;
   private static Main instance;
   public static List<SCommand> commands = new ArrayList<>();
@@ -40,6 +40,7 @@ public class Main extends JavaPlugin {
       configFile = new File(getDataFolder(), "config.yml");
       playersFile = new File(getDataFolder(), "players.yml");
       citiesFile = new File(getDataFolder(), "cities.yml");
+      nameMapperFile = new File(getDataFolder(), "nameToUUID.yml");
       try {
           if (!configFile.exists()) {
               InputStream in = getResource("config.yml");
@@ -54,6 +55,7 @@ public class Main extends JavaPlugin {
           config = YamlConfiguration.loadConfiguration(configFile);
           playersConfig = YamlConfiguration.loadConfiguration(playersFile);
           citiesConfig = YamlConfiguration.loadConfiguration(citiesFile);
+          nameMapperConfig = YamlConfiguration.loadConfiguration(nameMapperFile);
       } catch (IOException e) {
           e.printStackTrace();
       }
@@ -83,6 +85,10 @@ public class Main extends JavaPlugin {
       return citiesConfig;
   }
 
+  public YamlConfiguration getNameMapperConfig() {
+      return nameMapperConfig;
+  }
+
   public static Main getInstance() {
       return instance;
   }
@@ -97,6 +103,9 @@ public class Main extends JavaPlugin {
     }
     else if (c.equals(instance.citiesConfig)) {
       f = instance.citiesFile;
+    }
+    else if (c.equals(instance.nameMapperConfig)) {
+      f = instance.nameMapperFile;
     }
     try {
       c.save(f);

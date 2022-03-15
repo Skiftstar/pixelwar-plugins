@@ -2,9 +2,12 @@ GeneralErrors:
   PlayerOnly: "Nur für Spieler!"
   NEPerms: "&cNicht genug Rechte!"
   NEArgs: "&cNicht genug Argumente!"
+  PlayerNotFoundInMapper: "&cSpieler wurde nicht gefunden! Hat er seinen Namen geändert?"
 
 CitiesInfo:
   CityCreated: "&aStadt %name erfolgreich erstellt!"
+  joinRequestDenied: "&aBetrittsanfrage von %name erfolgreich abgelehnt!"
+  NewJoinRequest: "&b%name &awill deiner Stadt beitreten!\n&aAkzeptiere mit /city allow %name oder lehne ab mit /city deny %name"
   CityInfo: |-
   &6[%name Info]
   &6Level: &alevel
@@ -14,10 +17,15 @@ CitiesInfo:
   &6Stadtälteste (%fullCount): &a%fullMembers
   &6Neukömmlinge (%newCount): &a%newMembers
 CitiesErrors:
+  CityDoesNotExist: "&cDiese Stadt existiert nicht!"
   CityNameTaken: "&cDieser Name ist bereis vergeben!"
   AlreadyInACity: "&cDu bist bereits in einer Stadt!"
   MustBeInCityForCMDExtended: "&cDu musst in einer Stadt sein um diesen Befehl ohne Argumente auszuführen!"
   MustBeInCityForCMD: "&cDu musst in einer Stadt sein um diesen Befehl auszuführen!"
+  YouMustBeInvited: "&cIn diese Stadt musst du eingeladen werden!"
+  NoJoinRequestFromPlayer: "&cEs gibt keine Beitrittsanfrage von diesem Spieler!"
+  RankNotHighEnough: "&cDu hast keine Admin-Rechte für deine Stadt!"
+  AlreadyRequestedJoin: "&cDu hast bereits eine aktive Beitrittsanfrage!"
 
 CityEntryRequirements:
   NONE: "Keine Beschränkung"
@@ -25,4 +33,7 @@ CityEntryRequirements:
   REQUEST: "Einladung oder Anfrage"
 
 JobTranslations:
-  Miner: "Minenarbeiter"
+  MINER: "Minenarbeiter"
+  LOGGER: "Baumfäller"
+  FISHER: "Fischer"
+  FARMER: "Bauer"
