@@ -2,7 +2,9 @@ package kyu.cities.Util;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -17,7 +19,7 @@ public class CPlayer {
     private Map<Job, Double> jobs = new HashMap<>();
     private Player p;
     private CityRank rank;
-    
+
     public CPlayer(Player p) {
         this.p = p;
         load();
@@ -27,7 +29,7 @@ public class CPlayer {
     private void load() {
         YamlConfiguration pConf = Main.getInstance().getPlayersConfig();
 
-        //TODO: Load Job EXPs
+        // TODO: Load Job EXPs
 
         if (pConf.get(p.getUniqueId().toString() + ".city") != null) {
             String cityName = pConf.getString(p.getUniqueId().toString() + ".city");
@@ -43,6 +45,25 @@ public class CPlayer {
             }
             city.addOnlinePlayer(this);
         }
+    }
+
+    public void handleOfflineMessages() {
+        YamlConfiguration playerConf = Main.getInstance().getPlayersConfig();
+        for (String k : playerConf.getConfigurationSection(p.getUniqueId().toString() + ".offlineMessages").getKeys(false)) {
+            String key = p.getUniqueId().toString() + ".offlineMessages." + k;
+            String messageKey = playerConf.getString(key + ".messKey");
+            boolean prefix = playerConf.getBoolean(key + ".prefix");
+
+            String message = Main.helper.getMess(p, messageKey, prefix);
+            for (String rKey : playerConf.getConfigurationSection(key + ".replaces").getKeys(false)) {
+                message.replace(rKey, playerConf.getString(key + ".replaces." + rKey));
+            }
+
+            sendMessage(message);
+
+            playerConf.set(key, null);
+        }
+        Main.saveConfig(playerConf);
     }
 
     public void setCity(City city) {
@@ -76,9 +97,39 @@ public class CPlayer {
         return rank;
     }
 
-    public static void sendOfflineMess(String playerName, String MessageKey, Map<String, String> replaceValues) {
-        //TODO: If player online, send message directly, if not add to Config and send on Next join
-        //TODO: Also check if player is in mapper, if not just ignore
+    public static void sendOfflineMess(String playerName, String messageKey, Map<String, String> replaceValues, boolean prefix) {
+        //Ignore if not in mapper -> Cannot send offline message anyways
+        YamlConfiguration nameMapper = Main.getInstance().getNameMapperConfig();
+        if (nameMapper.get(playerName.toLowerCase()) == null) {
+            return;
+        }
+        String uuid = nameMapper.getString(playerName.toLowerCase());
+
+        if (isOnline(uuid)) {
+            CPlayer p = players.get(Bukkit.getPlayer(UUID.fromString(uuid)));
+            String message = Main.helper.getMess(p.getPlayer(), messageKey, prefix);
+            for (String k : replaceValues.keySet()) {
+                message.replace(k, replaceValues.get(k));
+            }
+            p.sendMessage(message);
+            return;
+        }
+
+        //If not online
+
+        YamlConfiguration playerConf = Main.getInstance().getPlayersConfig();
+        int keys = playerConf.get(uuid + ".offlineMessages") == null ? 0 : playerConf.getConfigurationSection(uuid + ".offlineMessages").getKeys(false).size();
+        String key = uuid + ".offlineMessages." + keys;
+        playerConf.set(key + ".messKey", messageKey);
+        playerConf.set(key + ".prefix", prefix);
+        for (String k : replaceValues.keySet()) {
+            playerConf.set(key + ".replaces." + k, replaceValues.get(k));
+        }
+        Main.saveConfig(playerConf);
+    }
+
+    public static boolean isOnline(String uuid) {
+        return Bukkit.getPlayer(UUID.fromString(uuid)) == null;
     }
 
 }

@@ -73,13 +73,29 @@ public class CityCommand {
                         p.sendMessage(Main.helper.getMess(e.player(), "PlayerNotFoundInMapper", true));
                         return;
                     }
-                    //TODO: Check if player is already in a city, if yes, erorr
-                    //TODO: Add player to City and send messages
+                    String uuid = nameMapper.getString(playerName.toLowerCase());
+                    if (playerConf.get(uuid + ".city") != null) { //Player is already in a city
+                        p.sendMessage(Main.helper.getMess(e.player(), "PlayerAlreadyInACity", true));
+                        return;
+                    }
 
+                    if (CPlayer.isOnline(uuid)) {
+                        CPlayer joiner = CPlayer.players.get(Bukkit.getPlayer(UUID.fromString(uuid)));
+                        City.joinCity(joiner, p.getCity().getName());
+                    } else {
+                        playerConf.set(uuid + ".city", p.getCity().getName());
+                        Main.saveConfig(playerConf);
+                    }
+
+                    Map<String, String> replaceValues = new HashMap<>();
+                    replaceValues.put("%name", city.getName());
+                    CPlayer.sendOfflineMess(playerName, "joinRequestGotAccepted", replaceValues, true);
+                    p.sendMessage(Main.helper.getMess(e.player(), "joinRequestAccepted", true)
+                        .replace("%name", playerName));
                 } else {
                     Map<String, String> replaceValues = new HashMap<>();
                     replaceValues.put("%name", city.getName());
-                    CPlayer.sendOfflineMess(playerName, "joinRequestDenied", replaceValues);
+                    CPlayer.sendOfflineMess(playerName, "joinRequestGotDenied", replaceValues, true);
                     p.sendMessage(Main.helper.getMess(e.player(), "joinRequestDenied", true)
                         .replace("%name", playerName));
                 }
@@ -104,7 +120,6 @@ public class CityCommand {
                         City.joinCity(p, cityName);
                         break;
                     case REQUEST:
-                        //TODO: Join Requests
                         City.requestJoin(p, cityName);
                         break;
                 }

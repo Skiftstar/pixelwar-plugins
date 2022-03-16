@@ -16,9 +16,11 @@ public class JoinLeaveListener implements Listener {
 
     @EventHandler
     private void onJoin(PlayerJoinEvent e) {
-        new CPlayer(e.getPlayer());
+        CPlayer p = new CPlayer(e.getPlayer());
+        p.handleOfflineMessages();
         Main.getInstance().getNameMapperConfig().set(e.getPlayer().getName().toLowerCase(), e.getPlayer().getUniqueId().toString());
         Main.saveConfig(Main.getInstance().getNameMapperConfig());
+        
     }
 
     @EventHandler

@@ -6,7 +6,10 @@ GeneralErrors:
 
 CitiesInfo:
   CityCreated: "&aStadt %name erfolgreich erstellt!"
+  joinRequestGotAccepted: "&aDeine Beitrittsanfrage zu &b%name &awurde akzeptiert!"
+  joinRequestGotDenied: "&aDeine Beitrittsanfrage zu &b%name &awurde abgelehnt!"
   joinRequestDenied: "&aBetrittsanfrage von %name erfolgreich abgelehnt!"
+  joinRequestAccepted: "&aBetrittsanfrage von %name erfolgreich akzeptiert!"
   NewJoinRequest: "&b%name &awill deiner Stadt beitreten!\n&aAkzeptiere mit /city allow %name oder lehne ab mit /city deny %name"
   CityInfo: |-
   &6[%name Info]
@@ -16,6 +19,7 @@ CitiesInfo:
   &6Stadtrat (%councilCount): &a%council
   &6Stadtälteste (%fullCount): &a%fullMembers
   &6Neukömmlinge (%newCount): &a%newMembers
+
 CitiesErrors:
   CityDoesNotExist: "&cDiese Stadt existiert nicht!"
   CityNameTaken: "&cDieser Name ist bereis vergeben!"
@@ -26,6 +30,7 @@ CitiesErrors:
   NoJoinRequestFromPlayer: "&cEs gibt keine Beitrittsanfrage von diesem Spieler!"
   RankNotHighEnough: "&cDu hast keine Admin-Rechte für deine Stadt!"
   AlreadyRequestedJoin: "&cDu hast bereits eine aktive Beitrittsanfrage!"
+  PlayerAlreadyInACity: "&cSpieler ist bereits in einer Stadt!"
 
 CityEntryRequirements:
   NONE: "Keine Beschränkung"
