@@ -43,6 +43,62 @@ public class CityCommand {
                 return;
             }
 
+            //#region acceptInvite/denyInvite command
+            if (e.args()[0].equalsIgnoreCase("acceptinvite") || e.args()[0].equalsIgnoreCase("denyinvite")) {
+                String cityName = e.args()[1];
+                if (City.exists(cityName)) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "CityDoesNotExist", true));
+                    return;
+                }
+                if (p.getCity() != null) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "AlreadyInACity", true));
+                    return;
+                }
+                if (e.args()[0].equalsIgnoreCase("acceptInvite")) {
+                    City.joinCity(p, cityName);
+                    p.sendMessage(Main.helper.getMess(e.player(), "CityJoined", true)
+                        .replace("%name", cityName));
+                } else {
+                    p.sendMessage(Main.helper.getMess(e.player(), "InviteDenied", true));
+                }
+                City.removeInvite(p.getPlayer().getUniqueId(), cityName);
+                return;
+            }
+            //#endregion acceptInvite/denyInvite command
+
+            //#region invite command
+            if (e.args()[0].equalsIgnoreCase("invite")) {
+
+                if (p.getCity() == null) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "MustBeInCityForCMD", true));
+                    return;
+                }
+
+                String playerName = e.args()[1];
+                YamlConfiguration nameMapper = Main.getInstance().getNameMapperConfig();
+                if (nameMapper.get(playerName.toLowerCase()) == null) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "PlayerNotFoundInMapper", true));
+                    return;
+                }
+
+                String uuid = nameMapper.getString(playerName.toLowerCase());
+                if (CPlayer.isInCity(UUID.fromString(uuid))) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "PlayerAlreadyInACity", true));
+                    return;
+                }
+
+                p.getCity().addInvite(UUID.fromString(uuid));
+
+                Map<String, String> replaceValues = new HashMap<>();
+                replaceValues.put("%name", p.getCity().getName());
+                CPlayer.sendOfflineMess(playerName, "GotInvitedToCity", replaceValues, true);
+                p.sendMessage(Main.helper.getMess(e.player(), "InvitedPlayerToCity", true)
+                    .replace("%pName", playerName)
+                    .replace("%name", p.getCity().getName()));
+                return;
+            }
+            //#endregion invite command
+
             //#region JoinRequests
             if (e.args()[0].equalsIgnoreCase("allow") || e.args()[0].equalsIgnoreCase("deny")) {
                 if (p.getCity() == null) {

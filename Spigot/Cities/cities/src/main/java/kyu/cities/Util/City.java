@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -39,6 +40,32 @@ public class City {
         joinRequests.remove(playerName.toLowerCase());
         cityConf.set(this.getName().toLowerCase() + ".joinRequests", joinRequests);
         Main.saveConfig(cityConf);
+    }
+
+    public void addInvite(UUID uuid) {
+        YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();
+        List<String> invites = new ArrayList<>();
+        if (cityConfig.get(name.toLowerCase() + ".invites") != null) {
+            invites = cityConfig.getStringList(name.toLowerCase() + ".invites");
+        }
+        invites.add(uuid.toString());
+        cityConfig.set(name.toLowerCase() + ".invites", invites);
+        Main.saveConfig(cityConfig);
+    }
+
+    public void removeInvite(UUID uuid) {
+        City.removeInvite(uuid, name);
+    }
+
+    public static void removeInvite(UUID uuid, String name) {
+        YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();
+        if (cityConfig.get(name.toLowerCase() + ".invites") == null) {
+            return;
+        }
+        List<String> invites = cityConfig.getStringList(name.toLowerCase() + ".invites");
+        invites.remove(uuid.toString());
+        cityConfig.set(name.toLowerCase() + ".invites", invites);
+        Main.saveConfig(cityConfig);
     }
 
     public String getName() {
@@ -84,7 +111,11 @@ public class City {
     }
 
     public static void joinCity(CPlayer p, String cityName) {
-        City city = getCity(cityName);
+        City city;
+        if (!cities.containsKey(cityName) && exists(cityName)) {
+            city = new City(cityName);
+        }
+        city = getCity(cityName);
         p.setCity(city);
         city.onlinePlayers.add(p);
 

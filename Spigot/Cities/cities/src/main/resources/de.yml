@@ -8,8 +8,12 @@ CitiesInfo:
   CityCreated: "&aStadt %name erfolgreich erstellt!"
   joinRequestGotAccepted: "&aDeine Beitrittsanfrage zu &b%name &awurde akzeptiert!"
   joinRequestGotDenied: "&aDeine Beitrittsanfrage zu &b%name &awurde abgelehnt!"
-  joinRequestDenied: "&aBetrittsanfrage von %name erfolgreich abgelehnt!"
-  joinRequestAccepted: "&aBetrittsanfrage von %name erfolgreich akzeptiert!"
+  joinRequestDenied: "&aBetrittsanfrage für %name erfolgreich abgelehnt!"
+  joinRequestAccepted: "&aBetrittsanfrage für %name erfolgreich akzeptiert!"
+  CityJoined: "&aErfolgreich der Stadt &b%name &abeigetreten!"
+  InviteDenied: "&aEinladung erfolgreich abgelehnt!"
+  InvitedPlayerToCity: "&aErfolgreich &b%pName &azu &b%name &aeingeladen!"
+  GotInvitedToCity: "&aDu wurdest zu der Stadt &b%name &aeingeladen!\n&aAntworte mit /city acceptInvite/denyInvite %name"
   NewJoinRequest: "&b%name &awill deiner Stadt beitreten!\n&aAkzeptiere mit /city allow %name oder lehne ab mit /city deny %name"
   CityInfo: |-
   &6[%name Info]

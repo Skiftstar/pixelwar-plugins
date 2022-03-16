@@ -132,4 +132,9 @@ public class CPlayer {
         return Bukkit.getPlayer(UUID.fromString(uuid)) == null;
     }
 
+    public static boolean isInCity(UUID uuid) {
+        YamlConfiguration pConf = Main.getInstance().getPlayersConfig();
+        return pConf.get(uuid.toString() + ".city") != null;
+    }
+
 }
