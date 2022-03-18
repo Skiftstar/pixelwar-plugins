@@ -41,7 +41,7 @@ public class CPlayer {
                 }
                 city = new City(cityName);
             } else {
-                city = City.cities.get(cityName);
+                city = City.cities.get(cityName.toLowerCase());
             }
             city.addOnlinePlayer(this);
         }
@@ -69,7 +69,7 @@ public class CPlayer {
     public void setCity(City city) {
         this.city = city;
         YamlConfiguration config = Main.getInstance().getPlayersConfig();
-        config.set(p.getUniqueId().toString() + ".city", city.getName());
+        config.set(p.getUniqueId().toString() + ".city", city.getName().toLowerCase());
         Main.saveConfig(config);
     }
 

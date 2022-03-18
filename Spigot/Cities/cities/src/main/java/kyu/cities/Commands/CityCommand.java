@@ -14,7 +14,6 @@ import kyu.cities.Util.City;
 import kyu.cities.Util.CityRank;
 import kyu.cities.Util.EntryRequirement;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 
 public class CityCommand {
     
@@ -174,6 +173,7 @@ public class CityCommand {
                         break;
                     case NONE:
                         City.joinCity(p, cityName);
+                        p.sendMessage(Main.helper.getMess(e.player(), "CityJoined", true).replace("%name", cityName));
                         break;
                     case REQUEST:
                         City.requestJoin(p, cityName);
@@ -210,7 +210,8 @@ public class CityCommand {
                 }
                 cityConfig.set(cityName.toLowerCase() + ".caseSensitiveName", cityName);
                 cityConfig.set(cityName.toLowerCase() + ".exp", 0);
-                cityConfig.set(cityName.toLowerCase() + ".mayor", ((TextComponent) e.player().displayName()).content());
+                cityConfig.set(cityName.toLowerCase() + ".mayor", e.player().getUniqueId().toString());
+                cityConfig.set(cityName.toLowerCase() + ".entryReq", EntryRequirement.NONE.toString());
                 Main.saveConfig(cityConfig);
                 City city = new City(cityName);
                 p.setCity(city);
@@ -243,16 +244,16 @@ public class CityCommand {
                     newMemberCount++;
                 }
                 //Remove the ", " at the end of the Strings
-                cityCouncilNames = new StringBuilder(cityCouncilNames.substring(0, cityCouncilNames.length() - 3));
-                fullMemberNames = new StringBuilder(fullMemberNames.substring(0, cityCouncilNames.length() - 3));
-                newMemberNames = new StringBuilder(newMemberNames.substring(0, cityCouncilNames.length() - 3));
+                cityCouncilNames = new StringBuilder(cityCouncilNames.substring(0, cityCouncilNames.length() - 2 < 0 ? 0 : cityCouncilNames.length() - 2));
+                fullMemberNames = new StringBuilder(fullMemberNames.substring(0, fullMemberNames.length() - 2 < 0 ? 0 : fullMemberNames.length() - 2));
+                newMemberNames = new StringBuilder(newMemberNames.substring(0, newMemberNames.length() - 2 < 0 ? 0 : newMemberNames.length() - 2));
                 int level = City.getLevel(cityConfig.getDouble(cityName.toLowerCase() + ".exp"));
                 p.sendMessage(Main.helper.getMess(p.getPlayer(), "CityInfo", true)
                     .replace("%name", cityConfig.getString(cityName.toLowerCase() + ".caseSensitiveName"))
                     .replace("%level", "" + level)
                     .replace("%entryReq", Main.helper.getMess(p.getPlayer(), cityConfig.getString(cityName.toLowerCase() + ".entryReq")))
                     .replace("%mayor", mayorName)
-                    .replace("%cityCouncil", cityCouncilNames.toString())
+                    .replace("%council", cityCouncilNames.toString())
                     .replace("%councilCount", councilCount + "")
                     .replace("%fullMembers", fullMemberNames.toString())
                     .replace("%fullCount", fullMemberCount + "")

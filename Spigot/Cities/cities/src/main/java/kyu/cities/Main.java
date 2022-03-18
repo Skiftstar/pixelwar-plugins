@@ -15,6 +15,8 @@ import Kyu.LangSupport.DB;
 import Kyu.LangSupport.LanguageHelper;
 import kyu.cities.Commands.CityCommand;
 import kyu.cities.Listeners.JoinLeaveListener;
+import kyu.cities.Util.City;
+import kyu.cities.Util.EXPCurveType;
 import kyu.cities.Util.Util;
 
 public class Main extends JavaPlugin {
@@ -29,6 +31,8 @@ public class Main extends JavaPlugin {
     @Override
     public void onEnable() {
       instance = this;
+
+      loadConfigValues();
 
       CityCommand.init();
       new JoinLeaveListener(this);
@@ -61,6 +65,7 @@ public class Main extends JavaPlugin {
       }
 
       cityCost = config.getInt("CityCost");
+      City.expCurveType = EXPCurveType.valueOf(config.getString("CityEXPCurveType").toUpperCase());
 
       helper = new LanguageHelper(this, "de", getTextResource("de.yml"), Util.color(getConfig().getString("chatPrefix") + " "), true);
       

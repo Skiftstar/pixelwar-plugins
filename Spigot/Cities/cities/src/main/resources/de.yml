@@ -15,14 +15,7 @@ CitiesInfo:
   InvitedPlayerToCity: "&aErfolgreich &b%pName &azu &b%name &aeingeladen!"
   GotInvitedToCity: "&aDu wurdest zu der Stadt &b%name &aeingeladen!\n&aAntworte mit /city acceptInvite/denyInvite %name"
   NewJoinRequest: "&b%name &awill deiner Stadt beitreten!\n&aAkzeptiere mit /city allow %name oder lehne ab mit /city deny %name"
-  CityInfo: |-
-  &6[%name Info]
-  &6Level: &alevel
-  &6Beitritt: &a%entryReq
-  &6Bürgermeister: &a%mayor
-  &6Stadtrat (%councilCount): &a%council
-  &6Stadtälteste (%fullCount): &a%fullMembers
-  &6Neukömmlinge (%newCount): &a%newMembers
+  CityInfo: "&6%name Info\n&6Level: &a%level\n&6Beitritt: &a%entryReq\n&6Bürgermeister: &a%mayor\n&6Stadtrat (%councilCount): &a%council\n&6Stadtälteste (%fullCount): &a%fullMembers\n&6Neukömmlinge (%newCount): &a%newMembers"
 
 CitiesErrors:
   CityDoesNotExist: "&cDiese Stadt existiert nicht!"
