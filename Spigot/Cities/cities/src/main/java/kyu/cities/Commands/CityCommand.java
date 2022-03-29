@@ -16,7 +16,7 @@ import kyu.cities.Util.EntryRequirement;
 import net.kyori.adventure.text.Component;
 
 public class CityCommand {
-    
+
     public static void init() {
         SCommand cityCmd = new SCommand(Main.getInstance(), "city", Main.helper);
         cityCmd.playerOnly(true);
@@ -25,7 +25,7 @@ public class CityCommand {
         cityCmd.exec(e -> {
             CPlayer p = CPlayer.players.get(e.player());
 
-            //#region info command without args
+            // #region info command without args
             if (e.args()[0].equalsIgnoreCase("info") && e.args().length == 1) {
                 if (p.getCity() == null) {
                     p.sendMessage(Main.helper.getMess(e.player(), "MustBeInCityForCMDExtended", true));
@@ -35,14 +35,14 @@ public class CityCommand {
                 sendInfoCommand(p, city.getName());
                 return;
             }
-            //#endregion info command without args
+            // #endregion info command without args
 
             if (e.args().length < 2) {
                 e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "NEArgs", true)));
                 return;
             }
 
-            //#region acceptInvite/denyInvite command
+            // #region acceptInvite/denyInvite command
             if (e.args()[0].equalsIgnoreCase("acceptinvite") || e.args()[0].equalsIgnoreCase("denyinvite")) {
                 String cityName = e.args()[1];
                 if (City.exists(cityName)) {
@@ -56,16 +56,16 @@ public class CityCommand {
                 if (e.args()[0].equalsIgnoreCase("acceptInvite")) {
                     City.joinCity(p, cityName);
                     p.sendMessage(Main.helper.getMess(e.player(), "CityJoined", true)
-                        .replace("%name", cityName));
+                            .replace("%name", cityName));
                 } else {
                     p.sendMessage(Main.helper.getMess(e.player(), "InviteDenied", true));
                 }
                 City.removeInvite(p.getPlayer().getUniqueId(), cityName);
                 return;
             }
-            //#endregion acceptInvite/denyInvite command
+            // #endregion acceptInvite/denyInvite command
 
-            //#region invite command
+            // #region invite command
             if (e.args()[0].equalsIgnoreCase("invite")) {
 
                 if (p.getCity() == null) {
@@ -92,13 +92,13 @@ public class CityCommand {
                 replaceValues.put("%name", p.getCity().getName());
                 CPlayer.sendOfflineMess(playerName, "GotInvitedToCity", replaceValues, true);
                 p.sendMessage(Main.helper.getMess(e.player(), "InvitedPlayerToCity", true)
-                    .replace("%pName", playerName)
-                    .replace("%name", p.getCity().getName()));
+                        .replace("%pName", playerName)
+                        .replace("%name", p.getCity().getName()));
                 return;
             }
-            //#endregion invite command
+            // #endregion invite command
 
-            //#region JoinRequests
+            // #region JoinRequests
             if (e.args()[0].equalsIgnoreCase("allow") || e.args()[0].equalsIgnoreCase("deny")) {
                 if (p.getCity() == null) {
                     p.sendMessage(Main.helper.getMess(e.player(), "MustBeInCityForCMD", true));
@@ -113,14 +113,16 @@ public class CityCommand {
                     return;
                 }
 
-                if (cityConf.get(city.getName().toLowerCase() + ".joinRequests") == null || !cityConf.getStringList(city.getName().toLowerCase() + ".joinRequests").contains(playerName.toLowerCase())) {
+                if (cityConf.get(city.getName().toLowerCase() + ".joinRequests") == null
+                        || !cityConf.getStringList(city.getName().toLowerCase() + ".joinRequests")
+                                .contains(playerName.toLowerCase())) {
                     p.sendMessage(Main.helper.getMess(e.player(), "NoJoinRequestFromPlayer", true));
                     return;
                 }
 
                 city.removeJoinRequest(playerName);
 
-                YamlConfiguration playerConf = Main.getInstance().getPlayersConfig();    
+                YamlConfiguration playerConf = Main.getInstance().getPlayersConfig();
 
                 if (e.args()[0].equalsIgnoreCase("allow")) {
                     YamlConfiguration nameMapper = Main.getInstance().getNameMapperConfig();
@@ -129,7 +131,7 @@ public class CityCommand {
                         return;
                     }
                     String uuid = nameMapper.getString(playerName.toLowerCase());
-                    if (playerConf.get(uuid + ".city") != null) { //Player is already in a city
+                    if (playerConf.get(uuid + ".city") != null) { // Player is already in a city
                         p.sendMessage(Main.helper.getMess(e.player(), "PlayerAlreadyInACity", true));
                         return;
                     }
@@ -146,19 +148,19 @@ public class CityCommand {
                     replaceValues.put("%name", city.getName());
                     CPlayer.sendOfflineMess(playerName, "joinRequestGotAccepted", replaceValues, true);
                     p.sendMessage(Main.helper.getMess(e.player(), "joinRequestAccepted", true)
-                        .replace("%name", playerName));
+                            .replace("%name", playerName));
                 } else {
                     Map<String, String> replaceValues = new HashMap<>();
                     replaceValues.put("%name", city.getName());
                     CPlayer.sendOfflineMess(playerName, "joinRequestGotDenied", replaceValues, true);
                     p.sendMessage(Main.helper.getMess(e.player(), "joinRequestDenied", true)
-                        .replace("%name", playerName));
+                            .replace("%name", playerName));
                 }
                 return;
             }
-            //#endregion JoinRequests
+            // #endregion JoinRequests
 
-            //#region join command
+            // #region join command
             if (e.args()[0].equals("join")) {
                 String cityName = e.args()[1];
                 YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();
@@ -166,7 +168,8 @@ public class CityCommand {
                     p.sendMessage(Main.helper.getMess(e.player(), "CityDoesNotExist", true));
                     return;
                 }
-                EntryRequirement req = EntryRequirement.valueOf(cityConfig.getString(cityName.toLowerCase() + ".entryReq"));
+                EntryRequirement req = EntryRequirement
+                        .valueOf(cityConfig.getString(cityName.toLowerCase() + ".entryReq"));
                 switch (req) {
                     case INVITE_ONLY:
                         p.sendMessage(Main.helper.getMess(e.player(), "YouMustBeInvited", true));
@@ -180,9 +183,9 @@ public class CityCommand {
                         break;
                 }
             }
-            //#endregion join command
+            // #endregion join command
 
-            //#region info command with args
+            // #region info command with args
             if (e.args()[0].equals("info")) {
                 String cityName = e.args()[1];
                 YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();
@@ -193,9 +196,9 @@ public class CityCommand {
                 sendInfoCommand(p, cityName);
                 return;
             }
-            //#endregion info commadn with args
+            // #endregion info commadn with args
 
-            //#region create command
+            // #region create command
             if (e.args()[0].equalsIgnoreCase("create")) {
                 if (p.getCity() != null) {
                     p.sendMessage(Main.helper.getMess(e.player(), "AlreadyInACity", true));
@@ -218,47 +221,52 @@ public class CityCommand {
                 p.sendMessage(Main.helper.getMess(e.player(), "CityCreated", true).replace("%name", cityName));
                 return;
             }
-            //#endregion create command
+            // #endregion create command
         });
     }
 
     private static void sendInfoCommand(CPlayer p, String cityName) {
         YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();
-                String mayorName = Bukkit.getOfflinePlayer(UUID.fromString(cityConfig.getString(cityName.toLowerCase() + ".mayor"))).getName();
-                StringBuilder cityCouncilNames = new StringBuilder();
-                int councilCount = 0;
-                StringBuilder fullMemberNames = new StringBuilder();
-                int fullMemberCount = 0;
-                StringBuilder newMemberNames = new StringBuilder();
-                int newMemberCount = 0;
-                for (String uuid : cityConfig.getStringList(cityName.toLowerCase() + ".cityCouncil")) {
-                    cityCouncilNames.append((Bukkit.getOfflinePlayer(UUID.fromString(uuid))).getName()).append(", ");
-                    councilCount++;
-                }
-                for (String uuid : cityConfig.getStringList(cityName.toLowerCase() + ".fullMembers")) {
-                    fullMemberNames.append((Bukkit.getOfflinePlayer(UUID.fromString(uuid))).getName()).append(", ");
-                    fullMemberCount++;
-                }
-                for (String uuid : cityConfig.getStringList(cityName.toLowerCase() + ".newMembers")) {
-                    newMemberNames.append((Bukkit.getOfflinePlayer(UUID.fromString(uuid))).getName()).append(", ");
-                    newMemberCount++;
-                }
-                //Remove the ", " at the end of the Strings
-                cityCouncilNames = new StringBuilder(cityCouncilNames.substring(0, cityCouncilNames.length() - 2 < 0 ? 0 : cityCouncilNames.length() - 2));
-                fullMemberNames = new StringBuilder(fullMemberNames.substring(0, fullMemberNames.length() - 2 < 0 ? 0 : fullMemberNames.length() - 2));
-                newMemberNames = new StringBuilder(newMemberNames.substring(0, newMemberNames.length() - 2 < 0 ? 0 : newMemberNames.length() - 2));
-                int level = City.getLevel(cityConfig.getDouble(cityName.toLowerCase() + ".exp"));
-                p.sendMessage(Main.helper.getMess(p.getPlayer(), "CityInfo", true)
-                    .replace("%name", cityConfig.getString(cityName.toLowerCase() + ".caseSensitiveName"))
-                    .replace("%level", "" + level)
-                    .replace("%entryReq", Main.helper.getMess(p.getPlayer(), cityConfig.getString(cityName.toLowerCase() + ".entryReq")))
-                    .replace("%mayor", mayorName)
-                    .replace("%council", cityCouncilNames.toString())
-                    .replace("%councilCount", councilCount + "")
-                    .replace("%fullMembers", fullMemberNames.toString())
-                    .replace("%fullCount", fullMemberCount + "")
-                    .replace("%newMembers", newMemberNames.toString())
-                    .replace("%newCount", newMemberCount + ""));
+        String mayorName = Bukkit
+                .getOfflinePlayer(UUID.fromString(cityConfig.getString(cityName.toLowerCase() + ".mayor"))).getName();
+        StringBuilder cityCouncilNames = new StringBuilder();
+        int councilCount = 0;
+        StringBuilder fullMemberNames = new StringBuilder();
+        int fullMemberCount = 0;
+        StringBuilder newMemberNames = new StringBuilder();
+        int newMemberCount = 0;
+        for (String uuid : cityConfig.getStringList(cityName.toLowerCase() + ".cityCouncil")) {
+            cityCouncilNames.append((Bukkit.getOfflinePlayer(UUID.fromString(uuid))).getName()).append(", ");
+            councilCount++;
+        }
+        for (String uuid : cityConfig.getStringList(cityName.toLowerCase() + ".fullMembers")) {
+            fullMemberNames.append((Bukkit.getOfflinePlayer(UUID.fromString(uuid))).getName()).append(", ");
+            fullMemberCount++;
+        }
+        for (String uuid : cityConfig.getStringList(cityName.toLowerCase() + ".newMembers")) {
+            newMemberNames.append((Bukkit.getOfflinePlayer(UUID.fromString(uuid))).getName()).append(", ");
+            newMemberCount++;
+        }
+        // Remove the ", " at the end of the Strings
+        cityCouncilNames = new StringBuilder(
+                cityCouncilNames.substring(0, cityCouncilNames.length() - 2 < 0 ? 0 : cityCouncilNames.length() - 2));
+        fullMemberNames = new StringBuilder(
+                fullMemberNames.substring(0, fullMemberNames.length() - 2 < 0 ? 0 : fullMemberNames.length() - 2));
+        newMemberNames = new StringBuilder(
+                newMemberNames.substring(0, newMemberNames.length() - 2 < 0 ? 0 : newMemberNames.length() - 2));
+        int level = City.getLevel(cityConfig.getDouble(cityName.toLowerCase() + ".exp"));
+        p.sendMessage(Main.helper.getMess(p.getPlayer(), "CityInfo", true)
+                .replace("%name", cityConfig.getString(cityName.toLowerCase() + ".caseSensitiveName"))
+                .replace("%level", "" + level)
+                .replace("%entryReq",
+                        Main.helper.getMess(p.getPlayer(), cityConfig.getString(cityName.toLowerCase() + ".entryReq")))
+                .replace("%mayor", mayorName)
+                .replace("%councilCount", councilCount + "")
+                .replace("%council", cityCouncilNames.toString())
+                .replace("%fullMembers", fullMemberNames.toString())
+                .replace("%fullCount", fullMemberCount + "")
+                .replace("%newMembers", newMemberNames.toString())
+                .replace("%newCount", newMemberCount + ""));
     }
 
 }
