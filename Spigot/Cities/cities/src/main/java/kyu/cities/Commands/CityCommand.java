@@ -213,8 +213,11 @@ public class CityCommand {
                 }
                 cityConfig.set(cityName.toLowerCase() + ".caseSensitiveName", cityName);
                 cityConfig.set(cityName.toLowerCase() + ".exp", 0);
+                cityConfig.set(cityName.toLowerCase() + ".claimableChunks", City.defaultClaimableChunks);
+                cityConfig.set(cityName.toLowerCase() + ".canNewcommersBreakPlace", false);
                 cityConfig.set(cityName.toLowerCase() + ".mayor", e.player().getUniqueId().toString());
                 cityConfig.set(cityName.toLowerCase() + ".entryReq", EntryRequirement.NONE.toString());
+                cityConfig.set(cityName.toLowerCase() + ".pvpEnabled", false);
                 Main.saveConfig(cityConfig);
                 City city = new City(cityName);
                 p.setCity(city);
@@ -222,6 +225,34 @@ public class CityCommand {
                 return;
             }
             // #endregion create command
+
+            //#region claim command
+            if (e.args()[0].equalsIgnoreCase("claim")) {
+                if (p.getCity() != null) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "AlreadyInACity", true));
+                    return;
+                }
+                City city = p.getCity();
+
+                if (p.getRank().getVal() < city.getMinClaimRank().getVal()) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "RankTooLow", true));
+                    return;
+                }
+                
+                if (!city.canClaimChunks()) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "CityCannotClaimMoreChunks", true));
+                    return;
+                }
+
+                if (City.isChunkOwned(e.player().getChunk()) != null) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "ChunkAlreadyOwned", true));
+                    return;
+                }
+                city.claimChunk(e.player().getChunk());
+                p.sendMessage(Main.helper.getMess(e.player(), "ChunkClaimed", true));
+                return;
+            }
+            //#endregion claim command
         });
     }
 

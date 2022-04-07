@@ -137,4 +137,11 @@ public class CPlayer {
         return pConf.get(uuid.toString() + ".city") != null;
     }
 
+    public static CPlayer getCPlayer(Player p) {
+        if (!players.containsKey(p)) {
+            return new CPlayer(p);
+        }
+        return players.get(p);
+    }
+
 }

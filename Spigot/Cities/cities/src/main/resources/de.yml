@@ -13,12 +13,21 @@ CitiesInfo:
   CityJoined: "&aErfolgreich der Stadt &b%name &abeigetreten!"
   InviteDenied: "&aEinladung erfolgreich abgelehnt!"
   InvitedPlayerToCity: "&aErfolgreich &b%pName &azu &b%name &aeingeladen!"
+  ChunkClaimed: "&aChunk erfolreich geclaimt!"
   GotInvitedToCity: "&aDu wurdest zu der Stadt &b%name &aeingeladen!\n&aAntworte mit /city acceptInvite/denyInvite %name"
   NewJoinRequest: "&b%name &awill deiner Stadt beitreten!\n&aAkzeptiere mit /city allow %name oder lehne ab mit /city deny %name"
   CityInfo: "&6%name Info\n&6Level: &a%level\n&6Beitritt: &a%entryReq\n&6Bürgermeister: &a%mayor\n&6Stadtrat (%councilCount): &a%council\n&6Stadtälteste (%fullCount): &a%fullMembers\n&6Neukömmlinge (%newCount): &a%newMembers"
 
 CitiesErrors:
+  CantBreakBlocksInOtherCity: "&cDu kannst in anderen Städten keine Blöcke abbauen!"
+  CantPlaceBlocksInOtherCity: "&cDu kannst in anderen Städten keine Blöcke platzieren!"
+  CantPlaceBlocksAsNewcommer: "&cDu kannst als Neuling in deiner Stadt keine Blöcke platzieren!"
+  CantBreakBlocksAsNewcommer: "&cDu kannst als Neuling in deiner Stadt keine Blöcke abbauen!"
+  CantOpenStuffInOtherCity: "&cDu kannst in anderen Städten nichts öffnen!"
   CityDoesNotExist: "&cDiese Stadt existiert nicht!"
+  CityCannotClaimMoreChunks: "&cDeine Stadt kann keine Chunks mehr claimen"
+  RankTooLow: "&cDein Stadtrang ist nicht hoch genug dafür!"
+  ChunkAlreadyOwned: "&cDieser Chunk gehört bereits einer Stadt!"
   CityNameTaken: "&cDieser Name ist bereis vergeben!"
   AlreadyInACity: "&cDu bist bereits in einer Stadt!"
   MustBeInCityForCMDExtended: "&cDu musst in einer Stadt sein um diesen Befehl ohne Argumente auszuführen!"
@@ -39,3 +48,9 @@ JobTranslations:
   LOGGER: "Baumfäller"
   FISHER: "Fischer"
   FARMER: "Bauer"
+
+CityRankTranslations:
+  MAYOR: "Bürgermeister"
+  CITY_COUNCIL: "Stadtrat"
+  FULL_MEMBER: "Stadtältester"
+  NEW_MEMBER: "Neuerkömmling"

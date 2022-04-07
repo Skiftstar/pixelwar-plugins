@@ -14,6 +14,7 @@ import Kyu.SCommand;
 import Kyu.LangSupport.DB;
 import Kyu.LangSupport.LanguageHelper;
 import kyu.cities.Commands.CityCommand;
+import kyu.cities.Listeners.CityChunkListeners;
 import kyu.cities.Listeners.JoinLeaveListener;
 import kyu.cities.Util.City;
 import kyu.cities.Util.EXPCurveType;
@@ -36,6 +37,7 @@ public class Main extends JavaPlugin {
 
       CityCommand.init();
       new JoinLeaveListener(this);
+      new CityChunkListeners(this);
     }
 
     public void loadConfigValues() {
@@ -66,6 +68,7 @@ public class Main extends JavaPlugin {
 
       cityCost = config.getInt("CityCost");
       City.expCurveType = EXPCurveType.valueOf(config.getString("CityEXPCurveType").toUpperCase());
+      City.defaultClaimableChunks = config.getInt("CityStartChunks");
 
       helper = new LanguageHelper(this, "de", getTextResource("de.yml"), Util.color(getConfig().getString("chatPrefix") + " "), true);
       

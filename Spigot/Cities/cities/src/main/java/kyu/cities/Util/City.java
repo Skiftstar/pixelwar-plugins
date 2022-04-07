@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.Chunk;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import kyu.cities.Main;
@@ -15,11 +16,17 @@ public class City {
     public static Map<String, City> cities = new HashMap<>();
     public static EXPCurveType expCurveType;
     public static double base, exponent, multiplier;
+    public static int defaultClaimableChunks;
 
     private double exp;
     private String name;
     private EntryRequirement entryRequirement;
     private List<CPlayer> onlinePlayers = new ArrayList<>();
+    private List<Chunk> claimedChunks = new ArrayList<>();
+    private CityRank minClaimRank;
+    private int claimAbleChunks;
+    private boolean canNewcommersBreakPlace;
+    private boolean pvpEnabled;
     
     public City(String name) {
         this.name = name;
@@ -31,7 +38,10 @@ public class City {
         YamlConfiguration cityConf = Main.getInstance().getCitiesConfig();
         name = cityConf.getString(name.toLowerCase() + ".caseSensitiveName");
         exp = cityConf.getDouble(name.toLowerCase() + ".exp");
+        claimAbleChunks = cityConf.getInt(name.toLowerCase() + ".claimableChunks");
         entryRequirement = EntryRequirement.valueOf(cityConf.getString(name.toLowerCase() + ".entryReq"));
+        canNewcommersBreakPlace = cityConf.getBoolean(name.toLowerCase() + ".canNewcommersBreakPlace");
+        pvpEnabled = cityConf.getBoolean(name.toLowerCase() + ".pvpEnabled");
     }
 
     public void removeJoinRequest(String playerName) {
@@ -68,6 +78,10 @@ public class City {
         Main.saveConfig(cityConfig);
     }
 
+    public void claimChunk(Chunk chunk) {
+        claimedChunks.add(chunk);
+    }
+
     public String getName() {
         return name;
     }
@@ -84,6 +98,14 @@ public class City {
         }
     }
 
+    public void setPvpEnabled(boolean pvpEnabled) {
+        this.pvpEnabled = pvpEnabled;
+    }
+
+    public void setCanNewcommersBreakPlace(boolean canNewcommersBreakPlace) {
+        this.canNewcommersBreakPlace = canNewcommersBreakPlace;
+    }
+
     public void setEntryRequirement(EntryRequirement entryRequirement) {
         this.entryRequirement = entryRequirement;
     }
@@ -96,12 +118,32 @@ public class City {
         return onlinePlayers;
     }
 
+    public boolean canNewcommersBreakPlace() {
+        return canNewcommersBreakPlace;
+    }
+
     public void addOnlinePlayer(CPlayer p) {
         if (!onlinePlayers.contains(p)) onlinePlayers.add(p);
     }
 
     public void removeOnlinePlayer(CPlayer p) {
         onlinePlayers.remove(p);
+    }
+
+    public boolean canClaimChunks() {
+        return claimAbleChunks > 0;
+    }
+
+    public CityRank getMinClaimRank() {
+        return minClaimRank;
+    }
+
+    public boolean isPvpEnabled() {
+        return pvpEnabled;
+    }
+
+    public List<Chunk> getClaimedChunks() {
+        return claimedChunks;
     }
 
 
@@ -162,6 +204,15 @@ public class City {
             city = cities.get(cityName.toLowerCase());
         }
         return city;
+    }
+
+    public static City isChunkOwned(Chunk chunk) {
+        for (City city : cities.values()) {
+            if (city.getClaimedChunks().contains(chunk)) {
+                return city;
+            }
+        }
+        return null;
     }
     
 }
