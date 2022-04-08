@@ -32,6 +32,7 @@ public class CPlayer {
         // TODO: Load Job EXPs
 
         if (pConf.get(p.getUniqueId().toString() + ".city") != null) {
+            rank = CityRank.valueOf(pConf.getString(p.getUniqueId().toString() + ".cityRank"));
             String cityName = pConf.getString(p.getUniqueId().toString() + ".city");
             if (!City.cities.containsKey(cityName.toLowerCase())) {
                 if (!City.exists(cityName)) {
@@ -49,6 +50,9 @@ public class CPlayer {
 
     public void handleOfflineMessages() {
         YamlConfiguration playerConf = Main.getInstance().getPlayersConfig();
+        if (playerConf.get(p.getUniqueId().toString() + ".offlineMessages") == null) {
+            return;
+        }
         for (String k : playerConf.getConfigurationSection(p.getUniqueId().toString() + ".offlineMessages").getKeys(false)) {
             String key = p.getUniqueId().toString() + ".offlineMessages." + k;
             String messageKey = playerConf.getString(key + ".messKey");
@@ -75,6 +79,9 @@ public class CPlayer {
 
     public void setRank(CityRank rank) {
         this.rank = rank;
+        YamlConfiguration pConf = Main.getInstance().getPlayersConfig();
+        pConf.set(p.getUniqueId().toString() + ".cityRank", rank.toString());
+        Main.saveConfig(pConf);
     }
 
     public void sendMessage(String message) {
@@ -129,7 +136,7 @@ public class CPlayer {
     }
 
     public static boolean isOnline(String uuid) {
-        return Bukkit.getPlayer(UUID.fromString(uuid)) == null;
+        return Bukkit.getPlayer(UUID.fromString(uuid)) != null;
     }
 
     public static boolean isInCity(UUID uuid) {

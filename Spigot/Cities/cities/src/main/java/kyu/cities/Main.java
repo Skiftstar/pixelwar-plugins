@@ -58,6 +58,9 @@ public class Main extends JavaPlugin {
           if (!citiesFile.exists()) {
             citiesFile.createNewFile();
           }
+          if (!nameMapperFile.exists()) {
+            nameMapperFile.createNewFile();
+          }
           config = YamlConfiguration.loadConfiguration(configFile);
           playersConfig = YamlConfiguration.loadConfiguration(playersFile);
           citiesConfig = YamlConfiguration.loadConfiguration(citiesFile);

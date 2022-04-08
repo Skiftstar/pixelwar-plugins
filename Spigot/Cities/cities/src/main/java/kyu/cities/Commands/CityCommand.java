@@ -37,6 +37,34 @@ public class CityCommand {
             }
             // #endregion info command without args
 
+            //#region claim command
+            if (e.args()[0].equalsIgnoreCase("claim")) {
+                if (p.getCity() == null) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "MustBeInCityForCMD", true));
+                    return;
+                }
+                City city = p.getCity();
+
+                if (p.getRank().getVal() < city.getMinClaimRank().getVal()) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "RankTooLow", true));
+                    return;
+                }
+                
+                if (!city.canClaimChunks()) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "CityCannotClaimMoreChunks", true));
+                    return;
+                }
+
+                if (City.isChunkOwned(e.player().getChunk()) != null) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "ChunkAlreadyOwned", true));
+                    return;
+                }
+                city.claimChunk(e.player().getChunk());
+                p.sendMessage(Main.helper.getMess(e.player(), "ChunkClaimed", true));
+                return;
+            }
+            //#endregion claim command
+
             if (e.args().length < 2) {
                 e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "NEArgs", true)));
                 return;
@@ -45,7 +73,7 @@ public class CityCommand {
             // #region acceptInvite/denyInvite command
             if (e.args()[0].equalsIgnoreCase("acceptinvite") || e.args()[0].equalsIgnoreCase("denyinvite")) {
                 String cityName = e.args()[1];
-                if (City.exists(cityName)) {
+                if (!City.exists(cityName)) {
                     p.sendMessage(Main.helper.getMess(e.player(), "CityDoesNotExist", true));
                     return;
                 }
@@ -176,6 +204,7 @@ public class CityCommand {
                         break;
                     case NONE:
                         City.joinCity(p, cityName);
+                        p.setRank(CityRank.NEW_MEMBER);
                         p.sendMessage(Main.helper.getMess(e.player(), "CityJoined", true).replace("%name", cityName));
                         break;
                     case REQUEST:
@@ -218,41 +247,15 @@ public class CityCommand {
                 cityConfig.set(cityName.toLowerCase() + ".mayor", e.player().getUniqueId().toString());
                 cityConfig.set(cityName.toLowerCase() + ".entryReq", EntryRequirement.NONE.toString());
                 cityConfig.set(cityName.toLowerCase() + ".pvpEnabled", false);
+                cityConfig.set(cityName.toLowerCase() + ".minClaimRank", CityRank.CITY_COUNCIL.toString());
                 Main.saveConfig(cityConfig);
                 City city = new City(cityName);
                 p.setCity(city);
+                p.setRank(CityRank.MAYOR);
                 p.sendMessage(Main.helper.getMess(e.player(), "CityCreated", true).replace("%name", cityName));
                 return;
             }
             // #endregion create command
-
-            //#region claim command
-            if (e.args()[0].equalsIgnoreCase("claim")) {
-                if (p.getCity() != null) {
-                    p.sendMessage(Main.helper.getMess(e.player(), "AlreadyInACity", true));
-                    return;
-                }
-                City city = p.getCity();
-
-                if (p.getRank().getVal() < city.getMinClaimRank().getVal()) {
-                    p.sendMessage(Main.helper.getMess(e.player(), "RankTooLow", true));
-                    return;
-                }
-                
-                if (!city.canClaimChunks()) {
-                    p.sendMessage(Main.helper.getMess(e.player(), "CityCannotClaimMoreChunks", true));
-                    return;
-                }
-
-                if (City.isChunkOwned(e.player().getChunk()) != null) {
-                    p.sendMessage(Main.helper.getMess(e.player(), "ChunkAlreadyOwned", true));
-                    return;
-                }
-                city.claimChunk(e.player().getChunk());
-                p.sendMessage(Main.helper.getMess(e.player(), "ChunkClaimed", true));
-                return;
-            }
-            //#endregion claim command
         });
     }
 

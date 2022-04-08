@@ -1,5 +1,6 @@
 package kyu.cities.Listeners;
 
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -18,8 +19,9 @@ public class JoinLeaveListener implements Listener {
     private void onJoin(PlayerJoinEvent e) {
         CPlayer p = new CPlayer(e.getPlayer());
         p.handleOfflineMessages();
-        Main.getInstance().getNameMapperConfig().set(e.getPlayer().getName().toLowerCase(), e.getPlayer().getUniqueId().toString());
-        Main.saveConfig(Main.getInstance().getNameMapperConfig());
+        YamlConfiguration nameMapper = Main.getInstance().getNameMapperConfig();
+        nameMapper.set(e.getPlayer().getName().toLowerCase(), e.getPlayer().getUniqueId().toString());
+        Main.saveConfig(nameMapper);
         
     }
 

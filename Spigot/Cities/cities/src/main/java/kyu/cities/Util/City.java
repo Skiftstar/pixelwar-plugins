@@ -42,6 +42,7 @@ public class City {
         entryRequirement = EntryRequirement.valueOf(cityConf.getString(name.toLowerCase() + ".entryReq"));
         canNewcommersBreakPlace = cityConf.getBoolean(name.toLowerCase() + ".canNewcommersBreakPlace");
         pvpEnabled = cityConf.getBoolean(name.toLowerCase() + ".pvpEnabled");
+        minClaimRank = CityRank.valueOf(cityConf.getString(name.toLowerCase() + ".minClaimRank"));
     }
 
     public void removeJoinRequest(String playerName) {
@@ -159,6 +160,7 @@ public class City {
         }
         city = getCity(cityName);
         p.setCity(city);
+        p.setRank(CityRank.NEW_MEMBER);
         city.onlinePlayers.add(p);
 
         YamlConfiguration cityConf = Main.getInstance().getCitiesConfig();
@@ -173,15 +175,6 @@ public class City {
     }
 
     public static void requestJoin(CPlayer p, String cityName) { 
-        if (cities.containsKey(cityName.toLowerCase())) {
-            City city = cities.get(cityName.toLowerCase());
-            for (CPlayer player : city.onlinePlayers) {
-                if (player.getRank().equals(CityRank.MAYOR) || player.getRank().equals(CityRank.CITY_COUNCIL)) {
-                    player.sendMessage(Main.helper.getMess(player.getPlayer(), "NewJoinRequest", true)
-                        .replace("%name", p.getPlayer().getName()));
-                }
-            }
-        }
         YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();
         List<String> joinRequests = new ArrayList<>();
         if (cityConfig.get(cityName.toLowerCase() + ".joinRequests") != null) {
@@ -190,6 +183,15 @@ public class City {
         if (joinRequests.contains(p.getPlayer().getName().toLowerCase())) {
             p.sendMessage(Main.helper.getMess(p.getPlayer(), "AlreadyRequestedJoin", true));
             return;
+        }
+        if (cities.containsKey(cityName.toLowerCase())) {
+            City city = cities.get(cityName.toLowerCase());
+            for (CPlayer player : city.onlinePlayers) {
+                if (player.getRank().equals(CityRank.MAYOR) || player.getRank().equals(CityRank.CITY_COUNCIL)) {
+                    player.sendMessage(Main.helper.getMess(player.getPlayer(), "NewJoinRequest", true)
+                        .replace("%name", p.getPlayer().getName()));
+                }
+            }
         }
         joinRequests.add(p.getPlayer().getName().toLowerCase());
         cityConfig.set(cityName.toLowerCase() + ".joinRequests", joinRequests);

@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
@@ -45,7 +46,7 @@ public class CityChunkListeners implements Listener {
     }
 
     @EventHandler
-    private void onBlockPlace(BlockBreakEvent e) {
+    private void onBlockPlace(BlockPlaceEvent e) {
         CPlayer p = CPlayer.getCPlayer(e.getPlayer());
 
         City chunkOwner = City.isChunkOwned(p.getPlayer().getChunk());
