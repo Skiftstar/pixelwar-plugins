@@ -59,9 +59,18 @@ public class City {
         if (cityConfig.get(name.toLowerCase() + ".invites") != null) {
             invites = cityConfig.getStringList(name.toLowerCase() + ".invites");
         }
-        invites.add(uuid.toString());
+        if (!invites.contains(uuid.toString())) invites.add(uuid.toString());
         cityConfig.set(name.toLowerCase() + ".invites", invites);
         Main.saveConfig(cityConfig);
+    }
+
+    public boolean hasInviteFor(UUID uuid) {
+        YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();
+        List<String> invites = new ArrayList<>();
+        if (cityConfig.get(name.toLowerCase() + ".invites") != null) {
+            invites = cityConfig.getStringList(name.toLowerCase() + ".invites");
+        }
+        return invites.contains(uuid.toString());
     }
 
     public void removeInvite(UUID uuid) {

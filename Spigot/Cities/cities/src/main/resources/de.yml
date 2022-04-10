@@ -19,6 +19,7 @@ CitiesInfo:
   CityInfo: "&6%name Info\n&6Level: &a%level\n&6Beitritt: &a%entryReq\n&6Bürgermeister: &a%mayor\n&6Stadtrat (%councilCount): &a%council\n&6Stadtälteste (%fullCount): &a%fullMembers\n&6Neukömmlinge (%newCount): &a%newMembers"
 
 CitiesErrors:
+  PlayerAlreadyInvited: "&cDieser Spieler ist bereits eingeladen!"
   CantBreakBlocksInOtherCity: "&cDu kannst in anderen Städten keine Blöcke abbauen!"
   CantPlaceBlocksInOtherCity: "&cDu kannst in anderen Städten keine Blöcke platzieren!"
   CantPlaceBlocksAsNewcommer: "&cDu kannst als Neuling in deiner Stadt keine Blöcke platzieren!"

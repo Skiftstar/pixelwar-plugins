@@ -60,7 +60,7 @@ public class CPlayer {
 
             String message = Main.helper.getMess(p, messageKey, prefix);
             for (String rKey : playerConf.getConfigurationSection(key + ".replaces").getKeys(false)) {
-                message.replace(rKey, playerConf.getString(key + ".replaces." + rKey));
+                message = message.replace(rKey, playerConf.getString(key + ".replaces." + rKey));
             }
 
             sendMessage(message);
@@ -116,7 +116,7 @@ public class CPlayer {
             CPlayer p = players.get(Bukkit.getPlayer(UUID.fromString(uuid)));
             String message = Main.helper.getMess(p.getPlayer(), messageKey, prefix);
             for (String k : replaceValues.keySet()) {
-                message.replace(k, replaceValues.get(k));
+                message = message.replace(k, replaceValues.get(k));
             }
             p.sendMessage(message);
             return;

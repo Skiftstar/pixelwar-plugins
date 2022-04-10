@@ -114,6 +114,11 @@ public class CityCommand {
                     return;
                 }
 
+                if (p.getCity().hasInviteFor(UUID.fromString(uuid))) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "PlayerAlreadyInvited", true));
+                    return;
+                }
+
                 p.getCity().addInvite(UUID.fromString(uuid));
 
                 Map<String, String> replaceValues = new HashMap<>();
