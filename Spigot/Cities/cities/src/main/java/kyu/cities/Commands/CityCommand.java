@@ -37,6 +37,20 @@ public class CityCommand {
             }
             // #endregion info command without args
 
+            if (e.args()[0].equalsIgnoreCase("leave")) {
+                if (p.getCity() == null) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "MustBeInCityForCMD", true));
+                    return;
+                }
+
+                if (p.getRank().equals(CityRank.MAYOR)) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "CannotLeaveOwnCity", true));
+                    return;
+                }
+
+                p.leaveCity();
+            }
+
             //#region claim command
             if (e.args()[0].equalsIgnoreCase("claim")) {
                 if (p.getCity() == null) {

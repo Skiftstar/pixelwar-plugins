@@ -20,6 +20,7 @@ CitiesInfo:
 
 CitiesErrors:
   PlayerAlreadyInvited: "&cDieser Spieler ist bereits eingeladen!"
+  CannotLeaveOwnCity: "&cDu kannst deine eigene Stadt nicht verlassen!"
   CantBreakBlocksInOtherCity: "&cDu kannst in anderen Städten keine Blöcke abbauen!"
   CantPlaceBlocksInOtherCity: "&cDu kannst in anderen Städten keine Blöcke platzieren!"
   CantPlaceBlocksAsNewcommer: "&cDu kannst als Neuling in deiner Stadt keine Blöcke platzieren!"
