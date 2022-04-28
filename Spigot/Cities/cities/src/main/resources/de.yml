@@ -6,6 +6,7 @@ GeneralErrors:
 
 CitiesInfo:
   CityCreated: "&aStadt %name erfolgreich erstellt!"
+  LeftCity: "&aStadt erfolgreich verlassen!"
   joinRequestGotAccepted: "&aDeine Beitrittsanfrage zu &b%name &awurde akzeptiert!"
   joinRequestGotDenied: "&aDeine Beitrittsanfrage zu &b%name &awurde abgelehnt!"
   joinRequestDenied: "&aBetrittsanfrage für %name erfolgreich abgelehnt!"

@@ -77,14 +77,20 @@ public class City {
         City.removeInvite(uuid, name);
     }
 
-    public static void removeInvite(UUID uuid, String name) {
-        YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();
-        if (cityConfig.get(name.toLowerCase() + ".invites") == null) {
+    public void removePlayer(CPlayer p) {
+        String key;
+        if (p.getRank().equals(CityRank.NEW_MEMBER))
+            key = name.toLowerCase() + ".newMembers";
+        else if (p.getRank().equals(CityRank.FULL_MEMBER))
+            key = name.toLowerCase() + ".fullMembers";
+        else if (p.getRank().equals(CityRank.CITY_COUNCIL))
+            key = name.toLowerCase() + ".cityCouncil";
+        else 
             return;
-        }
-        List<String> invites = cityConfig.getStringList(name.toLowerCase() + ".invites");
-        invites.remove(uuid.toString());
-        cityConfig.set(name.toLowerCase() + ".invites", invites);
+        YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();
+        List<String> members = cityConfig.getStringList(key);
+        members.remove(p.getPlayer().getUniqueId().toString());
+        cityConfig.set(key, members);
         Main.saveConfig(cityConfig);
     }
 
@@ -181,6 +187,17 @@ public class City {
         YamlConfiguration playerConf = Main.getInstance().getPlayersConfig();
         playerConf.set(p.getPlayer().getUniqueId().toString() + ".city", cityName.toLowerCase());
         Main.saveConfig(playerConf);
+    }
+
+    public static void removeInvite(UUID uuid, String name) {
+        YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();
+        if (cityConfig.get(name.toLowerCase() + ".invites") == null) {
+            return;
+        }
+        List<String> invites = cityConfig.getStringList(name.toLowerCase() + ".invites");
+        invites.remove(uuid.toString());
+        cityConfig.set(name.toLowerCase() + ".invites", invites);
+        Main.saveConfig(cityConfig);
     }
 
     public static void requestJoin(CPlayer p, String cityName) { 

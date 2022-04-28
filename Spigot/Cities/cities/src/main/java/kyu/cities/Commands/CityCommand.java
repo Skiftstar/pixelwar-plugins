@@ -49,6 +49,9 @@ public class CityCommand {
                 }
 
                 p.leaveCity();
+
+                p.sendMessage(Main.helper.getMess(e.player(), "LeftCity", true));
+                return;
             }
 
             //#region claim command

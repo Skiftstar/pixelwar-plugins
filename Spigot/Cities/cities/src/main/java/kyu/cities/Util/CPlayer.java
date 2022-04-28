@@ -84,6 +84,18 @@ public class CPlayer {
         Main.saveConfig(pConf);
     }
 
+    public void leaveCity() {
+        if (city == null) {
+            return;
+        }
+        city.removePlayer(this);
+        city.removeOnlinePlayer(this);
+        city = null;
+        YamlConfiguration pConf = Main.getInstance().getPlayersConfig();
+        pConf.set(p.getUniqueId().toString() + ".city", null);
+        Main.saveConfig(pConf);
+    }
+
     public void sendMessage(String message) {
         p.sendMessage(Component.text(message));
     }
