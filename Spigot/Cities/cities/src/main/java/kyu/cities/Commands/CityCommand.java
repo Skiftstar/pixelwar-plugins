@@ -87,6 +87,51 @@ public class CityCommand {
                 return;
             }
 
+            //#region kick command
+            if (e.args()[0].equalsIgnoreCase("kick")) {
+                String playerName = e.args()[1];
+                if (p.getCity() == null) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "MustBeInCityForCMD", true));
+                    return;
+                }
+                City city = p.getCity();
+                if (p.getRank().getVal() < CityRank.CITY_COUNCIL.getVal()) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "RankTooLow", true));
+                    return;
+                }
+
+                //Check target player, if mayor, return, if same rank don't kick
+                YamlConfiguration mapper = Main.getInstance().getNameMapperConfig();
+                if (mapper.get(playerName.toLowerCase()) == null) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "PlayerNotFoundInMapper", true));
+                    return;
+                }
+                UUID targetPUuid = UUID.fromString(mapper.getString(playerName));
+                if (CPlayer.getCityName(targetPUuid) == null || !CPlayer.getCityName(targetPUuid).equalsIgnoreCase(p.getCity().getName())) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "PlayerNotInSameCity", true));
+                    return;
+                }
+                CityRank targetRank = CPlayer.getCityRank(targetPUuid);
+                if (targetRank.equals(CityRank.MAYOR)) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "CannotKickMayor", true));
+                    return;
+                }
+                if (targetRank.equals(p.getRank())) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "CannotKickSameRank", true));
+                    return;
+                }
+
+                city.removePlayer(targetPUuid);
+                CPlayer.removeCity(targetPUuid);
+
+                Map<String, String> replace = new HashMap<>();
+                replace.put("%city%", city.getName());
+                CPlayer.sendOfflineMess(playerName, "YouWereKickedFromCity", replace, true);
+                p.sendMessage(Main.helper.getMess(e.player(), "PlayerKicked", true).replace("%player", playerName));
+                return;
+            }
+            //#endregion kick command
+
             // #region acceptInvite/denyInvite command
             if (e.args()[0].equalsIgnoreCase("acceptinvite") || e.args()[0].equalsIgnoreCase("denyinvite")) {
                 String cityName = e.args()[1];

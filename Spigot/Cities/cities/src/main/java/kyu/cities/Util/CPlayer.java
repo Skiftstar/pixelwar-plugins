@@ -93,6 +93,7 @@ public class CPlayer {
         city = null;
         YamlConfiguration pConf = Main.getInstance().getPlayersConfig();
         pConf.set(p.getUniqueId().toString() + ".city", null);
+        pConf.set(p.getUniqueId().toString() + ".cityRank", null);
         Main.saveConfig(pConf);
     }
 
@@ -154,6 +155,32 @@ public class CPlayer {
     public static boolean isInCity(UUID uuid) {
         YamlConfiguration pConf = Main.getInstance().getPlayersConfig();
         return pConf.get(uuid.toString() + ".city") != null;
+    }
+
+    public static CityRank getCityRank(UUID uuid) {
+        YamlConfiguration pConf = Main.getInstance().getPlayersConfig();
+        return CityRank.valueOf(pConf.getString(uuid.toString() + ".cityRank"));
+    }
+
+    public static String getCityName(UUID uuid) {
+        YamlConfiguration pConf = Main.getInstance().getPlayersConfig();
+        if (pConf.get(uuid.toString() + ".city") == null) {
+            return null;
+        }
+        return pConf.getString(uuid.toString() + ".city");
+    }
+
+    public static void removeCity(UUID uuid) {
+        if (isOnline(uuid.toString())) {
+            CPlayer p = players.get(Bukkit.getPlayer(uuid));
+            p.leaveCity();
+            return;
+        }
+
+        YamlConfiguration pConf = Main.getInstance().getPlayersConfig();
+        pConf.set(uuid.toString() + ".city", null);
+        pConf.set(uuid.toString() + ".cityRank", null);
+        Main.saveConfig(pConf);
     }
 
     public static CPlayer getCPlayer(Player p) {

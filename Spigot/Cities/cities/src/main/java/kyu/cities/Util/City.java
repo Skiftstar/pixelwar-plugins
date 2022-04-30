@@ -78,18 +78,24 @@ public class City {
     }
 
     public void removePlayer(CPlayer p) {
+        removePlayer(p.getPlayer().getUniqueId());
+        onlinePlayers.remove(p);
+    }
+
+    public void removePlayer(UUID uuid) {
         String key;
-        if (p.getRank().equals(CityRank.NEW_MEMBER))
+        CityRank rank = CPlayer.getCityRank(uuid);
+        if (rank.equals(CityRank.NEW_MEMBER))
             key = name.toLowerCase() + ".newMembers";
-        else if (p.getRank().equals(CityRank.FULL_MEMBER))
+        else if (rank.equals(CityRank.FULL_MEMBER))
             key = name.toLowerCase() + ".fullMembers";
-        else if (p.getRank().equals(CityRank.CITY_COUNCIL))
+        else if (rank.equals(CityRank.CITY_COUNCIL))
             key = name.toLowerCase() + ".cityCouncil";
         else 
             return;
         YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();
         List<String> members = cityConfig.getStringList(key);
-        members.remove(p.getPlayer().getUniqueId().toString());
+        members.remove(uuid.toString());
         cityConfig.set(key, members);
         Main.saveConfig(cityConfig);
     }

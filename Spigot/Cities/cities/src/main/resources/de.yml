@@ -20,6 +20,9 @@ CitiesInfo:
   CityInfo: "&6%name Info\n&6Level: &a%level\n&6Beitritt: &a%entryReq\n&6Bürgermeister: &a%mayor\n&6Stadtrat (%councilCount): &a%council\n&6Stadtälteste (%fullCount): &a%fullMembers\n&6Neukömmlinge (%newCount): &a%newMembers"
 
 CitiesErrors:
+  CannotKickMayor: "&cDu kannst den Bürgermeister nicht kicken!"
+  CannotKickSameRank: "&cDieser Bürger hat den gleichen Rang wie du, du kannst ihn nicht kicken!"
+  PlayerNotInSameCity: "&cDieser Spieler ist nicht in deiner Stadt!"
   PlayerAlreadyInvited: "&cDieser Spieler ist bereits eingeladen!"
   CannotLeaveOwnCity: "&cDu kannst deine eigene Stadt nicht verlassen!"
   CantBreakBlocksInOtherCity: "&cDu kannst in anderen Städten keine Blöcke abbauen!"
