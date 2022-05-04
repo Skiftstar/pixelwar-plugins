@@ -37,6 +37,7 @@ public class CityCommand {
             }
             // #endregion info command without args
 
+            //#region leave command
             if (e.args()[0].equalsIgnoreCase("leave")) {
                 if (p.getCity() == null) {
                     p.sendMessage(Main.helper.getMess(e.player(), "MustBeInCityForCMD", true));
@@ -53,6 +54,7 @@ public class CityCommand {
                 p.sendMessage(Main.helper.getMess(e.player(), "LeftCity", true));
                 return;
             }
+            //#endregion leave command
 
             //#region claim command
             if (e.args()[0].equalsIgnoreCase("claim")) {
@@ -86,6 +88,66 @@ public class CityCommand {
                 e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "NEArgs", true)));
                 return;
             }
+
+            //#region transfer command
+
+            if (e.args()[0].equalsIgnoreCase("transfer")) {
+
+                return;
+            }
+
+            //#endregion transfer command
+
+            //#region promote command
+            if (e.args()[0].equalsIgnoreCase("promote")) {
+
+                if (p.getCity() == null) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "MustBeInCityForCMD", true));
+                    return;
+                }
+
+                String playerName = e.args()[1];
+                YamlConfiguration nameMapper = Main.getInstance().getNameMapperConfig();
+
+                if (nameMapper.getString(playerName) == null) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "PlayerNotFound", true));
+                    return;
+                }
+
+                UUID uuid = UUID.fromString(nameMapper.getString(playerName));
+                if (!CPlayer.getCityName(uuid).equalsIgnoreCase(p.getCity().getName())) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "PlayerNotInSameCity", true));
+                    return;
+                }
+
+                CityRank targetRank = CPlayer.getCityRank(uuid);
+
+                if (p.getRank().getVal() < CityRank.CITY_COUNCIL.getVal() || targetRank.getVal() + 1 == p.getRank().getVal()) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "RankTooLow", true));
+                    return;
+                }
+                
+                if (targetRank.getVal() + 1 == CityRank.MAYOR.getVal()) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "CannotPromoteToMayor", true));
+                    return;
+                }
+
+                CityRank newRank = CityRank.values()[targetRank.getVal() + 1];
+
+                if (CPlayer.isOnline(uuid)) {
+                    CPlayer cp = CPlayer.players.get(Bukkit.getPlayer(uuid));
+                    cp.setRank(newRank);
+                } else {
+                    CPlayer.setRank(uuid, newRank);
+                }
+                
+                p.sendMessage(Main.helper.getMess(e.player(), "PlayerPromoted", true)
+                    .replace("%playerName", playerName)
+                    .replace("%newRank", Main.helper.getMess(e.player(), newRank.toString(), false)));
+                return;
+
+            }
+            //#endregion promote command
 
             //#region kick command
             if (e.args()[0].equalsIgnoreCase("kick")) {
@@ -154,6 +216,38 @@ public class CityCommand {
                 return;
             }
             // #endregion acceptInvite/denyInvite command
+
+            // #region revoke invite command
+            if (e.args()[0].equalsIgnoreCase("revokeInv")) {
+
+                if (p.getCity() == null) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "MustBeInCityForCMD", true));
+                    return;
+                }
+
+                if (p.getRank().getVal() < CityRank.CITY_COUNCIL.getVal()) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "RankTooLow", true));
+                    return;
+                }
+
+                String playerName = e.args()[1];
+                YamlConfiguration mapper = Main.getInstance().getNameMapperConfig();
+                if (mapper.get(playerName.toLowerCase()) == null) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "PlayerNotFoundInMapper", true));
+                    return;
+                }
+
+                UUID targetPUuid = UUID.fromString(mapper.getString(playerName));
+                if (!p.getCity().hasInviteFor(targetPUuid)) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "NoInviteFound", true));
+                    return;
+                }
+
+                p.getCity().removeInvite(targetPUuid);
+                p.sendMessage(Main.helper.getMess(e.player(), "InviteRevoked", true));
+                return;
+            }
+            // #endregion revoke invite command
 
             // #region invite command
             if (e.args()[0].equalsIgnoreCase("invite")) {
@@ -231,7 +325,7 @@ public class CityCommand {
                         return;
                     }
 
-                    if (CPlayer.isOnline(uuid)) {
+                    if (CPlayer.isOnline(UUID.fromString(uuid))) {
                         CPlayer joiner = CPlayer.players.get(Bukkit.getPlayer(UUID.fromString(uuid)));
                         City.joinCity(joiner, p.getCity().getName());
                     } else {

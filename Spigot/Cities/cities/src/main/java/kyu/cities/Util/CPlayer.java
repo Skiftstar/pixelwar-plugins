@@ -125,7 +125,7 @@ public class CPlayer {
         }
         String uuid = nameMapper.getString(playerName.toLowerCase());
 
-        if (isOnline(uuid)) {
+        if (isOnline(UUID.fromString(uuid))) {
             CPlayer p = players.get(Bukkit.getPlayer(UUID.fromString(uuid)));
             String message = Main.helper.getMess(p.getPlayer(), messageKey, prefix);
             for (String k : replaceValues.keySet()) {
@@ -148,13 +148,19 @@ public class CPlayer {
         Main.saveConfig(playerConf);
     }
 
-    public static boolean isOnline(String uuid) {
-        return Bukkit.getPlayer(UUID.fromString(uuid)) != null;
+    public static boolean isOnline(UUID uuid) {
+        return Bukkit.getPlayer(uuid) != null;
     }
 
     public static boolean isInCity(UUID uuid) {
         YamlConfiguration pConf = Main.getInstance().getPlayersConfig();
         return pConf.get(uuid.toString() + ".city") != null;
+    }
+
+    public static void setRank(UUID uuid, CityRank rank) {
+        YamlConfiguration pConf = Main.getInstance().getPlayersConfig();
+        pConf.set(uuid.toString() + ".cityRank", rank.toString());
+        Main.saveConfig(pConf);
     }
 
     public static CityRank getCityRank(UUID uuid) {
@@ -171,7 +177,7 @@ public class CPlayer {
     }
 
     public static void removeCity(UUID uuid) {
-        if (isOnline(uuid.toString())) {
+        if (isOnline(uuid)) {
             CPlayer p = players.get(Bukkit.getPlayer(uuid));
             p.leaveCity();
             return;
