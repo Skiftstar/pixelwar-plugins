@@ -5,6 +5,10 @@ GeneralErrors:
   PlayerNotFoundInMapper: "&cSpieler wurde nicht gefunden! Hat er seinen Namen geändert?"
 
 CitiesInfo:
+  OpenJoinRequestsHeader: "&aDeine Stadt hat offene Betrittsanfragen:"
+  OpenJoinRequestsEntry: "&a- Name: &b%name"
+  ConfirmTransferCity: "&aBitte bestätige mit &b/city confirm &adass du die Stadt an &b%player &aübertragen willst!"
+  ConfirmDeleteCity: "&aBitte bestätige mit &b/city confirm &adass du die Stadt löschen willst!"
   OptionSet: "&aErfolgreich Option &b%option &aauf &b%value &agesetzt!"
   DeletedCity: "&aStadt erfolgreich gelöscht!"
   TransferredCityTo: "&aStadt ergolreich an &b%playerName &aübertragen!"
@@ -25,6 +29,7 @@ CitiesInfo:
   CityInfo: "&6%name Info\n&6Level: &a%level\n&6Beitritt: &a%entryReq\n&6Bürgermeister: &a%mayor\n&6Stadtrat (%councilCount): &a%council\n&6Stadtälteste (%fullCount): &a%fullMembers\n&6Neukömmlinge (%newCount): &a%newMembers"
 
 CitiesErrors:
+  ConfirmTimedOut: "&cBestätigungszeitraum abgelaufen!"
   InvalidValue: "&cDas ist kein valider Wert für diese Einstellung!"
   InvalidOption: "&cDas ist keine Einstellungsmöglichkeit!"
   CannotPromoteToMayor: "&cUm einem Spieler die Stadt zu übertragen benutze /city transfer SPIELERNAME"

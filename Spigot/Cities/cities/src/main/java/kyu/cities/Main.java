@@ -27,7 +27,7 @@ public class Main extends JavaPlugin {
   public static LanguageHelper helper;
   private static Main instance;
   public static List<SCommand> commands = new ArrayList<>();
-  public static int cityCost = 0;
+  public static int cityCost = 0, confirmTimeout = 5;
 
     @Override
     public void onEnable() {
@@ -68,6 +68,8 @@ public class Main extends JavaPlugin {
       } catch (IOException e) {
           e.printStackTrace();
       }
+
+      confirmTimeout = config.getInt("ConfirmTimeout");
 
       cityCost = config.getInt("CityCost");
       City.expCurveType = EXPCurveType.valueOf(config.getString("CityEXPCurveType").toUpperCase());

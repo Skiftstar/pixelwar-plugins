@@ -3,6 +3,7 @@ package kyu.cities.Commands;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -14,9 +15,12 @@ import kyu.cities.Util.City;
 import kyu.cities.Util.CityOption;
 import kyu.cities.Util.CityRank;
 import kyu.cities.Util.EntryRequirement;
+import kyu.cities.Util.Pair;
 import net.kyori.adventure.text.Component;
 
 public class CityCommand {
+
+    public static Map<CPlayer, Pair<Consumer<Void>, Integer>> confirmTasks = new HashMap<>();
 
     public static void init() {
         SCommand cityCmd = new SCommand(Main.getInstance(), "city", Main.helper);
@@ -25,6 +29,14 @@ public class CityCommand {
         cityCmd.execPerm("cities.city");
         cityCmd.exec(e -> {
             CPlayer p = CPlayer.players.get(e.player());
+
+            // #region confirm command
+
+            if (e.args()[0].equalsIgnoreCase("confirm")) {
+                handleConfirm(p);
+            }
+
+            // #endregion confirm command
 
             // #region info command without args
             if (e.args()[0].equalsIgnoreCase("info") && e.args().length == 1) {
@@ -38,7 +50,7 @@ public class CityCommand {
             }
             // #endregion info command without args
 
-            //#region leave command
+            // #region leave command
             if (e.args()[0].equalsIgnoreCase("leave")) {
                 if (p.getCity() == null) {
                     p.sendMessage(Main.helper.getMess(e.player(), "MustBeInCityForCMD", true));
@@ -55,9 +67,9 @@ public class CityCommand {
                 p.sendMessage(Main.helper.getMess(e.player(), "LeftCity", true));
                 return;
             }
-            //#endregion leave command
+            // #endregion leave command
 
-            //#region delete command
+            // #region delete command
             if (e.args()[0].equalsIgnoreCase("delete")) {
                 if (p.getCity() == null) {
                     p.sendMessage(Main.helper.getMess(e.player(), "MustBeInCityForCMD", true));
@@ -69,13 +81,19 @@ public class CityCommand {
                     return;
                 }
 
-                p.getCity().delete();
-                p.sendMessage(Main.helper.getMess(e.player(), "DeletedCity", true));
+                addConfirmTask(new Consumer<Void>() {
+                    @Override
+                    public void accept(Void t) {
+                        p.sendMessage(Main.helper.getMess(e.player(), "DeletedCity", true));
+                        p.getCity().delete();
+                    }
+                }, p);
+                p.sendMessage(Main.helper.getMess(e.player(), "ConfirmDeleteCity", true));
                 return;
             }
-            //#endregion delete command
+            // #endregion delete command
 
-            //#region claim command
+            // #region claim command
             if (e.args()[0].equalsIgnoreCase("claim")) {
                 if (p.getCity() == null) {
                     p.sendMessage(Main.helper.getMess(e.player(), "MustBeInCityForCMD", true));
@@ -87,7 +105,7 @@ public class CityCommand {
                     p.sendMessage(Main.helper.getMess(e.player(), "RankTooLow", true));
                     return;
                 }
-                
+
                 if (!city.canClaimChunks()) {
                     p.sendMessage(Main.helper.getMess(e.player(), "CityCannotClaimMoreChunks", true));
                     return;
@@ -101,14 +119,14 @@ public class CityCommand {
                 p.sendMessage(Main.helper.getMess(e.player(), "ChunkClaimed", true));
                 return;
             }
-            //#endregion claim command
+            // #endregion claim command
 
             if (e.args().length < 2) {
                 e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "NEArgs", true)));
                 return;
             }
 
-            //#region transfer command
+            // #region transfer command
 
             if (e.args()[0].equalsIgnoreCase("transfer")) {
 
@@ -136,17 +154,25 @@ public class CityCommand {
                     return;
                 }
 
-                CPlayer.setRank(targetUUID, CityRank.MAYOR);
-                p.setRank(CityRank.CITY_COUNCIL);
+                addConfirmTask(new Consumer<Void>() {
+                    @Override
+                    public void accept(Void t) {
+                        CPlayer.setRank(targetUUID, CityRank.MAYOR);
+                        p.setRank(CityRank.CITY_COUNCIL);
 
-                p.sendMessage(Main.helper.getMess(e.player(), "TransferredCityTo", true)
+                        p.sendMessage(Main.helper.getMess(e.player(), "TransferredCityTo", true)
+                                .replace("%player%", targetName));
+                    }
+                }, p);
+
+                p.sendMessage(Main.helper.getMess(e.player(), "ConfirmTransferCity", true)
                         .replace("%player%", targetName));
                 return;
             }
 
-            //#endregion transfer command
+            // #endregion transfer command
 
-            //#region promote command
+            // #region promote command
             if (e.args()[0].equalsIgnoreCase("promote")) {
 
                 if (p.getCity() == null) {
@@ -170,11 +196,12 @@ public class CityCommand {
 
                 CityRank targetRank = CPlayer.getCityRank(uuid);
 
-                if (p.getRank().getVal() < CityRank.CITY_COUNCIL.getVal() || targetRank.getVal() + 1 == p.getRank().getVal()) {
+                if (p.getRank().getVal() < CityRank.CITY_COUNCIL.getVal()
+                        || targetRank.getVal() + 1 == p.getRank().getVal()) {
                     p.sendMessage(Main.helper.getMess(e.player(), "RankTooLow", true));
                     return;
                 }
-                
+
                 if (targetRank.getVal() + 1 == CityRank.MAYOR.getVal()) {
                     p.sendMessage(Main.helper.getMess(e.player(), "CannotPromoteToMayor", true));
                     return;
@@ -183,16 +210,16 @@ public class CityCommand {
                 CityRank newRank = CityRank.values()[targetRank.getVal() + 1];
 
                 CPlayer.setRank(uuid, newRank);
-                
+
                 p.sendMessage(Main.helper.getMess(e.player(), "PlayerPromoted", true)
-                    .replace("%playerName", playerName)
-                    .replace("%newRank", Main.helper.getMess(e.player(), newRank.toString(), false)));
+                        .replace("%playerName", playerName)
+                        .replace("%newRank", Main.helper.getMess(e.player(), newRank.toString(), false)));
                 return;
 
             }
-            //#endregion promote command
+            // #endregion promote command
 
-            //#region kick command
+            // #region kick command
             if (e.args()[0].equalsIgnoreCase("kick")) {
                 String playerName = e.args()[1];
                 if (p.getCity() == null) {
@@ -205,14 +232,15 @@ public class CityCommand {
                     return;
                 }
 
-                //Check target player, if mayor, return, if same rank don't kick
+                // Check target player, if mayor, return, if same rank don't kick
                 YamlConfiguration mapper = Main.getInstance().getNameMapperConfig();
                 if (mapper.get(playerName.toLowerCase()) == null) {
                     p.sendMessage(Main.helper.getMess(e.player(), "PlayerNotFoundInMapper", true));
                     return;
                 }
                 UUID targetPUuid = UUID.fromString(mapper.getString(playerName));
-                if (CPlayer.getCityName(targetPUuid) == null || !CPlayer.getCityName(targetPUuid).equalsIgnoreCase(p.getCity().getName())) {
+                if (CPlayer.getCityName(targetPUuid) == null
+                        || !CPlayer.getCityName(targetPUuid).equalsIgnoreCase(p.getCity().getName())) {
                     p.sendMessage(Main.helper.getMess(e.player(), "PlayerNotInSameCity", true));
                     return;
                 }
@@ -235,7 +263,7 @@ public class CityCommand {
                 p.sendMessage(Main.helper.getMess(e.player(), "PlayerKicked", true).replace("%player", playerName));
                 return;
             }
-            //#endregion kick command
+            // #endregion kick command
 
             // #region acceptInvite/denyInvite command
             if (e.args()[0].equalsIgnoreCase("acceptinvite") || e.args()[0].equalsIgnoreCase("denyinvite")) {
@@ -452,13 +480,13 @@ public class CityCommand {
                 return;
             }
             // #endregion create command
-        
+
             if (e.args().length < 3) {
                 p.sendMessage(Main.helper.getMess(e.player(), "NEArgs", true));
                 return;
             }
 
-            //#region options command
+            // #region options command
 
             if (e.args()[0].equalsIgnoreCase("options")) {
 
@@ -493,7 +521,7 @@ public class CityCommand {
                 return;
             }
 
-            //#endregion options command
+            // #endregion options command
         });
     }
 
@@ -539,6 +567,26 @@ public class CityCommand {
                 .replace("%fullCount", fullMemberCount + "")
                 .replace("%newMembers", newMemberNames.toString())
                 .replace("%newCount", newMemberCount + ""));
+    }
+
+    private static void handleConfirm(CPlayer p) {
+        if (!confirmTasks.containsKey(p))
+            return;
+        Pair<Consumer<Void>, Integer> pair = confirmTasks.get(p);
+        pair.first.accept(null);
+        Bukkit.getScheduler().cancelTask(pair.second);
+        confirmTasks.remove(p);
+    }
+
+    private static void addConfirmTask(Consumer<Void> function, CPlayer p) {
+        if (confirmTasks.containsKey(p)) {
+            confirmTasks.remove(p);
+        }
+        int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
+            confirmTasks.remove(p);
+            p.sendMessage(Main.helper.getMess(p.getPlayer(), "ConfirmTimedOut", true));
+        }, 20 * Main.confirmTimeout);
+        confirmTasks.put(p, new Pair<Consumer<Void>, Integer>(function, taskId));
     }
 
 }

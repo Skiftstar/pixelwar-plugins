@@ -1,5 +1,7 @@
 chatPrefix: "&6[Cities]"
 
+ConfirmTimeout: 10 # How many seconds a user has to confirm a dangerous command
+
 database:
   host: localhost # host of your database
   port: 3306 # default port for MySQL

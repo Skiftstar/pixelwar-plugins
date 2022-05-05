@@ -117,6 +117,22 @@ public class City {
         Main.saveConfig(cityConfig);
     }
 
+    public List<String> getJoinRequestNames() {
+        List<String> list = new ArrayList<>();
+        YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();
+        if (cityConfig.get(name.toLowerCase() + ".joinRequests") == null) {
+            return list;
+        }
+
+        YamlConfiguration nameMapper = Main.getInstance().getNameMapperConfig();
+        for (String s : cityConfig.getStringList(name.toLowerCase() + ".joinRequests")) {
+            if (nameMapper.get(s) != null) {
+                list.add(nameMapper.getString(s));
+            }
+        }
+        return list;
+    }
+
     public void delete() {
         YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();
         cityConfig.set(name.toLowerCase(), null);
