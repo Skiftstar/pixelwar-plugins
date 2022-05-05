@@ -117,6 +117,23 @@ public class City {
         Main.saveConfig(cityConfig);
     }
 
+    public void displayJoinRequests(CPlayer p, boolean showEmptyMessage) {
+        List<String> requests = p.getCity().getJoinRequestNames();
+        if (requests.size() == 0) {
+            if (showEmptyMessage) {
+                p.sendMessage(Main.helper.getMess(p.getPlayer(), "NoOpenJoinRequests", true));
+            }
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(Main.helper.getMess(p.getPlayer(), "OpenJoinRequestsHeader", true));
+        for (String s : requests) {
+            sb.append(Main.helper.getMess(p.getPlayer(), "OpenJoinRequestsEntry", false)
+                .replace("%name", s));
+        }
+        p.sendMessage(sb.toString());
+    }
+
     public List<String> getJoinRequestNames() {
         List<String> list = new ArrayList<>();
         YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();

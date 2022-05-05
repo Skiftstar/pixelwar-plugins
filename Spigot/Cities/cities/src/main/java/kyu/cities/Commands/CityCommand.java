@@ -121,6 +121,26 @@ public class CityCommand {
             }
             // #endregion claim command
 
+            //#region showRequests command
+
+            if (e.args()[0].equalsIgnoreCase("showRequests")) {
+                if (p.getCity() == null) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "MustBeInCityForCMD", true));
+                    return;
+                }
+
+                if (p.getRank().getVal() < CityRank.CITY_COUNCIL.getVal()) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "RankTooLow", true));
+                    return;
+                }
+
+                boolean showEmptyMessage = true;
+                p.getCity().displayJoinRequests(p, showEmptyMessage);
+                return;
+            }
+
+            //#endregion showRequests command
+
             if (e.args().length < 2) {
                 e.player().sendMessage(Component.text(Main.helper.getMess(e.player(), "NEArgs", true)));
                 return;
