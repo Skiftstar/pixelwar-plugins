@@ -12,4 +12,13 @@ public enum CityRank {
     public int getVal() {
         return val;
     }
+
+    public static String[] stringValues() {
+        String[] arr = new String[values().length];
+
+        for (int i = 0; i < values().length; i++) {
+            arr[i] = values()[i].toString();
+        }
+        return arr;
+    }
 }

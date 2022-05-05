@@ -11,6 +11,7 @@ import Kyu.SCommand;
 import kyu.cities.Main;
 import kyu.cities.Util.CPlayer;
 import kyu.cities.Util.City;
+import kyu.cities.Util.CityOption;
 import kyu.cities.Util.CityRank;
 import kyu.cities.Util.EntryRequirement;
 import net.kyori.adventure.text.Component;
@@ -56,6 +57,24 @@ public class CityCommand {
             }
             //#endregion leave command
 
+            //#region delete command
+            if (e.args()[0].equalsIgnoreCase("delete")) {
+                if (p.getCity() == null) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "MustBeInCityForCMD", true));
+                    return;
+                }
+
+                if (!p.getRank().equals(CityRank.MAYOR)) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "RankTooLow", true));
+                    return;
+                }
+
+                p.getCity().delete();
+                p.sendMessage(Main.helper.getMess(e.player(), "DeletedCity", true));
+                return;
+            }
+            //#endregion delete command
+
             //#region claim command
             if (e.args()[0].equalsIgnoreCase("claim")) {
                 if (p.getCity() == null) {
@@ -93,6 +112,35 @@ public class CityCommand {
 
             if (e.args()[0].equalsIgnoreCase("transfer")) {
 
+                if (p.getCity() == null) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "MustBeInCityForCMD", true));
+                    return;
+                }
+
+                if (p.getRank().getVal() < CityRank.MAYOR.getVal()) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "RankTooLow", true));
+                    return;
+                }
+
+                String targetName = e.args()[1];
+                YamlConfiguration mapper = Main.getInstance().getNameMapperConfig();
+                if (mapper.getString("Names." + targetName) == null) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "NoPlayerFound", true));
+                    return;
+                }
+
+                UUID targetUUID = UUID.fromString(mapper.getString("Names." + targetName));
+
+                if (!CPlayer.getCityName(targetUUID).equalsIgnoreCase(p.getCity().getName())) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "PlayerNotInSameCity", true));
+                    return;
+                }
+
+                CPlayer.setRank(targetUUID, CityRank.MAYOR);
+                p.setRank(CityRank.CITY_COUNCIL);
+
+                p.sendMessage(Main.helper.getMess(e.player(), "TransferredCityTo", true)
+                        .replace("%player%", targetName));
                 return;
             }
 
@@ -134,12 +182,7 @@ public class CityCommand {
 
                 CityRank newRank = CityRank.values()[targetRank.getVal() + 1];
 
-                if (CPlayer.isOnline(uuid)) {
-                    CPlayer cp = CPlayer.players.get(Bukkit.getPlayer(uuid));
-                    cp.setRank(newRank);
-                } else {
-                    CPlayer.setRank(uuid, newRank);
-                }
+                CPlayer.setRank(uuid, newRank);
                 
                 p.sendMessage(Main.helper.getMess(e.player(), "PlayerPromoted", true)
                     .replace("%playerName", playerName)
@@ -401,22 +444,56 @@ public class CityCommand {
                     p.sendMessage(Main.helper.getMess(e.player(), "CityNameTaken", true));
                     return;
                 }
-                cityConfig.set(cityName.toLowerCase() + ".caseSensitiveName", cityName);
-                cityConfig.set(cityName.toLowerCase() + ".exp", 0);
-                cityConfig.set(cityName.toLowerCase() + ".claimableChunks", City.defaultClaimableChunks);
-                cityConfig.set(cityName.toLowerCase() + ".canNewcommersBreakPlace", false);
-                cityConfig.set(cityName.toLowerCase() + ".mayor", e.player().getUniqueId().toString());
-                cityConfig.set(cityName.toLowerCase() + ".entryReq", EntryRequirement.NONE.toString());
-                cityConfig.set(cityName.toLowerCase() + ".pvpEnabled", false);
-                cityConfig.set(cityName.toLowerCase() + ".minClaimRank", CityRank.CITY_COUNCIL.toString());
-                Main.saveConfig(cityConfig);
                 City city = new City(cityName);
+                city.initNew(e.player().getUniqueId());
                 p.setCity(city);
                 p.setRank(CityRank.MAYOR);
                 p.sendMessage(Main.helper.getMess(e.player(), "CityCreated", true).replace("%name", cityName));
                 return;
             }
             // #endregion create command
+        
+            if (e.args().length < 3) {
+                p.sendMessage(Main.helper.getMess(e.player(), "NEArgs", true));
+                return;
+            }
+
+            //#region options command
+
+            if (e.args()[0].equalsIgnoreCase("options")) {
+
+                if (p.getCity() == null) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "NotInACity", true));
+                    return;
+                }
+
+                if (p.getRank().getVal() < p.getCity().getMinEditRank().getVal()) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "RankTooLow", true));
+                    return;
+                }
+
+                String option = e.args()[1];
+
+                CityOption cityOption = CityOption.valueOf(option);
+                if (cityOption == null) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "InvalidOption", true));
+                    return;
+                }
+
+                String value = e.args()[2];
+                if (!cityOption.isValidValue(value)) {
+                    p.sendMessage(Main.helper.getMess(e.player(), "InvalidValue", true));
+                    return;
+                }
+
+                p.getCity().setOption(cityOption, value);
+                p.sendMessage(Main.helper.getMess(e.player(), "OptionSet", true)
+                        .replace("%option", cityOption.toString().toLowerCase())
+                        .replace("%value", value));
+                return;
+            }
+
+            //#endregion options command
         });
     }
 

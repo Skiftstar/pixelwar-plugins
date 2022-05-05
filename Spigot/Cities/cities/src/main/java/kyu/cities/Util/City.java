@@ -24,14 +24,29 @@ public class City {
     private List<CPlayer> onlinePlayers = new ArrayList<>();
     private List<Chunk> claimedChunks = new ArrayList<>();
     private CityRank minClaimRank;
+    private CityRank minEditRank;
     private int claimAbleChunks;
     private boolean canNewcommersBreakPlace;
     private boolean pvpEnabled;
-    
+
     public City(String name) {
         this.name = name;
         load();
         cities.put(name.toLowerCase(), this);
+    }
+
+    public void initNew(UUID mayorUUID) {
+        YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();
+        cityConfig.set(getName().toLowerCase() + ".caseSensitiveName", getName().toLowerCase());
+        cityConfig.set(getName().toLowerCase() + ".exp", 0);
+        cityConfig.set(getName().toLowerCase() + ".claimableChunks", City.defaultClaimableChunks);
+        cityConfig.set(getName().toLowerCase() + ".canNewcommersBreakPlace", false);
+        cityConfig.set(getName().toLowerCase() + ".mayor", mayorUUID.toString());
+        cityConfig.set(getName().toLowerCase() + ".entryReq", EntryRequirement.NONE.toString());
+        cityConfig.set(getName().toLowerCase() + ".pvpEnabled", false);
+        cityConfig.set(getName().toLowerCase() + ".minClaimRank", CityRank.CITY_COUNCIL.toString());
+        cityConfig.set(getName().toLowerCase() + ".minEditRank", CityRank.MAYOR.toString());
+        Main.saveConfig(cityConfig);
     }
 
     private void load() {
@@ -43,6 +58,7 @@ public class City {
         canNewcommersBreakPlace = cityConf.getBoolean(name.toLowerCase() + ".canNewcommersBreakPlace");
         pvpEnabled = cityConf.getBoolean(name.toLowerCase() + ".pvpEnabled");
         minClaimRank = CityRank.valueOf(cityConf.getString(name.toLowerCase() + ".minClaimRank"));
+        minEditRank = CityRank.valueOf(cityConf.getString(name.toLowerCase() + ".minEditRank"));
     }
 
     public void removeJoinRequest(String playerName) {
@@ -59,7 +75,8 @@ public class City {
         if (cityConfig.get(name.toLowerCase() + ".invites") != null) {
             invites = cityConfig.getStringList(name.toLowerCase() + ".invites");
         }
-        if (!invites.contains(uuid.toString())) invites.add(uuid.toString());
+        if (!invites.contains(uuid.toString()))
+            invites.add(uuid.toString());
         cityConfig.set(name.toLowerCase() + ".invites", invites);
         Main.saveConfig(cityConfig);
     }
@@ -91,13 +108,24 @@ public class City {
             key = name.toLowerCase() + ".fullMembers";
         else if (rank.equals(CityRank.CITY_COUNCIL))
             key = name.toLowerCase() + ".cityCouncil";
-        else 
+        else
             return;
         YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();
         List<String> members = cityConfig.getStringList(key);
         members.remove(uuid.toString());
         cityConfig.set(key, members);
         Main.saveConfig(cityConfig);
+    }
+
+    public void delete() {
+        YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();
+        cityConfig.set(name.toLowerCase(), null);
+        Main.saveConfig(cityConfig);
+        cities.remove(name.toLowerCase());
+
+        for (UUID uuid : City.getAllPlayers(getName())) {
+            CPlayer.removeCity(uuid);
+        }
     }
 
     public void claimChunk(Chunk chunk) {
@@ -114,7 +142,7 @@ public class City {
 
     public static int getLevel(double exp) {
         if (expCurveType.equals(EXPCurveType.EXPONENTIAL)) {
-            return (int) Math.floor(((Math.log(exp)/Math.log(base)) - exponent) / multiplier);
+            return (int) Math.floor(((Math.log(exp) / Math.log(base)) - exponent) / multiplier);
         } else {
             return (int) Math.floor(exp / base);
         }
@@ -144,8 +172,13 @@ public class City {
         return canNewcommersBreakPlace;
     }
 
+    public CityRank getMinEditRank() {
+        return minEditRank;
+    }
+
     public void addOnlinePlayer(CPlayer p) {
-        if (!onlinePlayers.contains(p)) onlinePlayers.add(p);
+        if (!onlinePlayers.contains(p))
+            onlinePlayers.add(p);
     }
 
     public void removeOnlinePlayer(CPlayer p) {
@@ -168,6 +201,32 @@ public class City {
         return claimedChunks;
     }
 
+    public void setOption(CityOption option, String value) {
+        YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();
+        switch(option) {
+            case PVP:
+                pvpEnabled = Boolean.parseBoolean(value);
+                cityConfig.set(getName().toLowerCase() + ".pvpEnabled", pvpEnabled);
+                break;
+            case CAN_NEWCOMMERS_BREAK_BLOCKS:
+                canNewcommersBreakPlace = Boolean.parseBoolean(value);
+                cityConfig.set(getName().toLowerCase() + ".canNewcommersBreakPlace", canNewcommersBreakPlace);
+                break;
+            case JOIN_REQUIREMENT:
+                entryRequirement = EntryRequirement.valueOf(value);
+                cityConfig.set(getName().toLowerCase() + ".entryRequirement", entryRequirement.toString());
+                break;
+            case MIN_CLAIM_RANK:
+                minClaimRank = CityRank.valueOf(value);
+                cityConfig.set(getName().toLowerCase() + ".minClaimRank", minClaimRank.toString());
+                break;
+            case CAN_CITY_COUNCIL_EDIT_OPTIONS:
+                minEditRank = CityRank.valueOf(value);
+                cityConfig.set(getName().toLowerCase() + ".minEditRank", minEditRank.toString());
+                break;
+        }
+        Main.saveConfig(cityConfig);
+    }
 
     public static boolean exists(String name) {
         YamlConfiguration cityConf = Main.getInstance().getCitiesConfig();
@@ -206,7 +265,7 @@ public class City {
         Main.saveConfig(cityConfig);
     }
 
-    public static void requestJoin(CPlayer p, String cityName) { 
+    public static void requestJoin(CPlayer p, String cityName) {
         YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();
         List<String> joinRequests = new ArrayList<>();
         if (cityConfig.get(cityName.toLowerCase() + ".joinRequests") != null) {
@@ -221,7 +280,7 @@ public class City {
             for (CPlayer player : city.onlinePlayers) {
                 if (player.getRank().equals(CityRank.MAYOR) || player.getRank().equals(CityRank.CITY_COUNCIL)) {
                     player.sendMessage(Main.helper.getMess(player.getPlayer(), "NewJoinRequest", true)
-                        .replace("%name", p.getPlayer().getName()));
+                            .replace("%name", p.getPlayer().getName()));
                 }
             }
         }
@@ -248,5 +307,30 @@ public class City {
         }
         return null;
     }
-    
+
+    public static List<UUID> getAllPlayers(String cityName) {
+        List<UUID> players = new ArrayList<>();
+        YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();
+
+        if (cityConfig.get(cityName.toLowerCase() + ".newMembers") != null) {
+            for (String uuid : cityConfig.getStringList(cityName.toLowerCase() + ".newMembers")) {
+                players.add(UUID.fromString(uuid));
+            }
+        }
+        if (cityConfig.get(cityName.toLowerCase() + ".fullMembers") != null) {
+            for (String uuid : cityConfig.getStringList(cityName.toLowerCase() + ".fullMembers")) {
+                players.add(UUID.fromString(uuid));
+            }
+        }
+        if (cityConfig.get(cityName.toLowerCase() + ".cityCouncil") != null) {
+            for (String uuid : cityConfig.getStringList(cityName.toLowerCase() + ".cityCouncil")) {
+                players.add(UUID.fromString(uuid));
+            }
+        }
+        if (cityConfig.get(cityName.toLowerCase() + ".mayor") != null) {
+            players.add(UUID.fromString(cityConfig.getString(cityName.toLowerCase() + ".mayor")));
+        }
+        return players;
+    }
+
 }

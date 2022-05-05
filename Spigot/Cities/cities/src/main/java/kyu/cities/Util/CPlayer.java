@@ -158,6 +158,10 @@ public class CPlayer {
     }
 
     public static void setRank(UUID uuid, CityRank rank) {
+        if (CPlayer.isOnline(uuid)) {
+            players.get(Bukkit.getPlayer(uuid)).setRank(rank);
+            return;
+        }
         YamlConfiguration pConf = Main.getInstance().getPlayersConfig();
         pConf.set(uuid.toString() + ".cityRank", rank.toString());
         Main.saveConfig(pConf);

@@ -5,6 +5,9 @@ GeneralErrors:
   PlayerNotFoundInMapper: "&cSpieler wurde nicht gefunden! Hat er seinen Namen geändert?"
 
 CitiesInfo:
+  OptionSet: "&aErfolgreich Option &b%option &aauf &b%value &agesetzt!"
+  DeletedCity: "&aStadt erfolgreich gelöscht!"
+  TransferredCityTo: "&aStadt ergolreich an &b%playerName &aübertragen!"
   PlayerPromoted: "&aErfolgreich &b%playerName &azu &b%newRank &abefördert!"
   InviteRevoked: "&aEinladung erfolgreich zurückgezogen!"
   CityCreated: "&aStadt %name erfolgreich erstellt!"
@@ -22,6 +25,8 @@ CitiesInfo:
   CityInfo: "&6%name Info\n&6Level: &a%level\n&6Beitritt: &a%entryReq\n&6Bürgermeister: &a%mayor\n&6Stadtrat (%councilCount): &a%council\n&6Stadtälteste (%fullCount): &a%fullMembers\n&6Neukömmlinge (%newCount): &a%newMembers"
 
 CitiesErrors:
+  InvalidValue: "&cDas ist kein valider Wert für diese Einstellung!"
+  InvalidOption: "&cDas ist keine Einstellungsmöglichkeit!"
   CannotPromoteToMayor: "&cUm einem Spieler die Stadt zu übertragen benutze /city transfer SPIELERNAME"
   NoInviteFound: "&cDieser Spieler wurde noch nicht eingeladen!"
   CannotKickMayor: "&cDu kannst den Bürgermeister nicht kicken!"
