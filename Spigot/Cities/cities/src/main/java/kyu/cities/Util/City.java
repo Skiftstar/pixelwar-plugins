@@ -35,17 +35,17 @@ public class City {
         cities.put(name.toLowerCase(), this);
     }
 
-    public void initNew(UUID mayorUUID) {
+    public static void initNew(UUID mayorUUID, String cityName) {
         YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();
-        cityConfig.set(getName().toLowerCase() + ".caseSensitiveName", getName().toLowerCase());
-        cityConfig.set(getName().toLowerCase() + ".exp", 0);
-        cityConfig.set(getName().toLowerCase() + ".claimableChunks", City.defaultClaimableChunks);
-        cityConfig.set(getName().toLowerCase() + ".canNewcommersBreakPlace", false);
-        cityConfig.set(getName().toLowerCase() + ".mayor", mayorUUID.toString());
-        cityConfig.set(getName().toLowerCase() + ".entryReq", EntryRequirement.NONE.toString());
-        cityConfig.set(getName().toLowerCase() + ".pvpEnabled", false);
-        cityConfig.set(getName().toLowerCase() + ".minClaimRank", CityRank.CITY_COUNCIL.toString());
-        cityConfig.set(getName().toLowerCase() + ".minEditRank", CityRank.MAYOR.toString());
+        cityConfig.set(cityName.toLowerCase() + ".caseSensitiveName", cityName);
+        cityConfig.set(cityName.toLowerCase() + ".exp", 0);
+        cityConfig.set(cityName.toLowerCase() + ".claimableChunks", City.defaultClaimableChunks);
+        cityConfig.set(cityName.toLowerCase() + ".canNewcommersBreakPlace", false);
+        cityConfig.set(cityName.toLowerCase() + ".mayor", mayorUUID.toString());
+        cityConfig.set(cityName.toLowerCase() + ".entryReq", EntryRequirement.NONE.toString());
+        cityConfig.set(cityName.toLowerCase() + ".pvpEnabled", false);
+        cityConfig.set(cityName.toLowerCase() + ".minClaimRank", CityRank.CITY_COUNCIL.toString());
+        cityConfig.set(cityName.toLowerCase() + ".minEditRank", CityRank.MAYOR.toString());
         Main.saveConfig(cityConfig);
     }
 
@@ -157,6 +157,7 @@ public class City {
         cities.remove(name.toLowerCase());
 
         for (UUID uuid : City.getAllPlayers(getName())) {
+            System.out.println(uuid.toString());
             CPlayer.removeCity(uuid);
         }
     }

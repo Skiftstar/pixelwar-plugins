@@ -19,7 +19,7 @@ public class JoinLeaveListener implements Listener {
     @EventHandler
     private void onJoin(PlayerJoinEvent e) {
         CPlayer p = new CPlayer(e.getPlayer());
-        if (p.getRank().getVal() >= CityRank.CITY_COUNCIL.getVal()) {
+        if (p.getCity() != null && p.getRank().getVal() >= CityRank.CITY_COUNCIL.getVal()) {
             boolean showEmptyMessage = false;
             p.getCity().displayJoinRequests(p, showEmptyMessage);
         }
