@@ -1,4 +1,4 @@
-package kyu.cities.Util;
+package kyu.cities.Util.City;
 
 public enum CityOption {
 

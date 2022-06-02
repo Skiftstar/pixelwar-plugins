@@ -16,9 +16,12 @@ import Kyu.LangSupport.LanguageHelper;
 import kyu.cities.Commands.CityCommand;
 import kyu.cities.Listeners.CityChunkListeners;
 import kyu.cities.Listeners.JoinLeaveListener;
-import kyu.cities.Util.City;
-import kyu.cities.Util.EXPCurveType;
-import kyu.cities.Util.Util;
+import kyu.cities.Util.City.City;
+import kyu.cities.Util.General.Constants;
+import kyu.cities.Util.General.EXPCurveType;
+import kyu.cities.Util.General.RoundingType;
+import kyu.cities.Util.General.Util;
+import kyu.cities.Util.Player.Job;
 
 public class Main extends JavaPlugin {
 
@@ -27,7 +30,7 @@ public class Main extends JavaPlugin {
   public static LanguageHelper helper;
   private static Main instance;
   public static List<SCommand> commands = new ArrayList<>();
-  public static int cityCost = 0, confirmTimeout = 5;
+  // public static int cityCost = 0, confirmTimeout = 5;
 
     @Override
     public void onEnable() {
@@ -69,9 +72,16 @@ public class Main extends JavaPlugin {
           e.printStackTrace();
       }
 
-      confirmTimeout = config.getInt("ConfirmTimeout");
+      Constants.confirmTimeout = config.getInt("ConfirmTimeout");
 
-      cityCost = config.getInt("CityCost");
+      Job.expConversion = config.getDouble("JobToCityEXPConversion");
+      Job.expConversionRounding = RoundingType.valueOf(config.getString("JobToCityEXPConversionRounding"));
+      Job.allowBredAnimals = config.getBoolean("AllowBredAnimalsForEXP");
+      Job.allowSpawnerMobs = config.getBoolean("AllowSpawnerMobsForEXP");
+      Job.swapCost = config.getInt("JobSwapCost");
+      Job.loadJobs();
+
+      City.cost = config.getInt("CityCost");
       City.expCurveType = EXPCurveType.valueOf(config.getString("CityEXPCurveType").toUpperCase());
       City.defaultClaimableChunks = config.getInt("CityStartChunks");
 
@@ -104,6 +114,10 @@ public class Main extends JavaPlugin {
 
   public static Main getInstance() {
       return instance;
+  }
+
+  public YamlConfiguration getConfig() {
+    return config;
   }
 
   public static void saveConfig(YamlConfiguration c) {

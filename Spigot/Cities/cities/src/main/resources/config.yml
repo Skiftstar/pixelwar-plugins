@@ -30,6 +30,25 @@ JobEXPCurveExponential:
   exp: 1.01
   multiplier: 0.1
 
+# How many Jobs a player can have at maximum
+MaxJobs: 1
+# Cost of quitting one of your Jobs
+JobSwapCost: 10000
+
+# What percentage of the Job EXP is converted to City EXP
+# Can be overridden individually 
+JobToCityEXPConversion: 25
+# Can be: 
+# NONE (no rounding)
+# UP (always up)
+# DOWN (always down)
+# HALF (round up at .5)
+JobToCityEXPConversionRounding: NONE
+# Whether bred Animals should award JobEXP when in EXP Table
+AllowBredAnimalsForEXP: false
+# Whether Mobs spawned by a spawn should award JobEXP when in EXP Table
+AllowSpawnerMobsForEXP: false
+
 Jobs:
   Miner:
     BlocksExp:
@@ -38,16 +57,24 @@ Jobs:
         City: 0
       Coal_ore:
         Job: 5
-        City: 2
       Iron_ore:
         Job: 20
-        City: 5
       Gold_ore:
         Job: 30
-        City: 8
       Diamond_ore:
         Job: 50
-        City: 15
       Emerald_ore:
         Job: 100
-        City: 25
+  Hunter:
+    EntitiesExp:
+      Sheep:
+        Job: 50
+      Pig:
+        Job: 50
+      Rabbit:
+        Job: 100
+      Ender_dragon:
+        Job: 1000
+      Dolphin:
+        Job: 500
+      

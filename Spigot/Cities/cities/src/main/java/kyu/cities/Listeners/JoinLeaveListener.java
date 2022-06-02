@@ -7,8 +7,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import kyu.cities.Main;
-import kyu.cities.Util.CPlayer;
-import kyu.cities.Util.CityRank;
+import kyu.cities.Util.City.CityRank;
+import kyu.cities.Util.Player.CPlayer;
 
 public class JoinLeaveListener implements Listener {
 

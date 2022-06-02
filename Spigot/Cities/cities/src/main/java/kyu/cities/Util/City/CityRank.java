@@ -1,4 +1,4 @@
-package kyu.cities.Util;
+package kyu.cities.Util.City;
 
 public enum CityRank {
     MAYOR(3), CITY_COUNCIL(2), FULL_MEMBER(1), NEW_MEMBER(0);

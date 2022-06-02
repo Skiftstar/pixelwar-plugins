@@ -10,12 +10,13 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import Kyu.SCommand;
 import kyu.cities.Main;
-import kyu.cities.Util.CPlayer;
-import kyu.cities.Util.City;
-import kyu.cities.Util.CityOption;
-import kyu.cities.Util.CityRank;
-import kyu.cities.Util.EntryRequirement;
-import kyu.cities.Util.Pair;
+import kyu.cities.Util.City.City;
+import kyu.cities.Util.City.CityOption;
+import kyu.cities.Util.City.CityRank;
+import kyu.cities.Util.City.EntryRequirement;
+import kyu.cities.Util.General.Constants;
+import kyu.cities.Util.General.Pair;
+import kyu.cities.Util.Player.CPlayer;
 import net.kyori.adventure.text.Component;
 
 public class CityCommand {
@@ -605,7 +606,7 @@ public class CityCommand {
         int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), () -> {
             confirmTasks.remove(p);
             p.sendMessage(Main.helper.getMess(p.getPlayer(), "ConfirmTimedOut", true));
-        }, 20 * Main.confirmTimeout);
+        }, 20 * Constants.confirmTimeout);
         confirmTasks.put(p, new Pair<Consumer<Void>, Integer>(function, taskId));
     }
 

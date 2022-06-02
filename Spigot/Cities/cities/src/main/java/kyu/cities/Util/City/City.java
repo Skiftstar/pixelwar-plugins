@@ -1,4 +1,4 @@
-package kyu.cities.Util;
+package kyu.cities.Util.City;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +10,8 @@ import org.bukkit.Chunk;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import kyu.cities.Main;
+import kyu.cities.Util.General.EXPCurveType;
+import kyu.cities.Util.Player.CPlayer;
 
 public class City {
 
@@ -17,6 +19,7 @@ public class City {
     public static EXPCurveType expCurveType;
     public static double base, exponent, multiplier;
     public static int defaultClaimableChunks;
+    public static int cost;
 
     private double exp;
     private String name;

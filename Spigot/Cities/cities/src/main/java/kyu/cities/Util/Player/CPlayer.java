@@ -1,4 +1,4 @@
-package kyu.cities.Util;
+package kyu.cities.Util.Player;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +9,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import kyu.cities.Main;
+import kyu.cities.Util.City.City;
+import kyu.cities.Util.City.CityRank;
 import net.kyori.adventure.text.Component;
 
 public class CPlayer {
@@ -29,7 +31,14 @@ public class CPlayer {
     private void load() {
         YamlConfiguration pConf = Main.getInstance().getPlayersConfig();
 
-        // TODO: Load Job EXPs
+        if (pConf.get(p.getUniqueId().toString() + ".jobs") != null) {
+            for (String job : pConf.getConfigurationSection(p.getUniqueId().toString() + ".jobs").getKeys(false)) {
+                String key = p.getUniqueId().toString() + ".jobs." + job;
+                boolean active = pConf.getBoolean(key + ".active");
+                if (!active) continue;
+                //TODO: check job name, load exp
+            }
+        }
 
         if (pConf.get(p.getUniqueId().toString() + ".city") != null) {
             rank = CityRank.valueOf(pConf.getString(p.getUniqueId().toString() + ".cityRank"));

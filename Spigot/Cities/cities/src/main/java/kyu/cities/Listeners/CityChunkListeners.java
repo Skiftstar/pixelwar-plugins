@@ -13,9 +13,9 @@ import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 
 import kyu.cities.Main;
-import kyu.cities.Util.CPlayer;
-import kyu.cities.Util.City;
-import kyu.cities.Util.CityRank;
+import kyu.cities.Util.City.City;
+import kyu.cities.Util.City.CityRank;
+import kyu.cities.Util.Player.CPlayer;
 
 public class CityChunkListeners implements Listener {
 
