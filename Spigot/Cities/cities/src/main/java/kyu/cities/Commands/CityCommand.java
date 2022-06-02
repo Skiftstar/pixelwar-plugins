@@ -35,6 +35,7 @@ public class CityCommand {
 
             if (e.args()[0].equalsIgnoreCase("confirm")) {
                 handleConfirm(p);
+                return;
             }
 
             // #endregion confirm command
@@ -493,8 +494,9 @@ public class CityCommand {
                     p.sendMessage(Main.helper.getMess(e.player(), "CityNameTaken", true));
                     return;
                 }
+                City.initNew(e.player().getUniqueId(), cityName);
                 City city = new City(cityName);
-                city.initNew(e.player().getUniqueId());
+                
                 p.setCity(city);
                 p.setRank(CityRank.MAYOR);
                 p.sendMessage(Main.helper.getMess(e.player(), "CityCreated", true).replace("%name", cityName));

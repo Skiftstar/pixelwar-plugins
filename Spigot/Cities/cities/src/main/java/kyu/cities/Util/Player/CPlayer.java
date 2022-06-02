@@ -94,16 +94,17 @@ public class CPlayer {
     }
 
     public void leaveCity() {
+        YamlConfiguration pConf = Main.getInstance().getPlayersConfig();
+        pConf.set(p.getUniqueId().toString() + ".city", null);
+        pConf.set(p.getUniqueId().toString() + ".cityRank", null);
+        Main.saveConfig(pConf);
+
         if (city == null) {
             return;
         }
         city.removePlayer(this);
         city.removeOnlinePlayer(this);
-        city = null;
-        YamlConfiguration pConf = Main.getInstance().getPlayersConfig();
-        pConf.set(p.getUniqueId().toString() + ".city", null);
-        pConf.set(p.getUniqueId().toString() + ".cityRank", null);
-        Main.saveConfig(pConf);
+        this.city = null;
     }
 
     public void sendMessage(String message) {
