@@ -5,6 +5,7 @@ GeneralErrors:
   PlayerNotFoundInMapper: "&cSpieler wurde nicht gefunden! Hat er seinen Namen geändert?"
 
 CitiesInfo:
+  CityLevelUp: "&aDeine Stadt ist erfolgreich auf Level &b%newLevel &aaufgestiegen!"
   NoOpenJoinRequests: "&aEs sind keine Beitrittsanfragen offen!"
   OpenJoinRequestsHeader: "&aDeine Stadt hat offene Betrittsanfragen:"
   OpenJoinRequestsEntry: "&a- Name: &b%name"
@@ -58,6 +59,9 @@ CitiesErrors:
   RankNotHighEnough: "&cDu hast keine Admin-Rechte für deine Stadt!"
   AlreadyRequestedJoin: "&cDu hast bereits eine aktive Beitrittsanfrage!"
   PlayerAlreadyInACity: "&cSpieler ist bereits in einer Stadt!"
+
+PlayerInfo:
+  JobLevelUp: "&aDu bist im Job &b%jobName &aerfolgreich auf Level &b%newLevel &aaufgestiegen!"
 
 CityEntryRequirements:
   NONE: "Keine Beschränkung"

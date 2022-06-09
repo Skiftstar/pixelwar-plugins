@@ -32,11 +32,18 @@ public class CPlayer {
         YamlConfiguration pConf = Main.getInstance().getPlayersConfig();
 
         if (pConf.get(p.getUniqueId().toString() + ".jobs") != null) {
-            for (String job : pConf.getConfigurationSection(p.getUniqueId().toString() + ".jobs").getKeys(false)) {
-                String key = p.getUniqueId().toString() + ".jobs." + job;
+            for (String jobSt : pConf.getConfigurationSection(p.getUniqueId().toString() + ".jobs").getKeys(false)) {
+                String key = p.getUniqueId().toString() + ".jobs." + jobSt;
                 boolean active = pConf.getBoolean(key + ".active");
-                if (!active) continue;
-                //TODO: check job name, load exp
+                if (!active)
+                    continue;
+                Job job = Job.getJob(jobSt);
+                if (job == null)
+                    continue;
+                if (!pConf.getBoolean(key + ".active"))
+                    continue;
+                double exp = pConf.getDouble(key + ".exp");
+                jobs.put(job, exp);
             }
         }
 
@@ -57,12 +64,35 @@ public class CPlayer {
         }
     }
 
+    public void addJobExp(Job job, Double exp) {
+        int levelBefore = Job.getLevel(jobs.get(job));
+
+        if (!jobs.containsKey(job)) {
+            jobs.put(job, exp);
+        } else {
+            jobs.replace(job, jobs.get(job), exp);
+        }
+        YamlConfiguration pConf = Main.getInstance().getPlayersConfig();
+        String key = p.getUniqueId().toString() + ".jobs." + job.getName();
+        pConf.set(key + ".exp", jobs.get(job));
+        Main.saveConfig(pConf);
+
+        int levelAfter = Job.getLevel(jobs.get(job));
+        if (levelAfter > levelBefore) {
+            this.sendMessage(Main.helper.getMess(p, "JobLevelUp", true)
+                .replace("%newLevel", "" + levelAfter)
+                .replace("%jobName", Main.helper.getMess(p, job.getName().toUpperCase(), false)));
+        }
+
+    }
+
     public void handleOfflineMessages() {
         YamlConfiguration playerConf = Main.getInstance().getPlayersConfig();
         if (playerConf.get(p.getUniqueId().toString() + ".offlineMessages") == null) {
             return;
         }
-        for (String k : playerConf.getConfigurationSection(p.getUniqueId().toString() + ".offlineMessages").getKeys(false)) {
+        for (String k : playerConf.getConfigurationSection(p.getUniqueId().toString() + ".offlineMessages")
+                .getKeys(false)) {
             String key = p.getUniqueId().toString() + ".offlineMessages." + k;
             String messageKey = playerConf.getString(key + ".messKey");
             boolean prefix = playerConf.getBoolean(key + ".prefix");
@@ -127,8 +157,9 @@ public class CPlayer {
         return rank;
     }
 
-    public static void sendOfflineMess(String playerName, String messageKey, Map<String, String> replaceValues, boolean prefix) {
-        //Ignore if not in mapper -> Cannot send offline message anyways
+    public static void sendOfflineMess(String playerName, String messageKey, Map<String, String> replaceValues,
+            boolean prefix) {
+        // Ignore if not in mapper -> Cannot send offline message anyways
         YamlConfiguration nameMapper = Main.getInstance().getNameMapperConfig();
         if (nameMapper.get(playerName.toLowerCase()) == null) {
             return;
@@ -145,10 +176,11 @@ public class CPlayer {
             return;
         }
 
-        //If not online
+        // If not online
 
         YamlConfiguration playerConf = Main.getInstance().getPlayersConfig();
-        int keys = playerConf.get(uuid + ".offlineMessages") == null ? 0 : playerConf.getConfigurationSection(uuid + ".offlineMessages").getKeys(false).size();
+        int keys = playerConf.get(uuid + ".offlineMessages") == null ? 0
+                : playerConf.getConfigurationSection(uuid + ".offlineMessages").getKeys(false).size();
         String key = uuid + ".offlineMessages." + keys;
         playerConf.set(key + ".messKey", messageKey);
         playerConf.set(key + ".prefix", prefix);

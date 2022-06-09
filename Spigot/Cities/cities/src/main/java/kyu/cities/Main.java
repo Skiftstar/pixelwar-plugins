@@ -14,7 +14,9 @@ import Kyu.SCommand;
 import Kyu.LangSupport.DB;
 import Kyu.LangSupport.LanguageHelper;
 import kyu.cities.Commands.CityCommand;
+import kyu.cities.Commands.JobCommand;
 import kyu.cities.Listeners.CityChunkListeners;
+import kyu.cities.Listeners.JobListener;
 import kyu.cities.Listeners.JoinLeaveListener;
 import kyu.cities.Util.City.City;
 import kyu.cities.Util.General.Constants;
@@ -39,8 +41,10 @@ public class Main extends JavaPlugin {
       loadConfigValues();
 
       CityCommand.init();
+      JobCommand.init();
       new JoinLeaveListener(this);
       new CityChunkListeners(this);
+      new JobListener(this);
     }
 
     public void loadConfigValues() {
@@ -79,11 +83,27 @@ public class Main extends JavaPlugin {
       Job.allowBredAnimals = config.getBoolean("AllowBredAnimalsForEXP");
       Job.allowSpawnerMobs = config.getBoolean("AllowSpawnerMobsForEXP");
       Job.swapCost = config.getInt("JobSwapCost");
+      Job.expCurveType = EXPCurveType.valueOf(config.getString("JobEXPCurveType").toUpperCase());
+      if (Job.expCurveType.equals(EXPCurveType.LINEAR)) {
+        Job.base = config.getDouble("JobEXPCurveLinear.ExpPerLevel");
+      } else {
+        Job.exponent = config.getDouble("JobEXPCurveExponential.exp");
+        Job.base = config.getDouble("JobEXPCurveExponential.Base");
+        Job.multiplier = config.getDouble("JobEXPCurveExponential.multiplier");
+      }
       Job.loadJobs();
 
       City.cost = config.getInt("CityCost");
       City.expCurveType = EXPCurveType.valueOf(config.getString("CityEXPCurveType").toUpperCase());
+      if (City.expCurveType.equals(EXPCurveType.LINEAR)) {
+        City.base = config.getDouble("CityEXPCurveLinear.ExpPerLevel");
+      } else {
+        City.exponent = config.getDouble("CityEXPCurveExponential.exp");
+        City.base = config.getDouble("CityEXPCurveExponential.Base");
+        City.multiplier = config.getDouble("CityEXPCurveExponential.multiplier");
+      }
       City.defaultClaimableChunks = config.getInt("CityStartChunks");
+      City.levelsPerNewChunk = config.getInt("CityLevelsPerChunk");
 
       helper = new LanguageHelper(this, "de", getTextResource("de.yml"), Util.color(getConfig().getString("chatPrefix") + " "), true);
       

@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 
 import kyu.cities.Main;
+import kyu.cities.Util.General.EXPCurveType;
 import kyu.cities.Util.General.Pair;
 import kyu.cities.Util.General.RoundingType;
 import kyu.cities.Util.General.Util;
@@ -19,6 +20,8 @@ public class Job {
     public static boolean allowBredAnimals = false;
     public static boolean allowSpawnerMobs = false;
     public static int swapCost = 0;
+    public static EXPCurveType expCurveType;
+    public static double base, exponent, multiplier;
 
     private String name;
     private Map<Material, Pair<Double, Double>> blocks;
@@ -49,16 +52,24 @@ public class Job {
         jobs.put(name, this);
     }
 
+    public static int getLevel(double exp) {
+        if (expCurveType.equals(EXPCurveType.EXPONENTIAL)) {
+            return (int) Math.floor(((Math.log(exp) / Math.log(base)) - exponent) / multiplier);
+        } else {
+            return (int) Math.floor(exp / base);
+        }
+    }
+
     public String getName() {
         return name;
     }
 
     public Pair<Double, Double> getBlockExp(Material mat) {
-        return blocks.get(mat);
+        return blocks.getOrDefault(mat, null);
     }
 
     public Pair<Double, Double> getMobExp(EntityType entity) {
-        return mobs.get(entity);
+        return mobs.getOrDefault(entity, null);
     }
 
     public static void loadJobs() {

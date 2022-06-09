@@ -19,6 +19,7 @@ public class City {
     public static EXPCurveType expCurveType;
     public static double base, exponent, multiplier;
     public static int defaultClaimableChunks;
+    public static int levelsPerNewChunk;
     public static int cost;
 
     private double exp;
@@ -62,6 +63,21 @@ public class City {
         pvpEnabled = cityConf.getBoolean(name.toLowerCase() + ".pvpEnabled");
         minClaimRank = CityRank.valueOf(cityConf.getString(name.toLowerCase() + ".minClaimRank"));
         minEditRank = CityRank.valueOf(cityConf.getString(name.toLowerCase() + ".minEditRank"));
+    }
+
+    public void addExp(double exp) {
+        int levelBefore = getLevel();
+
+        this.exp += exp;
+        YamlConfiguration cityConf = Main.getInstance().getCitiesConfig();
+        cityConf.set(name.toLowerCase() + ".exp", this.exp);
+        Main.saveConfig(cityConf);
+
+        int levelAfter = getLevel();
+
+        if (levelAfter > levelBefore) {
+            handleLevelup();
+        }
     }
 
     public void removeJoinRequest(String playerName) {
@@ -167,6 +183,7 @@ public class City {
 
     public void claimChunk(Chunk chunk) {
         claimedChunks.add(chunk);
+        claimAbleChunks--;
     }
 
     public String getName() {
@@ -263,6 +280,23 @@ public class City {
                 break;
         }
         Main.saveConfig(cityConfig);
+    }
+
+    private void handleLevelup() {
+        YamlConfiguration cityConfig = Main.getInstance().getCitiesConfig();
+        int newLevel = getLevel();
+        for (CPlayer player : onlinePlayers) {
+            player.sendMessage(Main.helper.getMess(player.getPlayer(), "CityLevelUp", true)
+                .replace("%newLevel", "" + newLevel));
+        }
+
+        if (newLevel % levelsPerNewChunk == 0) {
+            claimAbleChunks++;
+            cityConfig.set(getName().toLowerCase() + ".claimAbleChunks", claimAbleChunks);
+        }
+
+        Main.saveConfig(cityConfig);
+
     }
 
     public static boolean exists(String name) {
