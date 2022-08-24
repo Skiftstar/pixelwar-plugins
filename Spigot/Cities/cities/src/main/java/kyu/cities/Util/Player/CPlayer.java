@@ -21,9 +21,11 @@ public class CPlayer {
     private Map<Job, Double> jobs = new HashMap<>();
     private Player p;
     private CityRank rank;
+    private String uuid;
 
     public CPlayer(Player p) {
         this.p = p;
+        uuid = p.getUniqueId().toString();
         load();
         players.put(p, this);
     }
@@ -32,7 +34,7 @@ public class CPlayer {
         YamlConfiguration pConf = Main.getInstance().getPlayersConfig();
 
         if (pConf.get(p.getUniqueId().toString() + ".jobs") != null) {
-            for (String jobSt : pConf.getConfigurationSection(p.getUniqueId().toString() + ".jobs").getKeys(false)) {
+            for (String jobSt : pConf.getConfigurationSection(this.uuid + ".jobs").getKeys(false)) {
                 String key = p.getUniqueId().toString() + ".jobs." + jobSt;
                 boolean active = pConf.getBoolean(key + ".active");
                 if (!active)
@@ -48,11 +50,11 @@ public class CPlayer {
         }
 
         if (pConf.get(p.getUniqueId().toString() + ".city") != null) {
-            rank = CityRank.valueOf(pConf.getString(p.getUniqueId().toString() + ".cityRank"));
-            String cityName = pConf.getString(p.getUniqueId().toString() + ".city");
+            rank = CityRank.valueOf(pConf.getString(this.uuid + ".cityRank"));
+            String cityName = pConf.getString(this.uuid + ".city");
             if (!City.cities.containsKey(cityName.toLowerCase())) {
                 if (!City.exists(cityName)) {
-                    pConf.set(p.getUniqueId().toString() + ".city", null);
+                    pConf.set(this.uuid + ".city", null);
                     Main.saveConfig(pConf);
                     return;
                 }
@@ -107,6 +109,28 @@ public class CPlayer {
             playerConf.set(key, null);
         }
         Main.saveConfig(playerConf);
+    }
+
+    public void addJob(Job job) {
+        YamlConfiguration pConf = Main.getInstance().getPlayersConfig();
+        double exp = 0;
+        if (pConf.get(this.uuid + ".jobs." + job.getName()) != null) {
+            exp = pConf.getDouble(this.uuid + ".jobs." + job.getName());
+        }
+        pConf.set(this.uuid + ".jobs." + job.getName() + ".active", true);
+        Main.saveConfig(pConf);
+        jobs.put(job, exp);
+    }
+
+    public void removeJob(Job job) {
+        YamlConfiguration pConf = Main.getInstance().getPlayersConfig();
+        pConf.set(this.uuid + ".jobs." + job.getName() + ".active", false);
+        Main.saveConfig(pConf);
+        this.jobs.remove(job);
+    }
+
+    public boolean hasJob(Job job) {
+        return this.jobs.containsKey(job);
     }
 
     public void setCity(City city) {

@@ -83,6 +83,7 @@ public class Main extends JavaPlugin {
       Job.allowBredAnimals = config.getBoolean("AllowBredAnimalsForEXP");
       Job.allowSpawnerMobs = config.getBoolean("AllowSpawnerMobsForEXP");
       Job.swapCost = config.getInt("JobSwapCost");
+      Job.maxJobs = config.getInt("MaxJobs");
       Job.expCurveType = EXPCurveType.valueOf(config.getString("JobEXPCurveType").toUpperCase());
       if (Job.expCurveType.equals(EXPCurveType.LINEAR)) {
         Job.base = config.getDouble("JobEXPCurveLinear.ExpPerLevel");

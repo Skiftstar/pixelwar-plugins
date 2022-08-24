@@ -2,6 +2,7 @@ package kyu.cities.Util.Player;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -20,6 +21,7 @@ public class Job {
     public static boolean allowBredAnimals = false;
     public static boolean allowSpawnerMobs = false;
     public static int swapCost = 0;
+    public static int maxJobs = 0;
     public static EXPCurveType expCurveType;
     public static double base, exponent, multiplier;
 
@@ -120,7 +122,18 @@ public class Job {
         }
     }
 
+    public static Set<String> getJobs() {
+        return jobs.keySet();
+    }
+
     public static Job getJob(String name) {
-        return jobs.getOrDefault(name, null);
+        for (String jobNameEng : jobs.keySet()) {
+            for (String language : Main.helper.getLanguages()) {
+                if (Main.helper.getMess(language, jobNameEng.toUpperCase()).equalsIgnoreCase(name)) {
+                    return jobs.get(jobNameEng);
+                }
+            }
+        }
+        return null;
     }
 }

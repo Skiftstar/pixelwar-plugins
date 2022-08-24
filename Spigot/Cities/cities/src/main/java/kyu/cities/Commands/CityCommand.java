@@ -59,6 +59,8 @@ public class CityCommand {
                     return;
                 }
 
+                
+
                 if (p.getRank().equals(CityRank.MAYOR)) {
                     p.sendMessage(Main.helper.getMess(e.player(), "CannotLeaveOwnCity", true));
                     return;
@@ -494,6 +496,7 @@ public class CityCommand {
                     p.sendMessage(Main.helper.getMess(e.player(), "CityNameTaken", true));
                     return;
                 }
+                //TODO: Cost
                 City.initNew(e.player().getUniqueId(), cityName);
                 City city = new City(cityName);
                 

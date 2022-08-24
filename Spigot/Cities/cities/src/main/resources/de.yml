@@ -60,9 +60,6 @@ CitiesErrors:
   AlreadyRequestedJoin: "&cDu hast bereits eine aktive Beitrittsanfrage!"
   PlayerAlreadyInACity: "&cSpieler ist bereits in einer Stadt!"
 
-PlayerInfo:
-  JobLevelUp: "&aDu bist im Job &b%jobName &aerfolgreich auf Level &b%newLevel &aaufgestiegen!"
-
 CityEntryRequirements:
   NONE: "Keine Beschränkung"
   INVITE_ONLY: "Nur über Einladung"
@@ -79,3 +76,18 @@ CityRankTranslations:
   CITY_COUNCIL: "Stadtrat"
   FULL_MEMBER: "Stadtältester"
   NEW_MEMBER: "Neuerkömmling"
+
+PlayerInfo:
+  JobLevelUp: "&aDu bist im Job &b%jobName &aerfolgreich auf Level &b%newLevel &aaufgestiegen!"
+
+JobInfo:
+  JobHelpMessage: "&aHier hast du eine Übersicht aller wichtigen Job Commands:\n&6- /job list &a| Zeigt dir eine Liste aller verfügbaren Jobs an\n&6- /job join [JobName] &a| Damit kannst du einem Job beitreten, du kannst in bis zu %maxJobs gleichzeitig sein\n&6- /job leave [JobName] &a| Damit kannst du einen Job verlassen, dafür fallen natürlich Verwaltungsgebühren an, diese belaufen sich momentan auf %swapCost Pixel\n&6- /job info [JobName] &a| Zeigt dir Informationen über einen Job an, dazu gehören z.B. ob du diesen Job ausübst und welches Level du bist"
+  JobListMessage: "&6Hier hast du eine Übersicht aller Jobs die gerade verfügbar sind:\n%list"
+  JobJoinedSuccess: "&aDu bist erfolgreich dem Beruf &b%jobName &abeigetreten!"
+  JobLeftSuccess: "&aDu bist erfolgreich aus dem Beruf &b%jobName &aausgetreten!"
+
+JobErrors:
+  MaxJobAmountReached: "&cDu hast die maximale Anzahl an Jobs erreicht, verlasse einen Job um einen Neuen annehmen zu können!"
+  NoSuchJob: "&cDieser Job existiert nicht!"
+  AlreadyInJob: "&cDu bist bereits in diesem Beruf!"
+  NotInJob: "&cDu bist nicht in diesem Beruf!"
