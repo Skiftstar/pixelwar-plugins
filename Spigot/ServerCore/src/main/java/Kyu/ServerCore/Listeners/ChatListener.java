@@ -26,6 +26,7 @@ public class ChatListener  implements Listener {
     @EventHandler
     private void onChat(AsyncChatEvent e) {
         e.setCancelled(true);
+
         Player player = e.getPlayer();
 
         System.out.println(MuteHandler.mutedPlayers.getOrDefault(player.getUniqueId(), null));
@@ -56,6 +57,7 @@ public class ChatListener  implements Listener {
                 prefix = "Group not found";
             } else {
                 prefix = lpGroup.getCachedData().getMetaData().getPrefix();
+                if (prefix == null) prefix = "";
             }
         }
         String unfilteredMessage = ((TextComponent) e.message()).content();
