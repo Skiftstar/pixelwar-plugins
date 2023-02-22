@@ -1,5 +1,6 @@
 Errors:
   NEPerms: "&cDu hast nicht genug Rechte!"
+  NoReasonProvided: "&cBitte gib einen Bangrund an!"
   NEArgs: "&cNicht genug Argumente!"
   PlayerNotFound: "&cSpieler wurde nicht gefunden!"
   PlayerOnly: "Nur für Spieler!"
