@@ -2,7 +2,6 @@ package Kyu.ServerCoreBungee.Bansystem;
 
 import Kyu.ServerCoreBungee.Bansystem.HelperClasses.Pair;
 import Kyu.ServerCoreBungee.Main;
-import Kyu.WaterFallLanguageHelper.LanguageHelper;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Command;
@@ -27,14 +26,14 @@ class ConfirmCMD extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!functions.containsKey(sender)) {
-            sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "NoConfirmationPresent", true)));
+            sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "NoConfirmationPresent", true)));
             return;
         }
         Pair<Consumer<Void>, ScheduledTask> pair = functions.get(sender);
         pair.first.accept(null);
         pair.second.cancel();
         functions.remove(sender);
-        sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "BanConfirmed", true)));
+        sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "BanConfirmed", true)));
     }
 
     public void addFunction(CommandSender sender, Consumer<Void> function) {
@@ -42,7 +41,7 @@ class ConfirmCMD extends Command {
 
         ScheduledTask task = main.getProxy().getScheduler().schedule(main, () -> {
             functions.remove(sender);
-            sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "ConfirmationTimeout", true)));
+            sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "ConfirmationTimeout", true)));
         }, Main.confirmTimeout, TimeUnit.SECONDS);
         functions.put(sender, new Pair<>(function, task));
     }

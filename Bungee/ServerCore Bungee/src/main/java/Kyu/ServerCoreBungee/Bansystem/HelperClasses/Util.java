@@ -4,7 +4,6 @@ import Kyu.ServerCoreBungee.Main;
 import Kyu.ServerCoreBungee.Bansystem.BanCMD;
 import Kyu.ServerCoreBungee.Bansystem.BansHandler;
 import Kyu.ServerCoreBungee.Bansystem.UnbanCMD;
-import Kyu.WaterFallLanguageHelper.LanguageHelper;
 import net.md_5.bungee.api.CommandSender;
 
 import java.sql.Connection;
@@ -49,7 +48,7 @@ public class Util {
         for (int i = 0; i < array.length; i++) {
             if (array[i] == 0)
                 continue;
-            duration.append(array[i]).append(" ").append(LanguageHelper.getMess(language, nameArray[i]));
+            duration.append(array[i]).append(" ").append(Main.helper.getMess(language, nameArray[i]));
             if (used == 0)
                 duration.append(" ");
             else
@@ -87,7 +86,7 @@ public class Util {
         for (int i = 0; i < array.length; i++) {
             if (array[i] == 0)
                 continue;
-            duration.append(array[i]).append(" ").append(LanguageHelper.getMess(language, nameArray[i]));
+            duration.append(array[i]).append(" ").append(Main.helper.getMess(language, nameArray[i]));
             if (used == 0)
                 duration.append(" ");
             else
@@ -197,12 +196,12 @@ public class Util {
                 if (string.startsWith("CUSTOM_"))
                     reasons += " + " + string.split("CUSTOM_")[1];
                 else
-                    reasons += " + " + LanguageHelper.getMess(sender, string);
+                    reasons += " + " + Main.helper.getMess(sender, string);
             }
             reasons = reasons.replaceFirst(" \\+ ", "");
             reasonMess = reasons;
         } else {
-            reasonMess = LanguageHelper.getMess(sender, reason);
+            reasonMess = Main.helper.getMess(sender, reason);
         }
         return reasonMess;
     }
@@ -217,12 +216,12 @@ public class Util {
                 if (string.startsWith("CUSTOM_"))
                     reasons += " + " + string.split("CUSTOM_")[1];
                 else
-                    reasons += " + " + LanguageHelper.getMess(language, string);
+                    reasons += " + " + Main.helper.getMess(language, string);
             }
             reasons = reasons.replaceFirst(" \\+ ", "");
             reasonMess = reasons;
         } else {
-            reasonMess = LanguageHelper.getMess(language, reason);
+            reasonMess = Main.helper.getMess(language, reason);
         }
         return reasonMess;
     }

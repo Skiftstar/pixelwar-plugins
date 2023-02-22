@@ -1,7 +1,6 @@
 package Kyu.ServerCoreBungee.Commands;
 
 import Kyu.ServerCoreBungee.Main;
-import Kyu.WaterFallLanguageHelper.LanguageHelper;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -21,7 +20,7 @@ public class OnlineCommand extends Command {
             }
             players.append(p.getDisplayName());
         }
-        sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "OnlinePlayers", true)
+        sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "OnlinePlayers", true)
             .replace("%players", players.toString())));
     }
 
