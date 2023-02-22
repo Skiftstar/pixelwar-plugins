@@ -2,7 +2,6 @@ package Kyu.ServerCoreBungee.Bansystem;
 
 import Kyu.ServerCoreBungee.Bansystem.HelperClasses.*;
 import Kyu.ServerCoreBungee.Main;
-import Kyu.WaterFallLanguageHelper.LanguageHelper;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -40,35 +39,35 @@ public class BanCMD extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "NEArgs")));
+            sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "NEArgs")));
             return;
         }
         if (args[0].equalsIgnoreCase("l")) {
-            StringBuilder builder = new StringBuilder(LanguageHelper.getMess(sender, "BanReasonListTitle"));
+            StringBuilder builder = new StringBuilder(Main.helper.getMess(sender, "BanReasonListTitle"));
             int index = 1;
             for (BanReason reason : banReasons) {
-                builder.append("\n").append(LanguageHelper.getMess(sender, "BanReasonListEntry")
+                builder.append("\n").append(Main.helper.getMess(sender, "BanReasonListEntry")
                         .replace("%index", "" + index)
-                        .replace("%reason", LanguageHelper.getMess(sender, reason.getReason())));
+                        .replace("%reason", Main.helper.getMess(sender, reason.getReason())));
                 index++;
             }
             sender.sendMessage(new TextComponent(builder.toString()));
             return;
         }
         if (args.length < 2) {
-            sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "NEArgs", true)));
+            sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "NEArgs", true)));
             return;
         }
         int reasonIndex;
         try {
             reasonIndex = Integer.parseInt(args[1]);
         } catch (NumberFormatException e) {
-            sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "NaN", true)
+            sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "NaN", true)
                     .replace("%value", args[1])));
             return;
         }
         if (reasonIndex < 1 || reasonIndex > banReasons.size()) {
-            sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "IndexOutOfBounds", true)));
+            sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "IndexOutOfBounds", true)));
             return;
         }
         BanReason reason = banReasons.get(reasonIndex - 1);
@@ -76,7 +75,7 @@ public class BanCMD extends Command {
         String playerName = args[0];
         UUID uuid = getUUID(playerName);
         if (uuid == null) {
-            sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "PlayerWasNeverOnServer", true)));
+            sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "PlayerWasNeverOnServer", true)));
             return;
         }
         ProxiedPlayer p = main.getProxy().getPlayer(playerName);
@@ -112,37 +111,37 @@ public class BanCMD extends Command {
                         case BAN:
                             ban = new Ban(reason.getReason(), new Date(unbanOn), banType, unbanOn == -1,
                                     banUUID);
-                            ban.setLanguage(LanguageHelper.getLanguage(p));
+                            ban.setLanguage(Main.helper.getLanguage(p));
                             if (unbanOn == -1) {
-                                kickMessage = LanguageHelper.getMess(p, "PermaBanMessage")
-                                        .replace("%reason", LanguageHelper.getMess(p, reason.getReason()));
+                                kickMessage = Main.helper.getMess(p, "PermaBanMessage")
+                                        .replace("%reason", Main.helper.getMess(p, reason.getReason()));
                             } else {
-                                kickMessage = LanguageHelper.getMess(p, "TempbanMessage")
-                                        .replace("%reason", LanguageHelper.getMess(p, reason.getReason()))
+                                kickMessage = Main.helper.getMess(p, "TempbanMessage")
+                                        .replace("%reason", Main.helper.getMess(p, reason.getReason()))
                                         .replace("%duration", Util.getRemainingTime(new Date(unbanOn),
-                                                LanguageHelper.getLanguage(p)));
+                                                Main.helper.getLanguage(p)));
                             }
                             BansHandler.bans.put(p.getUniqueId(), ban);
                             p.disconnect(new TextComponent(kickMessage));
                             break;
                         case KICK:
-                            kickMessage = LanguageHelper.getMess(p, "KickMessage")
-                                    .replace("%reason", LanguageHelper.getMess(p, reason.getReason()));
+                            kickMessage = Main.helper.getMess(p, "KickMessage")
+                                    .replace("%reason", Main.helper.getMess(p, reason.getReason()));
                             p.disconnect(new TextComponent(kickMessage));
                             break;
                         case MUTE:
                             ban = new Ban(reason.getReason(), new Date(unbanOn), banType, unbanOn == -1,
                                     banUUID);
                             if (unbanOn == -1) {
-                                p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "PermaMuteMessage")
-                                        .replace("%reason", LanguageHelper.getMess(p, reason.getReason()))));
+                                p.sendMessage(new TextComponent(Main.helper.getMess(p, "PermaMuteMessage")
+                                        .replace("%reason", Main.helper.getMess(p, reason.getReason()))));
                                 sendCustomData(p, p.getUniqueId().toString(), reason.getReason(), -1, banUUID);
                             } else {
-                                p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "MuteMessage")
+                                p.sendMessage(new TextComponent(Main.helper.getMess(p, "MuteMessage")
                                         .replace("%duration",
                                                 Util.getRemainingTime(new Date(unbanOn),
-                                                        LanguageHelper.getLanguage(p)))
-                                        .replace("%reason", LanguageHelper.getMess(p, reason.getReason()))));
+                                                        Main.helper.getLanguage(p)))
+                                        .replace("%reason", Main.helper.getMess(p, reason.getReason()))));
                                 sendCustomData(p, p.getUniqueId().toString(), reason.getReason(),
                                         unbanOn, banUUID);
                             }
@@ -152,14 +151,14 @@ public class BanCMD extends Command {
                             ban = new Ban(reason.getReason(), new Date(unbanOn), banType, unbanOn == -1,
                                     banUUID);
                             if (unbanOn == -1) {
-                                p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "GChatPermaMuteMessage")
-                                        .replace("%reason", LanguageHelper.getMess(p, reason.getReason()))));
+                                p.sendMessage(new TextComponent(Main.helper.getMess(p, "GChatPermaMuteMessage")
+                                        .replace("%reason", Main.helper.getMess(p, reason.getReason()))));
                             } else {
-                                p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "GChatMuteMessage")
+                                p.sendMessage(new TextComponent(Main.helper.getMess(p, "GChatMuteMessage")
                                         .replace("%duration",
                                                 Util.getRemainingTime(new Date(unbanOn),
-                                                        LanguageHelper.getLanguage(p)))
-                                        .replace("%reason", LanguageHelper.getMess(p, reason.getReason()))));
+                                                        Main.helper.getLanguage(p)))
+                                        .replace("%reason", Main.helper.getMess(p, reason.getReason()))));
                             }
                             BansHandler.gMuteds.put(p.getUniqueId(), ban);
                             break;
@@ -167,22 +166,22 @@ public class BanCMD extends Command {
 
                 }
 
-                String banMess = LanguageHelper.getMess(sender, "PlayerBanned", true).replace("%player", playerName).replace("%reason", LanguageHelper.getMess(sender, reason.getReason()));
+                String banMess = Main.helper.getMess(sender, "PlayerBanned", true).replace("%player", playerName).replace("%reason", Main.helper.getMess(sender, reason.getReason()));
                 for (ProxiedPlayer pl : main.getProxy().getPlayers()) {
-                    pl.sendMessage(new TextComponent(LanguageHelper.getMess(pl, "Global_PlayerPunished", true)
+                    pl.sendMessage(new TextComponent(Main.helper.getMess(pl, "Global_PlayerPunished", true)
                         .replace("%player", playerName)
-                        .replace("%reason", LanguageHelper.getMess(pl, reason.getReason()))));
+                        .replace("%reason", Main.helper.getMess(pl, reason.getReason()))));
                 }
-                Main.instance().getDiscordBot().logBan(sender instanceof ProxiedPlayer ? ((ProxiedPlayer) sender).getDisplayName() : "CONSOLE", playerName, LanguageHelper.getMess("de", reason.getReason()));
+                Main.instance().getDiscordBot().logBan(sender instanceof ProxiedPlayer ? ((ProxiedPlayer) sender).getDisplayName() : "CONSOLE", playerName, Main.helper.getMess("de", reason.getReason()));
                 sender.sendMessage(new TextComponent(banMess));
             }
         };
 
         if (p == null) {
             confirmCMD.addFunction(sender, function);
-            sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "PleaseConfirmBan", true)
+            sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "PleaseConfirmBan", true)
                     .replace("%player", playerName)
-                    .replace("%reason", LanguageHelper.getMess(sender, reason.getReason()))));
+                    .replace("%reason", Main.helper.getMess(sender, reason.getReason()))));
         } else {
             function.accept(null);
         }

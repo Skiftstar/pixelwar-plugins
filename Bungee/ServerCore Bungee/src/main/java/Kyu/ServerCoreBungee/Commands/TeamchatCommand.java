@@ -1,7 +1,6 @@
 package Kyu.ServerCoreBungee.Commands;
 
 import Kyu.ServerCoreBungee.Main;
-import Kyu.WaterFallLanguageHelper.LanguageHelper;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -19,12 +18,12 @@ public class TeamchatCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof ProxiedPlayer)) {
-            sender.sendMessage(new TextComponent(LanguageHelper.getMess("PlayerOnly")));
+            sender.sendMessage(new TextComponent(Main.helper.getMess("PlayerOnly")));
             return;
         }
         ProxiedPlayer p = (ProxiedPlayer) sender;
         if (args.length < 1) {
-            p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "NEArgs")));
+            p.sendMessage(new TextComponent(Main.helper.getMess(p, "NEArgs")));
             return;
         }
         StringBuilder message = new StringBuilder();

@@ -2,7 +2,6 @@ package Kyu.ServerCoreBungee.Bansystem;
 
 import Kyu.ServerCoreBungee.Bansystem.HelperClasses.*;
 import Kyu.ServerCoreBungee.Main;
-import Kyu.WaterFallLanguageHelper.LanguageHelper;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.LoginEvent;
@@ -68,10 +67,10 @@ public class BansHandler implements Listener {
     private void kickForBan(LoginEvent e, UUID uuid) {
         Ban ban = bans.get(uuid);
         if (ban.isPermanent()) {
-            e.setCancelReason(new TextComponent(LanguageHelper.getMess(ban.getLanguage(), "PermaBanMessage")
+            e.setCancelReason(new TextComponent(Main.helper.getMess(ban.getLanguage(), "PermaBanMessage")
             .replace("%reason", Util.getReason(ban.getReason(), ban.getLanguage()))));
         } else {
-        e.setCancelReason(new TextComponent(LanguageHelper.getMess(ban.getLanguage(), "TempbanMessage")
+        e.setCancelReason(new TextComponent(Main.helper.getMess(ban.getLanguage(), "TempbanMessage")
         .replace("%reason", Util.getReason(ban.getReason(), ban.getLanguage()))
         .replace("%duration", Util.getRemainingTime(ban.getUnbanDate(),
                 ban.getLanguage()))));
@@ -146,10 +145,10 @@ public class BansHandler implements Listener {
             if (rs.next()) {
                 return rs.getString("lang");
             }
-            return LanguageHelper.getDefaultLang();
+            return Main.helper.getDefaultLang();
         } catch (SQLException e) {
             e.printStackTrace();
-            return LanguageHelper.getDefaultLang();
+            return Main.helper.getDefaultLang();
         }
     }
 

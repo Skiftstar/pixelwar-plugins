@@ -1,3 +1,3 @@
-name: ServerCore
+name: ServerCoreBungee
 version: '${project.version}'
 main: Kyu.ServerCoreBungee.Main
