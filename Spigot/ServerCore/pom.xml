@@ -82,8 +82,8 @@
         </dependency>
         <dependency>
             <groupId>com.github.Skiftstar</groupId>
-            <artifactId>SpigotLangaugeHelper</artifactId>
-            <version>1.4.03-SNAPSHOT</version>
+            <artifactId>SpigotLanguageHelper</artifactId>
+            <version>1.5.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.github.Skiftstar</groupId>

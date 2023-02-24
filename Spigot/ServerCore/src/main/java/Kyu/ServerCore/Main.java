@@ -1,7 +1,7 @@
 package Kyu.ServerCore;
 
-import Kyu.LangSupport.DB;
 import Kyu.LangSupport.LanguageHelper;
+import Kyu.LangSupport.DB.MariaDB;
 import Kyu.SCommand;
 import Kyu.ServerCore.Bans.Mute;
 import Kyu.ServerCore.Bans.MuteHandler;
@@ -29,7 +29,9 @@ import java.io.*;
 import java.nio.file.Files;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import com.google.common.io.ByteArrayDataInput;
@@ -131,7 +133,6 @@ public final class Main extends JavaPlugin implements PluginMessageListener{
         discordLink = getConfig().getString("discordLink");
         cacheDelay = getConfig().getInt("cacheTimeout") * 20L;
 
-        helper = new LanguageHelper(this, "de", getTextResource("de.yml"), Util.color(getConfig().getString("chatPrefix") + " "), true);
         
         String host = config.getString("database.host");
         int port = config.getInt("database.port");
@@ -139,7 +140,15 @@ public final class Main extends JavaPlugin implements PluginMessageListener{
         String user = config.getString("database.user");
         String password = config.getString("database.password");
         
-        helper.setDatabase(new DB(host, port, user, password, database));
+        MariaDB helperDb = new MariaDB(host, port, user, password, database, true);
+
+        Map<String, Reader> langs = new HashMap<>();
+        langs.put("de", getTextResource("de.yml"));
+        langs.put("en", getTextResource("en.yml"));
+
+        helper = new LanguageHelper(this, "de", langs, Util.color(getConfig().getString("chatPrefix") + " "), helperDb);
+        helper.setSendNoLangSetMess(false);
+
 
         for (SCommand command : commands) {
             command.setLangHelper(helper);
