@@ -5,6 +5,7 @@ import Kyu.ServerCoreBungee.Bansystem.BanInfoCMD;
 import Kyu.ServerCoreBungee.Bansystem.BansHandler;
 import Kyu.ServerCoreBungee.Bansystem.HardBanCMD;
 import Kyu.ServerCoreBungee.Bansystem.UnbanCMD;
+import Kyu.ServerCoreBungee.Commands.ChangeLangCommand;
 import Kyu.ServerCoreBungee.Commands.DMCommand;
 import Kyu.ServerCoreBungee.Commands.GlobalChatCommand;
 import Kyu.ServerCoreBungee.Commands.OnlineCommand;
@@ -26,7 +27,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 import Kyu.ServerCoreBungee.DiscordBot.DCBot;
 
@@ -72,7 +76,7 @@ public final class Main extends Plugin {
         new TeamchatCommand(this);
         new DMCommand(this);
         new GlobalChatCommand(this);
-
+        new ChangeLangCommand(this);
 
         new BanCMD(this);
         new HardBanCMD(this);
@@ -118,9 +122,14 @@ public final class Main extends Plugin {
         String database = config.getString("database.database");
         String user = config.getString("database.user");
         String password = config.getString("database.password");
-        
+
         MariaDB helperDb = new MariaDB(host, port, user, password, database, true);
-        helper = new LanguageHelper(this, "de", new InputStreamReader(getResourceAsStream("de.yml")), "de", ChatColor.translateAlternateColorCodes('&', "&6[PixelCore] "), helperDb);
+
+        Map<String, Reader> langs = new HashMap<>();
+        langs.put("de", new InputStreamReader(getResourceAsStream("de.yml")));
+        langs.put("en", new InputStreamReader(getResourceAsStream("en.yml")));
+
+        helper = new LanguageHelper(this, "de", langs, ChatColor.translateAlternateColorCodes('&', "&6[PixelCore] "), helperDb);
 
 
         confirmTimeout = getConfig().getInt("confirmTimeout");
