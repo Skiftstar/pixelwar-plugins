@@ -13,6 +13,7 @@ import Kyu.ServerCoreBungee.Commands.ReloadCMD;
 import Kyu.ServerCoreBungee.Commands.TeamchatCommand;
 import Kyu.ServerCoreBungee.Database.DB;
 import Kyu.ServerCoreBungee.Listeners.JoinListener;
+import Kyu.ServerCoreBungee.Util.LuckPermsAPI;
 import Kyu.WaterFallLanguageHelper.LanguageHelper;
 import Kyu.WaterFallLanguageHelper.MariaDB;
 import net.luckperms.api.LuckPerms;
@@ -62,6 +63,7 @@ public final class Main extends Plugin {
 
         try {
             lp = LuckPermsProvider.get();
+            LuckPermsAPI.setLuckAPI(lp);
         } catch (IllegalStateException e) {
             System.out.println("Luckperms not loaded!");
             return;
