@@ -4,6 +4,7 @@ import Kyu.ServerCoreBungee.Bansystem.HelperClasses.Ban;
 import Kyu.ServerCoreBungee.Bansystem.HelperClasses.Util;
 import Kyu.ServerCoreBungee.Bansystem.BansHandler;
 import Kyu.ServerCoreBungee.Main;
+import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.Node;
 import net.md_5.bungee.api.ChatColor;
@@ -65,12 +66,27 @@ public class GlobalChatCommand extends Command {
             }
         }
 
+        User lpUser = Main.lp.getUserManager().getUser(p.getUniqueId());
+        String prefix;
+        if (lpUser == null) {
+            prefix = "User not found";
+        } else {
+            Group lpGroup = Main.lp.getGroupManager().getGroup(lpUser.getPrimaryGroup());
+            if (lpGroup == null) {
+                prefix = "Group not found";
+            } else {
+                prefix = lpGroup.getCachedData().getMetaData().getPrefix();
+                if (prefix == null) prefix = "";
+            }
+        }
+        prefix = ChatColor.translateAlternateColorCodes('&', prefix);
+
         StringBuilder message = new StringBuilder();
         message.append(ChatColor.DARK_GRAY)
                 .append("[")
                 .append(p.getServer().getInfo().getName())
                 .append("] ")
-                .append(ChatColor.GRAY).append(p.getDisplayName())
+                .append(ChatColor.GRAY).append(prefix + p.getDisplayName())
                 .append(ChatColor.DARK_GRAY)
                 .append(" >>")
                 .append(ChatColor.GRAY);
