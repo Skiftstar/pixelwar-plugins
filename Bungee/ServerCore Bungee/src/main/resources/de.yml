@@ -4,24 +4,25 @@ Errors:
   NEArgs: "&cNicht genug Argumente!"
   PlayerNotFound: "&cSpieler wurde nicht gefunden!"
   PlayerOnly: "Nur für Spieler!"
-  GlobalChatNotActive: "&cDu hast den Globalen Chat nicht aktieviert! Aktiviere ihn mit /g"
+  GlobalChatNotActive: "&cDu hast den Globalen Chat nicht aktiviert! Aktiviere ihn mit /g"
   NaN: "&4%value &cmuss eine Zahl sein!"
   IndexOutOfBounds: "&cGib eine gültige Zahl ein!"
   NoConfirmationPresent: "&cDu musst nichts bestätigen!"
   ConfirmationTimeout: "&cDeine Bestätigungszeit ist ausgelaufen!"
-  NoLangSet: "&aDu hast noch keine Sprache gesetzt, daher wurde sie vorerst auf &b%default &agesetzt!"
   PlayerWasNeverOnServer: "&cDieser Spieler war noch nie auf dem Server!"
   CouldNotUnbanNoPlayer: "&cBan konnte nicht entfernt werden, da kein Spieler online ist für den PluginChannel. Bitte führe den Command erneut auf dem Server (also nicht als Console) aus."
+  NoSuchLang: "&cDiese Sprache existiert nicht!"
 
 Templates:
   DMTemplate: "&8[&7%p1 -> %p2&8] %mess"
   OnlinePlayers: "&aSpieler Online: %players"
 
 SuccessMessages:
-  GlobalChatStatus: "&bDu hast den Globalen Chat %status!"
+  GlobalChatStatus: "&aDu hast den Globalen Chat %status!"
+  ChangeLangSuccess: "&aDeine Sprache wurde erfolgreich zu &b%lang &ageändert!"
 
 Info:
-  NoLangSet: '&aDu hast noch keine Sprache gesetzt, daher wird sie auf %default gesetzt'
+  NoLangSet: "&aDu hast noch keine Sprache gesetzt, daher wurde sie vorerst auf &b%default &agesetzt! Du kannst sie mit /lang ändern"
   ReloadDone: "&aPlugin erfolgreich reloaded!"
 
 Constants:
