@@ -1,0 +1,55 @@
+Error:
+  PlayerOnly: "Player only!"
+  InvalidGamemode: "&4%mode &cis not a valid gamemode!"
+  NEPerms: "&cNot enough permissions!"
+  NEArgs: "&cNot enough arguments!"
+  PlayerNotFound: "&cPlayer &4%player &cwas not found!"
+  InvalidCoordinates: "&4%cords &care not coordinates!"
+  LuckPermsCantChangeThis: "&cYou can't edit &4%target &cbecause your rank isn't high enough!"
+
+Info:
+  GameModeChanged: "&aGamemode changed to &b%mode&a!"
+  OtherGameModeChanged: "&aChanged &b%player's &agamemode to &b%mode&a!"
+  Teleported: "&aTeleported to &b%location&a!"
+  TeleportedToYou: "&b%player &ateleported to you!"
+  SbTeleportedYou: "&b%player &ateleported you to &b%location&a!"
+  SbTeleportedToYou: "&b%player1 &ateleported &b%player2 &ato you!"
+  YouTeleportedSb: "&aYou teleported &b%player &ato &b%location&a!"
+  DiscordMessage: "&aJoin our discord: &b%link !"
+  BadWordSent: "&4%player &ctried sending a forbidden word: &4%word"
+  ReloadDone: "&aPlugin reloaded successfully!"
+
+Tab:
+  TabHeader: "&aHey!"
+  TabFooter: "&bJoin our discord: &a/discord"
+
+Sidebar:
+  SidebarTitle: "%ServerName"
+
+Sidebarlores:
+  Sidebar:
+    - "&7» Rank"
+    - "%rankName"
+    - " "
+    - "&7» Online: %players"
+    - "  "
+    - "&7» Money: %money"
+
+
+JoinLeave:
+  Join: "&8[&a+&8] &7%player"
+  Leave: "&8[&c-&8] &7%player"
+
+Chat:
+  ChatTemplate: "&7%prefix%player &8» &7%message"
+
+Mute:
+  PermaMuteMessage: "&cYou've been &4PERMANENTLY &cmuted!\n&cReason: &4%reason"
+  MuteMessage: "&cYou've been muted for &4%duration!\n&cReason: &4%reason"
+
+Constants:
+  "Days": "Days"
+  "Months": "Months"
+  "Hours": "Hours"
+  "Minutes": "Minutes"
+  "Seconds": "Seconds"
