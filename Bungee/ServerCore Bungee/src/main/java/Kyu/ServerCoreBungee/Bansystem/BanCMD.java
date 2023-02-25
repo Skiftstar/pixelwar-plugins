@@ -42,6 +42,7 @@ public class BanCMD extends Command {
             sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "NEArgs")));
             return;
         }
+
         if (args[0].equalsIgnoreCase("l")) {
             StringBuilder builder = new StringBuilder(Main.helper.getMess(sender, "BanReasonListTitle"));
             int index = 1;
@@ -54,12 +55,14 @@ public class BanCMD extends Command {
             sender.sendMessage(new TextComponent(builder.toString()));
             return;
         }
+
         if (args.length < 2) {
             sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "NEArgs", true)));
             return;
         }
+
         int reasonIndex;
-        try {
+        try { //Parse input to predefined banreason
             reasonIndex = Integer.parseInt(args[1]);
         } catch (NumberFormatException e) {
             sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "NaN", true)
@@ -72,6 +75,7 @@ public class BanCMD extends Command {
         }
         BanReason reason = banReasons.get(reasonIndex - 1);
 
+        //Parse player to punish
         String playerName = args[0];
         UUID uuid = getUUID(playerName);
         if (uuid == null) {
@@ -80,102 +84,7 @@ public class BanCMD extends Command {
         }
         ProxiedPlayer p = main.getProxy().getPlayer(playerName);
 
-        Consumer<Void> function = new Consumer<Void>() {
-            @Override
-            public void accept(Void unused) {
-                long banTime = System.currentTimeMillis();
-                int index = checkForPrevBans(uuid.toString(), reason.getReason());
-                BanTime bantime = reason.getBantime(index);
-                BanType banType = bantime.getBanType();
-
-                String banUUID;
-                do {
-                    banUUID = Util.generateUUID();
-                } while (Util.exists(banUUID));
-
-                Pair<Long, String> pair = Util.checkForActive(uuid, banType.toString(), bantime, banUUID);
-
-                long unbanOn = pair.first;
-                String reasonSt = reason.getReason();
-                if (pair.second.length() > 0) {
-                    reasonSt = "CMB_" + reasonSt + pair.second;
-                }
-                String banner = sender instanceof ProxiedPlayer ? ((ProxiedPlayer) sender).getUniqueId().toString()
-                        : "CONSOLE";
-                Util.putInDB(uuid, banner, reasonSt, bantime, unbanOn, banUUID, banTime);
-
-                if (p != null) {
-                    String kickMessage;
-                    Ban ban;
-                    switch (banType) {
-                        case BAN:
-                            ban = new Ban(reason.getReason(), new Date(unbanOn), banType, unbanOn == -1,
-                                    banUUID);
-                            ban.setLanguage(Main.helper.getLanguage(p));
-                            if (unbanOn == -1) {
-                                kickMessage = Main.helper.getMess(p, "PermaBanMessage")
-                                        .replace("%reason", Main.helper.getMess(p, reason.getReason()));
-                            } else {
-                                kickMessage = Main.helper.getMess(p, "TempbanMessage")
-                                        .replace("%reason", Main.helper.getMess(p, reason.getReason()))
-                                        .replace("%duration", Util.getRemainingTime(new Date(unbanOn),
-                                                Main.helper.getLanguage(p)));
-                            }
-                            BansHandler.bans.put(p.getUniqueId(), ban);
-                            p.disconnect(new TextComponent(kickMessage));
-                            break;
-                        case KICK:
-                            kickMessage = Main.helper.getMess(p, "KickMessage")
-                                    .replace("%reason", Main.helper.getMess(p, reason.getReason()));
-                            p.disconnect(new TextComponent(kickMessage));
-                            break;
-                        case MUTE:
-                            ban = new Ban(reason.getReason(), new Date(unbanOn), banType, unbanOn == -1,
-                                    banUUID);
-                            if (unbanOn == -1) {
-                                p.sendMessage(new TextComponent(Main.helper.getMess(p, "PermaMuteMessage")
-                                        .replace("%reason", Main.helper.getMess(p, reason.getReason()))));
-                                sendCustomData(p, p.getUniqueId().toString(), reason.getReason(), -1, banUUID);
-                            } else {
-                                p.sendMessage(new TextComponent(Main.helper.getMess(p, "MuteMessage")
-                                        .replace("%duration",
-                                                Util.getRemainingTime(new Date(unbanOn),
-                                                        Main.helper.getLanguage(p)))
-                                        .replace("%reason", Main.helper.getMess(p, reason.getReason()))));
-                                sendCustomData(p, p.getUniqueId().toString(), reason.getReason(),
-                                        unbanOn, banUUID);
-                            }
-                            BansHandler.gMuteds.put(p.getUniqueId(), ban);
-                            break;
-                        case GCHAT_MUTE:
-                            ban = new Ban(reason.getReason(), new Date(unbanOn), banType, unbanOn == -1,
-                                    banUUID);
-                            if (unbanOn == -1) {
-                                p.sendMessage(new TextComponent(Main.helper.getMess(p, "GChatPermaMuteMessage")
-                                        .replace("%reason", Main.helper.getMess(p, reason.getReason()))));
-                            } else {
-                                p.sendMessage(new TextComponent(Main.helper.getMess(p, "GChatMuteMessage")
-                                        .replace("%duration",
-                                                Util.getRemainingTime(new Date(unbanOn),
-                                                        Main.helper.getLanguage(p)))
-                                        .replace("%reason", Main.helper.getMess(p, reason.getReason()))));
-                            }
-                            BansHandler.gMuteds.put(p.getUniqueId(), ban);
-                            break;
-                    }
-
-                }
-
-                String banMess = Main.helper.getMess(sender, "PlayerBanned", true).replace("%player", playerName).replace("%reason", Main.helper.getMess(sender, reason.getReason()));
-                for (ProxiedPlayer pl : main.getProxy().getPlayers()) {
-                    pl.sendMessage(new TextComponent(Main.helper.getMess(pl, "Global_PlayerPunished", true)
-                        .replace("%player", playerName)
-                        .replace("%reason", Main.helper.getMess(pl, reason.getReason()))));
-                }
-                Main.instance().getDiscordBot().logBan(sender instanceof ProxiedPlayer ? ((ProxiedPlayer) sender).getDisplayName() : "CONSOLE", playerName, Main.helper.getMess("de", reason.getReason()));
-                sender.sendMessage(new TextComponent(banMess));
-            }
-        };
+        Consumer<Void> function = getPunishFunction(reason, uuid, playerName, p, sender);
 
         if (p == null) {
             confirmCMD.addFunction(sender, function);
@@ -231,5 +140,111 @@ public class BanCMD extends Command {
             e.printStackTrace();
             return 0;
         }
+    }
+
+    private Consumer<Void> getPunishFunction(BanReason reason, UUID uuid, String playerName, ProxiedPlayer p, CommandSender sender) {
+        Consumer<Void> function = new Consumer<Void>() {
+            @Override
+            public void accept(Void unused) {
+                long banTime = System.currentTimeMillis();
+                int index = checkForPrevBans(uuid.toString(), reason.getReason());
+                BanTime bantime = reason.getBantime(index);
+                BanType banType = bantime.getBanType();
+
+                String banUUID;
+                do {
+                    banUUID = Util.generateUUID();
+                } while (Util.exists(banUUID));
+
+                Pair<Long, String> pair = Util.checkForActive(uuid, banType.toString(), bantime, banUUID);
+
+                long unbanOn = pair.first;
+
+                String reasonSt = reason.getReason();
+                if (pair.second.length() > 0) {
+                    reasonSt = "CMB_" + reasonSt + pair.second;
+                }
+
+                String banner = sender instanceof ProxiedPlayer ? ((ProxiedPlayer) sender).getUniqueId().toString()
+                        : "CONSOLE";
+
+                Util.putInDB(uuid, banner, reasonSt, bantime, unbanOn, banUUID, banTime);
+
+                if (p != null) {
+                    String kickMessage;
+                    Ban ban;
+                    switch (banType) {
+                        case BAN:
+                            ban = new Ban(reason.getReason(), new Date(unbanOn), banType, unbanOn == -1,
+                                    banUUID);
+                            ban.setLanguage(Main.helper.getLanguage(p));
+                            if (unbanOn == -1) {
+                                kickMessage = Main.helper.getMess(p, "PermaBanMessage")
+                                        .replace("%reason", Main.helper.getMess(p, reason.getReason()));
+                            } else {
+                                kickMessage = Main.helper.getMess(p, "TempbanMessage")
+                                        .replace("%reason", Main.helper.getMess(p, reason.getReason()))
+                                        .replace("%duration", Util.getRemainingTime(new Date(unbanOn),
+                                                Main.helper.getLanguage(p)));
+                            }
+                            BansHandler.bans.put(p.getUniqueId(), ban);
+                            p.disconnect(new TextComponent(kickMessage));
+                            break;
+
+                        case KICK:
+                            kickMessage = Main.helper.getMess(p, "KickMessage")
+                                    .replace("%reason", Main.helper.getMess(p, reason.getReason()));
+                            p.disconnect(new TextComponent(kickMessage));
+                            break;
+
+                        case MUTE:
+                            ban = new Ban(reason.getReason(), new Date(unbanOn), banType, unbanOn == -1,
+                                    banUUID);
+                            if (unbanOn == -1) {
+                                p.sendMessage(new TextComponent(Main.helper.getMess(p, "PermaMuteMessage")
+                                        .replace("%reason", Main.helper.getMess(p, reason.getReason()))));
+                                sendCustomData(p, p.getUniqueId().toString(), reason.getReason(), -1, banUUID);
+                            } else {
+                                p.sendMessage(new TextComponent(Main.helper.getMess(p, "MuteMessage")
+                                        .replace("%duration",
+                                                Util.getRemainingTime(new Date(unbanOn),
+                                                        Main.helper.getLanguage(p)))
+                                        .replace("%reason", Main.helper.getMess(p, reason.getReason()))));
+                                sendCustomData(p, p.getUniqueId().toString(), reason.getReason(),
+                                        unbanOn, banUUID);
+                            }
+                            BansHandler.gMuteds.put(p.getUniqueId(), ban);
+                            break;
+
+                        case GCHAT_MUTE:
+                            ban = new Ban(reason.getReason(), new Date(unbanOn), banType, unbanOn == -1,
+                                    banUUID);
+                            if (unbanOn == -1) {
+                                p.sendMessage(new TextComponent(Main.helper.getMess(p, "GChatPermaMuteMessage")
+                                        .replace("%reason", Main.helper.getMess(p, reason.getReason()))));
+                            } else {
+                                p.sendMessage(new TextComponent(Main.helper.getMess(p, "GChatMuteMessage")
+                                        .replace("%duration",
+                                                Util.getRemainingTime(new Date(unbanOn),
+                                                        Main.helper.getLanguage(p)))
+                                        .replace("%reason", Main.helper.getMess(p, reason.getReason()))));
+                            }
+                            BansHandler.gMuteds.put(p.getUniqueId(), ban);
+                            break;
+                    }
+
+                }
+
+                String banMess = Main.helper.getMess(sender, "PlayerBanned", true).replace("%player", playerName).replace("%reason", Main.helper.getMess(sender, reason.getReason()));
+                for (ProxiedPlayer pl : main.getProxy().getPlayers()) {
+                    pl.sendMessage(new TextComponent(Main.helper.getMess(pl, "Global_PlayerPunished", true)
+                        .replace("%player", playerName)
+                        .replace("%reason", Main.helper.getMess(pl, reason.getReason()))));
+                }
+                Main.instance().getDiscordBot().logBan(sender instanceof ProxiedPlayer ? ((ProxiedPlayer) sender).getDisplayName() : "CONSOLE", playerName, Main.helper.getMess("de", reason.getReason()), banType, Util.getDateDiff(new Date(System.currentTimeMillis()), bantime.getUnbanDate(), "de"));
+                sender.sendMessage(new TextComponent(banMess));
+            }
+        };
+        return function;
     }
 }
