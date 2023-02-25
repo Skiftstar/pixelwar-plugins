@@ -37,13 +37,13 @@ public class DMCommand extends Command implements TabExecutor {
         for (int i = 1; i < args.length; i++) {
             content.append(" ").append(args[i]);
         }
-        p.sendMessage(new TextComponent(Main.helper.getMess("DMTemplate")
-                        .replace("%p1", Main.helper.getMess("you"))
+        p.sendMessage(new TextComponent(Main.helper.getMess(p, "DMTemplate")
+                        .replace("%p1", Main.helper.getMess(p, "you"))
                         .replace("%p2", receiver.getDisplayName())
                         .replace("%mess", content.toString())));
 
-        receiver.sendMessage(new TextComponent(Main.helper.getMess("DMTemplate")
-                .replace("%p2", Main.helper.getMess("you"))
+        receiver.sendMessage(new TextComponent(Main.helper.getMess(receiver, "DMTemplate")
+                .replace("%p2", Main.helper.getMess(receiver, "you"))
                 .replace("%p1", p.getDisplayName())
                 .replace("%mess", content.toString())));
     }

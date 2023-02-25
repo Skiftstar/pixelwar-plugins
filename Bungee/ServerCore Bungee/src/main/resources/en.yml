@@ -18,7 +18,7 @@ Templates:
   OnlinePlayers: "&aOnline Players: %players"
 
 SuccessMessages:
-  GlobalChatStatus: "&aYou %status the global chat!"
+  GlobalChatStatus: "&aYou %status &athe global chat!"
   ChangeLangSuccess: "&aYou successfully changed your language to &b%lang&a!"
 
 Info:
@@ -26,7 +26,7 @@ Info:
   ReloadDone: "&aPlugin reloaded successfully!"
 
 Constants:
-  you: "you"
+  you: "You"
   activated: "&aactivated"
   deactivated: "&cdeactivated"
   Days: "Days"
