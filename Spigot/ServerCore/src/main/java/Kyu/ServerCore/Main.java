@@ -8,6 +8,7 @@ import Kyu.ServerCore.Bans.MuteHandler;
 import Kyu.ServerCore.Commands.GamemodeCMD;
 import Kyu.ServerCore.Commands.SmallCommands;
 import Kyu.ServerCore.Commands.TeleportCMD;
+import Kyu.ServerCore.DB.DB;
 import Kyu.ServerCore.Listeners.ChatListener;
 import Kyu.ServerCore.Listeners.JoinLeaveListener;
 import Kyu.ServerCore.LuckPermsDenial.LuckPermsDenial;
@@ -28,6 +29,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.*;
 import java.nio.file.Files;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,21 +46,30 @@ public final class Main extends JavaPlugin implements PluginMessageListener{
     public static LuckPerms lp;
     public static LanguageHelper helper;
     public static String serverName;
-    private static Main instance;
+    public static long cacheDelay;
+    public static Economy econ = null;
+    public static Location spawnPos = null;
     public static int sidebarDelay;
     public static String toIgnore, discordLink;
     public static List<String> badWords = new ArrayList<>();
     public static List<SCommand> commands = new ArrayList<>();
+
+    private static Main instance;
+    
     private YamlConfiguration config;
     private File configFile;
-    public static long cacheDelay;
-    public static Economy econ = null;
-    public static Location spawnPos = null;
+    private boolean isMaster;
+    private boolean doSync;
+    private DB db;
 
     @Override
     public void onEnable() {
         // Plugin startup logic
         instance = this;
+
+        configCheck();
+
+        db = new DB();
 
         try {
             lp = LuckPermsProvider.get();
@@ -114,24 +127,20 @@ public final class Main extends JavaPlugin implements PluginMessageListener{
             }
         }
 
-        if (!getDataFolder().exists()) getDataFolder().mkdirs();
-        configFile = new File(getDataFolder(), "config.yml");
-        try {
-            if (!configFile.exists()) {
-                InputStream in = getResource("config.yml");
-                Files.copy(in, configFile.toPath());
-            }
-            config = YamlConfiguration.loadConfiguration(configFile);
+        configCheck();
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        isMaster = getConfig().getBoolean("isMasterCore");
+        doSync = getConfig().getBoolean("syncWithMasterOnStartup");
+
+        if (isMaster) updateDBConfig();
+
+        if (!fetchConfigFromDB()) {
+            sidebarDelay = getConfig().getInt("ScoreboardRefreshDelay");
+            serverName = Util.color(getConfig().getString("serverName"));
+            toIgnore = Util.color(getConfig().getString("filterFromPrefixForScoreboard"));
+            discordLink = getConfig().getString("discordLink");
+            cacheDelay = getConfig().getInt("cacheTimeout") * 20L;
         }
-
-        sidebarDelay = getConfig().getInt("ScoreboardRefreshDelay");
-        serverName = Util.color(getConfig().getString("serverName"));
-        toIgnore = Util.color(getConfig().getString("filterFromPrefixForScoreboard"));
-        discordLink = getConfig().getString("discordLink");
-        cacheDelay = getConfig().getInt("cacheTimeout") * 20L;
 
         
         String host = config.getString("database.host");
@@ -152,6 +161,21 @@ public final class Main extends JavaPlugin implements PluginMessageListener{
 
         for (SCommand command : commands) {
             command.setLangHelper(helper);
+        }
+    }
+
+    private void configCheck() {
+        if (!getDataFolder().exists()) getDataFolder().mkdirs();
+        configFile = new File(getDataFolder(), "config.yml");
+        try {
+            if (!configFile.exists()) {
+                InputStream in = getResource("config.yml");
+                Files.copy(in, configFile.toPath());
+            }
+            config = YamlConfiguration.loadConfiguration(configFile);
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -179,6 +203,58 @@ public final class Main extends JavaPlugin implements PluginMessageListener{
         return instance;
     }
 
+    private void updateDBConfig() {
+        sidebarDelay = getConfig().getInt("ScoreboardRefreshDelay");
+        serverName = getConfig().getString("serverName");
+        toIgnore = getConfig().getString("filterFromPrefixForScoreboard");
+        discordLink = getConfig().getString("discordLink");
+        cacheDelay = getConfig().getInt("cacheTimeout");
+
+        try (PreparedStatement stmt = db.getConnection().prepareStatement("REPLACE INTO paper_core_config VALUES (?, ?, ?, ?, ?, ?);")) {
+            stmt.setString(1, "1");
+            stmt.setInt(2, sidebarDelay);
+            stmt.setString(3, serverName);
+            stmt.setString(4, toIgnore);
+            stmt.setString(5, discordLink);
+            stmt.setInt(6, (int) cacheDelay);
+
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean fetchConfigFromDB() {
+        if (!doSync || isMaster) return false;
+
+        try (PreparedStatement stmt = db.getConnection().prepareStatement("SELECT * FROM paper_core_config;")) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                sidebarDelay = rs.getInt("scoreboardRefreshDelay");
+                serverName = rs.getString("serverName");
+                toIgnore = rs.getString("filterFromPrefixForScoreboard");
+                discordLink = rs.getString("discordLink");
+                cacheDelay = rs.getInt("cacheTimeout");
+
+                getConfig().set("scoreboardRefreshDelay", sidebarDelay);
+                getConfig().set("serverName", serverName);
+                getConfig().set("filterFromPrefixForScoreboard", toIgnore);
+                getConfig().set("discordLink", discordLink);
+                getConfig().set("cacheTimeout", cacheDelay);
+                saveConfig();
+
+                serverName = Util.color(serverName);
+                toIgnore = Util.color(toIgnore);
+                cacheDelay = cacheDelay * 20L;
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull byte[] bytes) {
         if ( !channel.equalsIgnoreCase( "my:channel" ) )
@@ -187,7 +263,6 @@ public final class Main extends JavaPlugin implements PluginMessageListener{
         }
         ByteArrayDataInput in = ByteStreams.newDataInput( bytes );
         String subChannel = in.readUTF();
-        System.out.println(subChannel);
         if ( subChannel.equalsIgnoreCase( "MuteChannel" ) )
         {
             String string = in.readUTF();
@@ -204,7 +279,7 @@ public final class Main extends JavaPlugin implements PluginMessageListener{
             Mute mute = new Mute(reason, new Date(unbanTime < 0 ? 0 : unbanTime), permanent, banUUID);
             MuteHandler.mutedPlayers.put(uuid, mute);
         }
-        if ( subChannel.equalsIgnoreCase("UnmuteChannel")) {
+        else if ( subChannel.equalsIgnoreCase("UnmuteChannel")) {
             String string = in.readUTF();
             UUID pUUID = UUID.fromString(string.split(";;;")[0]);
             MuteHandler.mutedPlayers.remove(pUUID);
