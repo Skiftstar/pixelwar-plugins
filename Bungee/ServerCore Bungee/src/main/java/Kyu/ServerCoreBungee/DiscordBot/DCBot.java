@@ -3,7 +3,6 @@ package Kyu.ServerCoreBungee.DiscordBot;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -305,16 +304,16 @@ public class DCBot implements EventListener {
         return eb.build();
     }
 
-    public void logBan(String banner, String playerName, String reason) {
+    public void logBan(String banner, String playerName, String reason, BanType type, String banLength) {
         TextChannel channel = jda.getGuildById(guildId).getTextChannelById(logChannelID);
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle("Neuer Ban");
         embed.addField("Banned Player", playerName, false);
-        embed.addField("Länge", "HARDCODED", false);
+        embed.addField("Länge", banLength, false);
         embed.addField("Grund", reason, true);
         embed.addField("Banner", banner, true);
-        embed.addField("Typ", "HARDCODED", true);
-        embed.setTimestamp(new Date().toInstant());
+        embed.addField("Typ", type.toString().toLowerCase(), true);
+        embed.setTimestamp(new java.util.Date().toInstant());
         embed.setColor(Color.CYAN);
         channel.sendMessageEmbeds(embed.build()).complete();
     }
