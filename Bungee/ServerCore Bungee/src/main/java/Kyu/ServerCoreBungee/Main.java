@@ -12,6 +12,8 @@ import Kyu.ServerCoreBungee.Commands.ReloadCMD;
 import Kyu.ServerCoreBungee.Commands.TeamchatCommand;
 import Kyu.ServerCoreBungee.Database.DB;
 import Kyu.ServerCoreBungee.Listeners.JoinListener;
+import Kyu.ServerCoreBungee.Ontime.commands.OntimeCommand;
+import Kyu.ServerCoreBungee.Ontime.listener.OntimeListener;
 import Kyu.WaterFallLanguageHelper.LanguageHelper;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -68,12 +70,15 @@ public final class Main extends Plugin {
         new DMCommand(this);
         new GlobalChatCommand(this);
 
-
         new BanCMD(this);
         new HardBanCMD(this);
         new BanInfoCMD(this);
         new UnbanCMD(this);
         new ReloadCMD(this);
+
+        new OntimeCommand(this);
+        new OntimeListener(this);
+
         handler = new BansHandler(this);
         handler.loadBanReasons();
     }
