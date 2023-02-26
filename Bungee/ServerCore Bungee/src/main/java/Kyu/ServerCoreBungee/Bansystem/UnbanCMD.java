@@ -11,7 +11,6 @@ import com.google.common.io.ByteStreams;
 
 import Kyu.ServerCoreBungee.Main;
 import Kyu.ServerCoreBungee.Bansystem.HelperClasses.BanType;
-import Kyu.WaterFallLanguageHelper.LanguageHelper;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -28,7 +27,7 @@ public class UnbanCMD extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "NEArgs", true)));
+            sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "NEArgs", true)));
             return;
         }
         String banUUID = args[0];
@@ -39,7 +38,7 @@ public class UnbanCMD extends Command {
         if (removeLog)
             removeLog(banUUID);
         else updateLog(banUUID, sender);
-        sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "UnbanSuccess", true)));
+        sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "UnbanSuccess", true)));
         
     }
 
@@ -65,7 +64,7 @@ public class UnbanCMD extends Command {
                         break;
                     case MUTE:
                         if (Main.instance().getProxy().getPlayers().size() == 0) {
-                            sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "CouldNotUnbanNoPlayer", true)));
+                            sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "CouldNotUnbanNoPlayer", true)));
                         } else {
                             sendCustomData(Main.instance().getProxy().getPlayers().iterator().next(), pUUID.toString(), banUUID);
                         }

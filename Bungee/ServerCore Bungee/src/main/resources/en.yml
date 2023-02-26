@@ -1,0 +1,63 @@
+Errors:
+  NEPerms: "&cNot enough permissions!"
+  NoReasonProvided: "&cPlease provide a reason!"
+  NEArgs: "&cNot enough arguments!"
+  PlayerNotFound: "&cPlayer not found!"
+  PlayerOnly: "Player only!"
+  GlobalChatNotActive: "&cYour global chat isn't turned on! Toggle it with /g"
+  NaN: "&4%value &chas to be a number!"
+  IndexOutOfBounds: "&cPlease provice a valid number!"
+  NoConfirmationPresent: "&cThere's nothing to confirm!"
+  ConfirmationTimeout: "&cThe confirmation time ran out!"
+  PlayerWasNeverOnServer: "&cThis player has never been on the server!"
+  CouldNotUnbanNoPlayer: "&cBan couldn't be removed because noone is on the server so the PluginChannel is inactive. Please join the server and run the command again."
+  NoSuchLang: "&cLanguage not available!"
+
+Templates:
+  DMTemplate: "&8[&7%p1 -> %p2&8] %mess"
+  OnlinePlayers: "&aOnline Players: %players"
+
+SuccessMessages:
+  GlobalChatStatus: "&aYou %status &athe global chat!"
+  ChangeLangSuccess: "&aYou successfully changed your language to &b%lang&a!"
+
+Info:
+  NoLangSet: "&aYou didn't have a language set, so we set it to &b%default &afor now! You can change it with /lang"
+  ReloadDone: "&aPlugin reloaded successfully!"
+
+Constants:
+  you: "You"
+  activated: "&aactivated"
+  deactivated: "&cdeactivated"
+  Days: "Days"
+  Months: "Months"
+  Hours: "Hours"
+  Minutes: "Minutes"
+  Seconds: "Seconds"
+  Permanent: "&6PERMANENT"
+
+Bans:
+  PleaseConfirmBan: "&b%player &aisn't online! Please confirm that you want to punish &b%player &afor &b%reason &awith /banconfirm!"
+  BanConfirmed: "&aSuccessfully confirmed!"
+  PlayerBanned: "&aYou successfully punished &b%player &afor &b%reason&a!"
+  UnbanSuccess: "&aBan removed successfully!"
+  BanReasonListTitle: "&aList of Banreasons:"
+  BanReasonListEntry: "&a%index - %reason"
+  PermaBanMessage: "&cYou've been &4PERMANENTLY &cbanned from the server!\n&cReason: &4%reason"
+  TempbanMessage: "&cYou've been banned from the server for &4%duration!\n&cReason: &4%reason"
+  KickMessage: "&cYou got kicked from the server!\n&cReason: &4%reason"
+  GChatPermaMuteMessage: "&cYou've been &4PERMANENTLY &cmuted in the global chat!\n&cReason: &4%reason"
+  GChatMuteMessage: "&cYou've been muted in the global chat for &4%duration!\n&cReason: &4%reason"
+  PermaMuteMessage: "&cYou've been &4PERMANENTLY &cmuted!\n&cReason: &4%reason"
+  MuteMessage: "&cYou've been muted for &4%duration!\n&cReason: &4%reason"
+
+BanInfo:
+  BanInfoTemplateHeader: "&b=== %player's Bans ==="
+  BanInfoTemplateActiveHeader: "&b=== %player's ongoing Bans ==="
+  BanInfoTemplateReasonHeader: "&b= Banned for %reason ="
+  BanInfoTemplateEntry: "&b%index: BanID = &6%banID &bBanned by: &6%bannedBy &bBanned on: &6%banDate &bDuration: &6%banTime (%unbanDate) &bType: &6%banType"
+  BanInfoTemplateCombineEntry: "&bBanID = &6%banID &bBanned by: &6%bannedBy &bBanned on: &6%banDate &bDuration: &6%banTime"
+  BanInfoTemplateEarlyUnbanInfo: "&b- Early unban by: &6%player &bam &6%date"
+  BanInfoTemplateHoverText: "&bThis ban is still active! Click here to remove it"
+  BanInfoTemplateCombined: "&b---Combined from: %ban"
+  Global_PlayerPunished: "&7%player &8was successfully punished for: &7%reason"

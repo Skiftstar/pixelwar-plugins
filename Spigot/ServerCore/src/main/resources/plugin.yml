@@ -1,7 +1,7 @@
 name: ServerCore
 version: '${project.version}'
 main: Kyu.ServerCore.Main
-api-version: 1.18
+api-version: 1.19
 depend: [LuckPerms, BetterEconomy, Vault]
 
 commands:

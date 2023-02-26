@@ -1,7 +1,8 @@
 package Kyu.ServerCoreBungee.Commands;
 
 import Kyu.ServerCoreBungee.Main;
-import Kyu.WaterFallLanguageHelper.LanguageHelper;
+import net.luckperms.api.model.group.Group;
+import net.luckperms.api.model.user.User;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -19,16 +20,31 @@ public class TeamchatCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof ProxiedPlayer)) {
-            sender.sendMessage(new TextComponent(LanguageHelper.getMess("PlayerOnly")));
+            sender.sendMessage(new TextComponent(Main.helper.getMess("PlayerOnly")));
             return;
         }
         ProxiedPlayer p = (ProxiedPlayer) sender;
         if (args.length < 1) {
-            p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "NEArgs")));
+            p.sendMessage(new TextComponent(Main.helper.getMess(p, "NEArgs")));
             return;
         }
+
+        User lpUser = Main.lp.getUserManager().getUser(p.getUniqueId());
+        String prefix;
+        if (lpUser == null) {
+            prefix = "User not found";
+        } else {
+            Group lpGroup = Main.lp.getGroupManager().getGroup(lpUser.getPrimaryGroup());
+            if (lpGroup == null) {
+                prefix = "Group not found";
+            } else {
+                prefix = lpGroup.getCachedData().getMetaData().getPrefix();
+                if (prefix == null) prefix = "";
+            }
+        }
+
         StringBuilder message = new StringBuilder();
-        message.append(ChatColor.AQUA).append("[TC] ").append(p.getDisplayName()).append(" >>");
+        message.append(ChatColor.AQUA).append("[TC] ").append(prefix + p.getDisplayName()).append(ChatColor.AQUA + " >>");
         for (String word : args) {
             message.append(" ").append(word);
         }

@@ -4,7 +4,7 @@ import Kyu.ServerCoreBungee.Bansystem.HelperClasses.Ban;
 import Kyu.ServerCoreBungee.Bansystem.HelperClasses.Util;
 import Kyu.ServerCoreBungee.Bansystem.BansHandler;
 import Kyu.ServerCoreBungee.Main;
-import Kyu.WaterFallLanguageHelper.LanguageHelper;
+import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.Node;
 import net.md_5.bungee.api.ChatColor;
@@ -26,7 +26,7 @@ public class GlobalChatCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof ProxiedPlayer)) {
-            sender.sendMessage(new TextComponent(LanguageHelper.getMess("PlayerOnly")));
+            sender.sendMessage(new TextComponent(Main.helper.getMess("PlayerOnly")));
             return;
         }
         ProxiedPlayer p = (ProxiedPlayer) sender;
@@ -38,14 +38,14 @@ public class GlobalChatCommand extends Command {
             else lpUser.data().add(Node.builder("bcore.globalenabled").build());
             Main.lp.getUserManager().saveUser(lpUser);
 
-            String stateSt = chatEnabled ? LanguageHelper.getMess(p, "deactivated") : LanguageHelper.getMess(p, "activated");
-            p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "GlobalChatStatus")
+            String stateSt = chatEnabled ? Main.helper.getMess(p, "deactivated") : Main.helper.getMess(p, "activated");
+            p.sendMessage(new TextComponent(Main.helper.getMess(p, "GlobalChatStatus")
                     .replace("%status", stateSt)));
             return;
         }
 
         if (!p.hasPermission("bcore.globalenabled")) {
-            p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "GlobalChatNotActive")));
+            p.sendMessage(new TextComponent(Main.helper.getMess(p, "GlobalChatNotActive")));
             return;
         }
 
@@ -53,12 +53,12 @@ public class GlobalChatCommand extends Command {
             Ban ban = BansHandler.gMuteds.get(p.getUniqueId());
             if (!ban.getUnbanDate().before(new Date(System.currentTimeMillis()))) {
                 if (ban.isPermanent()) {
-                    p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "GChatPermaMuteMessage")
+                    p.sendMessage(new TextComponent(Main.helper.getMess(p, "GChatPermaMuteMessage")
                             .replace("%reason", Util.getReason(ban.getReason(), p))));
                 } else {
-                    p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "GChatMuteMessage")
+                    p.sendMessage(new TextComponent(Main.helper.getMess(p, "GChatMuteMessage")
                             .replace("%reason", Util.getReason(ban.getReason(), p))
-                            .replace("%duration", Util.getRemainingTime(ban.getUnbanDate(), LanguageHelper.getLanguage(p)))));
+                            .replace("%duration", Util.getRemainingTime(ban.getUnbanDate(), Main.helper.getLanguage(p)))));
                 }
                 return;
             } else {
@@ -66,12 +66,27 @@ public class GlobalChatCommand extends Command {
             }
         }
 
+        User lpUser = Main.lp.getUserManager().getUser(p.getUniqueId());
+        String prefix;
+        if (lpUser == null) {
+            prefix = "User not found";
+        } else {
+            Group lpGroup = Main.lp.getGroupManager().getGroup(lpUser.getPrimaryGroup());
+            if (lpGroup == null) {
+                prefix = "Group not found";
+            } else {
+                prefix = lpGroup.getCachedData().getMetaData().getPrefix();
+                if (prefix == null) prefix = "";
+            }
+        }
+        prefix = ChatColor.translateAlternateColorCodes('&', prefix);
+
         StringBuilder message = new StringBuilder();
         message.append(ChatColor.DARK_GRAY)
                 .append("[")
                 .append(p.getServer().getInfo().getName())
                 .append("] ")
-                .append(ChatColor.GRAY).append(p.getDisplayName())
+                .append(ChatColor.GRAY).append(prefix + p.getDisplayName())
                 .append(ChatColor.DARK_GRAY)
                 .append(" >>")
                 .append(ChatColor.GRAY);

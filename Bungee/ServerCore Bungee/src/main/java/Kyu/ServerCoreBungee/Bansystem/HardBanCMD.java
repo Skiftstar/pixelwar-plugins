@@ -14,7 +14,6 @@ import Kyu.ServerCoreBungee.Bansystem.HelperClasses.BanTime;
 import Kyu.ServerCoreBungee.Bansystem.HelperClasses.BanType;
 import Kyu.ServerCoreBungee.Bansystem.HelperClasses.Pair;
 import Kyu.ServerCoreBungee.Bansystem.HelperClasses.Util;
-import Kyu.WaterFallLanguageHelper.LanguageHelper;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -33,12 +32,12 @@ public class HardBanCMD extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "NEArgs", true)));
+            sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "NEArgs", true)));
             return;
         }
         String player = args[0];
         if (Main.getUuidStorage().get(player.toLowerCase()) == null) {
-            sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "PlayerWasNeverOnServer", true)));
+            sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "PlayerWasNeverOnServer", true)));
             return;
         }
         String uuid = Main.getUuidStorage().getString(player.toLowerCase());
@@ -47,7 +46,7 @@ public class HardBanCMD extends Command {
         try {
             banType = BanType.valueOf(banTypeSt);
         } catch (IllegalArgumentException e) {
-            sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "NotAValidBanType", true)
+            sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "NotAValidBanType", true)
                     .replace("%types", Arrays.toString(BanType.values()))));
             return;
         }
@@ -55,7 +54,7 @@ public class HardBanCMD extends Command {
         if (banType == BanType.KICK)
             isKick = true;
         if (!((isKick && args.length >= 2) || (!isKick && args.length >= 3))) {
-            sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "NEArgs", true)));
+            sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "NEArgs", true)));
             return;
         }
         int reasonIndex = isKick ? 2 : 3;
@@ -65,6 +64,11 @@ public class HardBanCMD extends Command {
         }
         reason = reason.replaceFirst(" ", "");
         reason = "CUSTOM_" + reason;
+
+        if (reason.equalsIgnoreCase("CUSTOM_")) {
+            sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "NoReasonProvided", true)));
+            return;
+        }
 
         int[] times = new int[] { 0, 0, 0, 0, 0 };
         boolean permanent = false;
@@ -104,21 +108,21 @@ public class HardBanCMD extends Command {
                 case BAN:
                     ban = new Ban(reasonSt, new Date(unbanOn), banType, unbanOn == -1,
                             banUUID);
-                    ban.setLanguage(LanguageHelper.getLanguage(p));
+                    ban.setLanguage(Main.helper.getLanguage(p));
                     if (unbanOn == -1) {
-                        kickMessage = LanguageHelper.getMess(p, "PermaBanMessage")
+                        kickMessage = Main.helper.getMess(p, "PermaBanMessage")
                                 .replace("%reason", reason.split("CUSTOM_")[1]);
                     } else {
-                        kickMessage = LanguageHelper.getMess(p, "TempbanMessage")
+                        kickMessage = Main.helper.getMess(p, "TempbanMessage")
                                 .replace("%reason", reason.split("CUSTOM_")[1])
                                 .replace("%duration", Util.getRemainingTime(new Date(unbanOn),
-                                        LanguageHelper.getLanguage(p)));
+                                        Main.helper.getLanguage(p)));
                     }
                     BansHandler.bans.put(p.getUniqueId(), ban);
                     p.disconnect(new TextComponent(kickMessage));
                     break;
                 case KICK:
-                    kickMessage = LanguageHelper.getMess(p, "KickMessage")
+                    kickMessage = Main.helper.getMess(p, "KickMessage")
                             .replace("%reason", reason.split("CUSTOM_")[1]);
                     p.disconnect(new TextComponent(kickMessage));
                     break;
@@ -126,14 +130,14 @@ public class HardBanCMD extends Command {
                     ban = new Ban(reasonSt, new Date(unbanOn), banType, unbanOn == -1,
                             banUUID);
                     if (unbanOn == -1) {
-                        p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "PermaMuteMessage")
+                        p.sendMessage(new TextComponent(Main.helper.getMess(p, "PermaMuteMessage")
                                 .replace("%reason", reason.split("CUSTOM_")[1])));
                         sendCustomData(p, p.getUniqueId().toString(), reasonSt, -1, banUUID);
                     } else {
-                        p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "MuteMessage")
+                        p.sendMessage(new TextComponent(Main.helper.getMess(p, "MuteMessage")
                                 .replace("%duration",
                                         Util.getRemainingTime(new Date(unbanOn),
-                                                LanguageHelper.getLanguage(p)))
+                                                Main.helper.getLanguage(p)))
                                 .replace("%reason", reason.split("CUSTOM_")[1])));
                         sendCustomData(p, p.getUniqueId().toString(), reasonSt,
                                 unbanOn, banUUID);
@@ -144,26 +148,26 @@ public class HardBanCMD extends Command {
                     ban = new Ban(reasonSt, new Date(unbanOn), banType, unbanOn == -1,
                             banUUID);
                     if (unbanOn == -1) {
-                        p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "GChatPermaMuteMessage")
+                        p.sendMessage(new TextComponent(Main.helper.getMess(p, "GChatPermaMuteMessage")
                                 .replace("%reason", reason.split("CUSTOM_")[1])));
                     } else {
-                        p.sendMessage(new TextComponent(LanguageHelper.getMess(p, "GChatMuteMessage")
+                        p.sendMessage(new TextComponent(Main.helper.getMess(p, "GChatMuteMessage")
                                 .replace("%duration",
                                         Util.getRemainingTime(new Date(unbanOn),
-                                                LanguageHelper.getLanguage(p)))
+                                                Main.helper.getLanguage(p)))
                                 .replace("%reason", reason.split("CUSTOM_")[1])));
                     }
                     BansHandler.gMuteds.put(p.getUniqueId(), ban);
                     break;
             }
         }
-        sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "PlayerBanned", true)
+        sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "PlayerBanned", true)
                 .replace("%player", player)
                 .replace("%reason", Util.getReason(reason, sender))));
 
         if (announceBan) {
             for (ProxiedPlayer pl : Main.instance().getProxy().getPlayers()) {
-                pl.sendMessage(new TextComponent(LanguageHelper.getMess(pl, "Global_PlayerPunished", true)
+                pl.sendMessage(new TextComponent(Main.helper.getMess(pl, "Global_PlayerPunished", true)
                         .replace("%player", player)
                         .replace("%reason", Util.getReason(reason, pl))));
             }

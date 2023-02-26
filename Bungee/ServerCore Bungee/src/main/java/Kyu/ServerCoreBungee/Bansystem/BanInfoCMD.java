@@ -7,7 +7,6 @@ import Kyu.ServerCoreBungee.Main;
 import Kyu.ServerCoreBungee.Bansystem.HelperClasses.BanInfo;
 import Kyu.ServerCoreBungee.Bansystem.HelperClasses.BanType;
 import Kyu.ServerCoreBungee.Bansystem.HelperClasses.Util;
-import Kyu.WaterFallLanguageHelper.LanguageHelper;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -28,12 +27,12 @@ public class BanInfoCMD extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "NEArgs", true)));
+            sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "NEArgs", true)));
             return;
         }
         String playerName = args[0];
         if (Main.getUuidStorage().get(playerName.toLowerCase()) == null) {
-            sender.sendMessage(new TextComponent(LanguageHelper.getMess(sender, "PlayerWasNeverOnServer", true)));
+            sender.sendMessage(new TextComponent(Main.helper.getMess(sender, "PlayerWasNeverOnServer", true)));
             return;
         }
         String uuid = Main.getUuidStorage().getString(playerName.toLowerCase());
@@ -47,15 +46,15 @@ public class BanInfoCMD extends Command {
             bans = Util.fetchAllBans(uuid);
         }
 
-        String language = sender instanceof ProxiedPlayer ? LanguageHelper.getLanguage((ProxiedPlayer) sender)
-                : LanguageHelper.getDefaultLang();
+        String language = sender instanceof ProxiedPlayer ? Main.helper.getLanguage((ProxiedPlayer) sender)
+                : Main.helper.getDefaultLang();
 
         TextComponent banInfo;
         if (onlyActive) {
-            banInfo = new TextComponent(LanguageHelper.getMess(sender, "BanInfoTemplateActiveHeader")
+            banInfo = new TextComponent(Main.helper.getMess(sender, "BanInfoTemplateActiveHeader")
                     .replace("%player", playerName));
         } else {
-            banInfo = new TextComponent(LanguageHelper.getMess(sender, "BanInfoTemplateHeader")
+            banInfo = new TextComponent(Main.helper.getMess(sender, "BanInfoTemplateHeader")
                     .replace("%player", playerName));
         }
 
@@ -66,7 +65,7 @@ public class BanInfoCMD extends Command {
             if (bans.get(reason).isEmpty())
                 continue;
 
-            String reasonMess = LanguageHelper.getMess(sender, "BanInfoTemplateReasonHeader").replace("%reason", Util.getReason(reason, sender));
+            String reasonMess = Main.helper.getMess(sender, "BanInfoTemplateReasonHeader").replace("%reason", Util.getReason(reason, sender));
             TextComponent reasonComponent = new TextComponent(reasonMess);
             
 
@@ -76,9 +75,9 @@ public class BanInfoCMD extends Command {
                 String message;
 
                 if (info.getCombinedInto() != null) {
-                    message = LanguageHelper.getMess(sender, "BanInfoTemplateCombineEntry");
+                    message = Main.helper.getMess(sender, "BanInfoTemplateCombineEntry");
                 } else {
-                    message = LanguageHelper.getMess(sender, "BanInfoTemplateEntry");
+                    message = Main.helper.getMess(sender, "BanInfoTemplateEntry");
                 }
 
                 if (info.getBantype().equals(BanType.KICK)) {
@@ -98,8 +97,8 @@ public class BanInfoCMD extends Command {
                             .replace("%banID", info.getBanUUID())
                             .replace("%bannedBy", info.getBannedBy())
                             .replace("%banDate", info.getBanOn().toString())
-                            .replace("%banTime", LanguageHelper.getMess(sender, "Permanent"))
-                            .replace("%unbanDate", LanguageHelper.getMess(sender, "Permanent"))
+                            .replace("%banTime", Main.helper.getMess(sender, "Permanent"))
+                            .replace("%unbanDate", Main.helper.getMess(sender, "Permanent"))
                             .replace("%banType", info.getBantype().toString());
                 }
 
@@ -115,7 +114,7 @@ public class BanInfoCMD extends Command {
                             .setClickEvent(new ClickEvent(Action.SUGGEST_COMMAND,
                                     "/unban " + info.getBanUUID()));
                     banInfoComponent.setHoverEvent(new HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT,
-                            new ComponentBuilder(LanguageHelper.getMess(sender, "BanInfoTemplateHoverText")).create()));
+                            new ComponentBuilder(Main.helper.getMess(sender, "BanInfoTemplateHoverText")).create()));
                 }
 
                 reasonComponent.addExtra("\n");
@@ -126,7 +125,7 @@ public class BanInfoCMD extends Command {
 
                 if (info.isEarlyUnban()) {
                     reasonComponent.addExtra("\n");
-                    reasonComponent.addExtra(LanguageHelper.getMess(sender, "BanInfoTemplateEarlyUnbanInfo")
+                    reasonComponent.addExtra(Main.helper.getMess(sender, "BanInfoTemplateEarlyUnbanInfo")
                             .replace("%player", info.getEarlyUnbanBy())
                             .replace("%date", info.getEarlyUnbanOn().toString()));
                 }
@@ -145,7 +144,7 @@ public class BanInfoCMD extends Command {
             if (ban == null)
                 continue;
             ban.addExtra("\n");
-            String combineMess = LanguageHelper.getMess(sender, "BanInfoTemplateCombined");
+            String combineMess = Main.helper.getMess(sender, "BanInfoTemplateCombined");
             String[] split = combineMess.split("%ban");
             ban.addExtra(split[0]);
             ban.addExtra(comp);

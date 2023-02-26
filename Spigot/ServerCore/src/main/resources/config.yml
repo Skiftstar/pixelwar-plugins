@@ -6,6 +6,9 @@ discordLink: "https://discord.gg/Fce224eSzf"
 cacheTimeout: 30
 enableEssentials: false
 
+isMasterCore: false
+syncWithMasterOnStartup: true
+
 database:
   host: localhost # host of your database
   port: 3306 # default port for MySQL

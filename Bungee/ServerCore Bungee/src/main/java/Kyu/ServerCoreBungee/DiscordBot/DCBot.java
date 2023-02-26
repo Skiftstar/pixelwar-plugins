@@ -3,7 +3,6 @@ package Kyu.ServerCoreBungee.DiscordBot;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +14,6 @@ import Kyu.ServerCoreBungee.Bansystem.HelperClasses.BanType;
 import Kyu.ServerCoreBungee.Bansystem.HelperClasses.DiscordBanInfoHelper;
 import Kyu.ServerCoreBungee.Bansystem.HelperClasses.Pair;
 import Kyu.ServerCoreBungee.Bansystem.HelperClasses.Util;
-import Kyu.WaterFallLanguageHelper.LanguageHelper;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -139,10 +137,10 @@ public class DCBot implements EventListener {
 
         // TextComponent banInfo;
         // if (activeOnly) {
-        //     banInfo = new TextComponent(LanguageHelper.getMess("de", "BanInfoTemplateActiveHeader")
+        //     banInfo = new TextComponent(Main.helper.getMess("de", "BanInfoTemplateActiveHeader")
         //             .replace("%player", playerName));
         // } else {
-        //     banInfo = new TextComponent(LanguageHelper.getMess("de", "BanInfoTemplateHeader")
+        //     banInfo = new TextComponent(Main.helper.getMess("de", "BanInfoTemplateHeader")
         //             .replace("%player", playerName));
         // }
 
@@ -166,9 +164,9 @@ public class DCBot implements EventListener {
                 String message;
 
                 if (info.getCombinedInto() != null) {
-                    message = LanguageHelper.getMess("de", "BanInfoTemplateCombineEntry");
+                    message = Main.helper.getMess("de", "BanInfoTemplateCombineEntry");
                 } else {
-                    message = LanguageHelper.getMess("de", "BanInfoTemplateEntry");
+                    message = Main.helper.getMess("de", "BanInfoTemplateEntry");
                 }
 
                 if (info.getBantype().equals(BanType.KICK)) {
@@ -188,8 +186,8 @@ public class DCBot implements EventListener {
                             .replace("%banID", info.getBanUUID())
                             .replace("%bannedBy", info.getBannedBy())
                             .replace("%banDate", info.getBanOn().toString())
-                            .replace("%banTime", LanguageHelper.getMess("de", "Permanent"))
-                            .replace("%unbanDate", LanguageHelper.getMess("de", "Permanent"))
+                            .replace("%banTime", Main.helper.getMess("de", "Permanent"))
+                            .replace("%unbanDate", Main.helper.getMess("de", "Permanent"))
                             .replace("%banType", info.getBantype().toString());
                 }
 
@@ -206,7 +204,7 @@ public class DCBot implements EventListener {
                 // "/unban " + info.getBanUUID()));
                 // banInfoComponent.setHoverEvent(new
                 // HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT,
-                // new ComponentBuilder(LanguageHelper.getMess("de",
+                // new ComponentBuilder(Main.helper.getMess("de",
                 // "BanInfoTemplateHoverText")).create()));
                 // }
 
@@ -219,7 +217,7 @@ public class DCBot implements EventListener {
                     combinedBans.put(info.getBanUUID(), banInfoList);
 
                 if (info.isEarlyUnban()) {
-                    banInfoComponent.append("\n").append(LanguageHelper.getMess("de", "BanInfoTemplateEarlyUnbanInfo")
+                    banInfoComponent.append("\n").append(Main.helper.getMess("de", "BanInfoTemplateEarlyUnbanInfo")
                             .replace("%player", info.getEarlyUnbanBy())
                             .replace("%date", info.getEarlyUnbanOn().toString()));
                 }
@@ -306,16 +304,16 @@ public class DCBot implements EventListener {
         return eb.build();
     }
 
-    public void logBan(String banner, String playerName, String reason) {
+    public void logBan(String banner, String playerName, String reason, BanType type, String banLength) {
         TextChannel channel = jda.getGuildById(guildId).getTextChannelById(logChannelID);
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle("Neuer Ban");
         embed.addField("Banned Player", playerName, false);
-        embed.addField("Länge", "HARDCODED", false);
+        embed.addField("Länge", banLength, false);
         embed.addField("Grund", reason, true);
         embed.addField("Banner", banner, true);
-        embed.addField("Typ", "HARDCODED", true);
-        embed.setTimestamp(new Date().toInstant());
+        embed.addField("Typ", type.toString().toLowerCase(), true);
+        embed.setTimestamp(new java.util.Date().toInstant());
         embed.setColor(Color.CYAN);
         channel.sendMessageEmbeds(embed.build()).complete();
     }

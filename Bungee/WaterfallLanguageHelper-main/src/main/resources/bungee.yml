@@ -1,3 +1,0 @@
-name: WaterfallLanguageHelper
-version: '${project.version}'
-main: Kyu.WaterFallLanguageHelper.LanguageHelper

@@ -5,6 +5,7 @@ import Kyu.ServerCoreBungee.Bansystem.BanInfoCMD;
 import Kyu.ServerCoreBungee.Bansystem.BansHandler;
 import Kyu.ServerCoreBungee.Bansystem.HardBanCMD;
 import Kyu.ServerCoreBungee.Bansystem.UnbanCMD;
+import Kyu.ServerCoreBungee.Commands.ChangeLangCommand;
 import Kyu.ServerCoreBungee.Commands.DMCommand;
 import Kyu.ServerCoreBungee.Commands.GlobalChatCommand;
 import Kyu.ServerCoreBungee.Commands.OnlineCommand;
@@ -14,7 +15,9 @@ import Kyu.ServerCoreBungee.Database.DB;
 import Kyu.ServerCoreBungee.Listeners.JoinListener;
 import Kyu.ServerCoreBungee.Ontime.commands.OntimeCommand;
 import Kyu.ServerCoreBungee.Ontime.listener.OntimeListener;
+import Kyu.ServerCoreBungee.Util.LuckPermsAPI;
 import Kyu.WaterFallLanguageHelper.LanguageHelper;
+import Kyu.WaterFallLanguageHelper.MariaDB;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.md_5.bungee.api.ChatColor;
@@ -26,20 +29,27 @@ import net.md_5.bungee.config.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 import Kyu.ServerCoreBungee.DiscordBot.DCBot;
 
 public final class Main extends Plugin {
 
     public static LuckPerms lp;
+    public static LanguageHelper helper;
+    public static int cacheTimeout, confirmTimeout;
+
     private static Configuration config, uuidStorage;
     private static File configFile, uuidStorageFile;
     private static Logger logger;
-    public static int cacheTimeout, confirmTimeout;
     private static Main instance;
-    private BansHandler handler = null;
     private static DB db;
+
+    private BansHandler handler = null;
     private DCBot discordBot;
 
 
@@ -55,6 +65,7 @@ public final class Main extends Plugin {
 
         try {
             lp = LuckPermsProvider.get();
+            LuckPermsAPI.setLuckAPI(lp);
         } catch (IllegalStateException e) {
             System.out.println("Luckperms not loaded!");
             return;
@@ -69,6 +80,7 @@ public final class Main extends Plugin {
         new TeamchatCommand(this);
         new DMCommand(this);
         new GlobalChatCommand(this);
+        new ChangeLangCommand(this);
 
         new BanCMD(this);
         new HardBanCMD(this);
@@ -91,8 +103,6 @@ public final class Main extends Plugin {
     public void loadConfigValues() {
         if (!getDataFolder().exists()) getDataFolder().mkdirs();
 
-        LanguageHelper.setup(this, "de", getResourceAsStream("de.yml"), ChatColor.translateAlternateColorCodes('&', "&6[PixelCore] "), true);
-
         uuidStorageFile = new File(getDataFolder(), "uuids.yml");
         try {
             if (!uuidStorageFile.exists()) uuidStorageFile.createNewFile();
@@ -114,14 +124,21 @@ public final class Main extends Plugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        
         String host = config.getString("database.host");
         int port = config.getInt("database.port");
         String database = config.getString("database.database");
         String user = config.getString("database.user");
         String password = config.getString("database.password");
-        
-        LanguageHelper.setDatabase(new Kyu.WaterFallLanguageHelper.DB(host, port, user, password, database));
+
+        MariaDB helperDb = new MariaDB(host, port, user, password, database, true);
+
+        Map<String, Reader> langs = new HashMap<>();
+        langs.put("de", new InputStreamReader(getResourceAsStream("de.yml")));
+        langs.put("en", new InputStreamReader(getResourceAsStream("en.yml")));
+
+        helper = new LanguageHelper(this, "de", langs, ChatColor.translateAlternateColorCodes('&', "&6[PixelCore] "), helperDb);
+
 
         confirmTimeout = getConfig().getInt("confirmTimeout");
         cacheTimeout = getConfig().getInt("cacheTimeout");
