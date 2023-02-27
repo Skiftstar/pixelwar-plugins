@@ -1,6 +1,5 @@
 package Kyu.ServerCoreBungee.Ontime.listener;
 
-import java.sql.SQLException;
 import java.util.UUID;
 
 import Kyu.ServerCoreBungee.Main;
@@ -16,7 +15,7 @@ public class OntimeListener implements Listener {
     }
 
     @EventHandler
-    public void onJoin(LoginEvent e) throws SQLException {
+    public void onJoin(LoginEvent e) {
         UUID uuid = e.getConnection().getUniqueId();
         if (Util.getLastUpdate(uuid.toString()) == -1L) {
             Util.registerUser(uuid.toString());

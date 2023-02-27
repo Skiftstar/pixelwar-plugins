@@ -1,7 +1,6 @@
 package Kyu.ServerCoreBungee.Ontime.commands;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import Kyu.ServerCoreBungee.Main;
@@ -16,235 +15,74 @@ import net.md_5.bungee.api.plugin.TabExecutor;
 
 public class OntimeCommand extends Command implements TabExecutor {
     public OntimeCommand(Main main) {
-        super("ontime", "ontime.show.self", new String[0]);
+        super("ontime", "ontime.show.self");
         main.getProxy().getPluginManager().registerCommand(main, this);
     }
 
     public void execute(CommandSender cs, String[] args) {
-        if (args.length == 0) {
-            if (!(cs instanceof ProxiedPlayer)) {
-                return;
-            }
-
-            ProxiedPlayer sender = (ProxiedPlayer)cs;
-            if (!sender.hasPermission("ontime.show.self") && !sender.hasPermission("ontime.show.*")) {
-                sender.sendMessage(new TextComponent("§cDu hast dazu keine Berechtigungen"));
-            } else {
-                long totaltime = Util.getOntimeTotal(sender.getUniqueId().toString());
-                long daytime = Util.getDayOnTime(sender.getUniqueId().toString());
-                long weektime = Util.getWeekOnTime(sender.getUniqueId().toString());
-                long monthtime = Util.getMonthOnTime(sender.getUniqueId().toString());
-
-                String[] resultday = convertMillisToDHMS(daytime);
-                sender.sendMessage(new TextComponent("  §b=== Ontime ==="));
-                String dayString = "";
-                if (resultday[0] != null) {
-                    dayString = dayString + resultday[0] + " ";
-                }
-
-                if (resultday[1] != null) {
-                    dayString = dayString + resultday[1] + " ";
-                }
-
-                if (resultday[2] != null) {
-                    dayString = dayString + resultday[2];
-                }
-
-                sender.sendMessage(new TextComponent("" + ChatColor.AQUA + "Heute: " + dayString.trim()));
-                String[] resulttotal = convertMillisToDHMS(totaltime);
-                String[] restultweek = convertMillisToDHMS(weektime);
-                String[] resultmonth = convertMillisToDHMS(monthtime);
-                String weekString = "";
-                if (restultweek[0] != null) {
-                    weekString = weekString + restultweek[0] + " ";
-                }
-
-                if (restultweek[1] != null) {
-                    weekString = weekString + restultweek[1] + " ";
-                }
-
-                if (restultweek[2] != null) {
-                    weekString = weekString + restultweek[2];
-                }
-
-                try {
-                    sender.sendMessage(new TextComponent("" + ChatColor.AQUA + "Diese Woche: " + weekString.trim()));
-                } catch (IndexOutOfBoundsException var34) {
-                    try {
-                        sender.sendMessage(new TextComponent(ChatColor.AQUA + "Diese Woche: " + weekString));
-                    } catch (IndexOutOfBoundsException var33) {
-                        sender.sendMessage(new TextComponent(ChatColor.AQUA + "Diese Woche: "));
-                    }
-                }
-
-                String monthString = "";
-                if (resultmonth[0] != null) {
-                    monthString = monthString + resultmonth[0] + " ";
-                }
-
-                if (resultmonth[1] != null) {
-                    monthString = monthString + resultmonth[1] + " ";
-                }
-
-                if (resultmonth[2] != null) {
-                    monthString = monthString + resultmonth[2];
-                }
-
-                try {
-                    sender.sendMessage(new TextComponent("" + ChatColor.AQUA + "Diesen Monat: " + monthString.trim()));
-                } catch (IndexOutOfBoundsException var32) {
-                    try {
-                        sender.sendMessage(new TextComponent(ChatColor.AQUA + "Diesen Monat: " + monthString));
-                    } catch (IndexOutOfBoundsException var31) {
-                        sender.sendMessage(new TextComponent(ChatColor.AQUA + "Diesen Monat: "));
-                    }
-                }
-
-                String totalString = "";
-                if (resulttotal[0] != null) {
-                    totalString = totalString + resulttotal[0] + " ";
-                }
-
-                if (resulttotal[1] != null) {
-                    totalString = totalString + resulttotal[1] + " ";
-                }
-
-                if (resulttotal[2] != null) {
-                    totalString = totalString + resulttotal[2];
-                }
-
-                try {
-                    sender.sendMessage(new TextComponent("" + ChatColor.AQUA + "Insgesamt: " + totalString.trim()));
-                } catch (IndexOutOfBoundsException var30) {
-                    try {
-                        sender.sendMessage(new TextComponent(ChatColor.AQUA + "Insgesamt: " + totalString));
-                    } catch (IndexOutOfBoundsException var29) {
-                        sender.sendMessage(new TextComponent(ChatColor.AQUA + "Insgesamt: "));
-                    }
-                }
-            }
-        } else {
-            ProxiedPlayer sender = (ProxiedPlayer)cs;
-            ProxiedPlayer p = ProxyServer.getInstance().getPlayer(args[0]);
-            if (p == null) {
-                p.sendMessage(new TextComponent("§cDieser Spieler ist offline/existiert nicht"));
-                return;
-            }
-
-            if (!sender.hasPermission("ontime.show.other") && !sender.hasPermission("ontime.show.*")) {
-                sender.sendMessage(new TextComponent("§cDu hast dazu keine Berechtigungen"));
-            } else {
-                long totaltime = Util.getOntimeTotal(p.getUniqueId().toString());
-                long daytime = Util.getDayOnTime(p.getUniqueId().toString());
-                long weektime = Util.getWeekOnTime(p.getUniqueId().toString());
-                long monthtime = Util.getMonthOnTime(p.getUniqueId().toString());
-                sender.sendMessage(new TextComponent("  §b=== Ontime === §7(Von: §e" + p.getName() + "§7)"));
-                String[] resultday = convertMillisToDHMS(daytime);
-                String dayString = "";
-                if (resultday[0] != null) {
-                    dayString = dayString + resultday[0] + " ";
-                }
-
-                if (resultday[1] != null) {
-                    dayString = dayString + resultday[1] + " ";
-                }
-
-                if (resultday[2] != null) {
-                    dayString = dayString + resultday[2];
-                }
-
-                sender.sendMessage(new TextComponent("" + ChatColor.AQUA + "Heute: " + dayString.trim()));
-                String[] resulttotal = convertMillisToDHMS(totaltime);
-                String[] resultWeek = convertMillisToDHMS(weektime);
-                String[] resultmonth = convertMillisToDHMS(monthtime);
-                String weekString = "";
-                if (resultWeek[0] != null) {
-                    weekString = weekString + resultWeek[0] + " ";
-                }
-
-                if (resultWeek[1] != null) {
-                    weekString = weekString + resultWeek[1] + " ";
-                }
-
-                if (resultWeek[2] != null) {
-                    weekString = weekString + resultWeek[2];
-                }
-
-                try {
-                    sender.sendMessage(new TextComponent("" + ChatColor.AQUA + "Diese Woche: " + weekString.trim()));
-                } catch (IndexOutOfBoundsException var28) {
-                    try {
-                        sender.sendMessage(new TextComponent(ChatColor.AQUA + "Diese Woche: " + weekString));
-                    } catch (IndexOutOfBoundsException var27) {
-                        sender.sendMessage(new TextComponent(ChatColor.AQUA + "Diese Woche: "));
-                    }
-                }
-
-                String monthString = "";
-                if (resultmonth[0] != null) {
-                    monthString = monthString + resultmonth[0] + " ";
-                }
-
-                if (resultmonth[1] != null) {
-                    monthString = monthString + resultmonth[1] + " ";
-                }
-
-                if (resultmonth[2] != null) {
-                    monthString = monthString + resultmonth[2];
-                }
-
-                try {
-                    sender.sendMessage(new TextComponent("" + ChatColor.AQUA + "Diesen Monat: " + monthString.trim()));
-                } catch (IndexOutOfBoundsException var26) {
-                    try {
-                        sender.sendMessage(new TextComponent(ChatColor.AQUA + "Diesen Monat: " + monthString));
-                    } catch (IndexOutOfBoundsException var25) {
-                        sender.sendMessage(new TextComponent(ChatColor.AQUA + "Diesen Monat: "));
-                    }
-                }
-
-                String totalString = "";
-                if (resulttotal[0] != null) {
-                    totalString = totalString + resulttotal[0] + " ";
-                }
-
-                if (resulttotal[1] != null) {
-                    totalString = totalString + resulttotal[1] + " ";
-                }
-
-                if (resulttotal[2] != null) {
-                    totalString = totalString + resulttotal[2];
-                }
-
-                try {
-                    sender.sendMessage(new TextComponent("" + ChatColor.AQUA + "Insgesamt: " + totalString.trim()));
-                } catch (IndexOutOfBoundsException var24) {
-                    try {
-                        sender.sendMessage(new TextComponent(ChatColor.AQUA + "Insgesamt: " + totalString));
-                    } catch (IndexOutOfBoundsException var23) {
-                        sender.sendMessage(new TextComponent(ChatColor.AQUA + "Insgesamt: "));
-                    }
-                }
-            }
+        if (!(cs instanceof ProxiedPlayer)) {
+            return;
         }
+        ProxiedPlayer sender = (ProxiedPlayer)cs;
 
+        if (args.length == 0) {
+            String mess = buildResponse(sender.getUniqueId().toString());
+            sender.sendMessage(new TextComponent(mess));
+
+        } else {
+            ProxiedPlayer otherP = ProxyServer.getInstance().getPlayer(args[0]);
+            if (otherP == null) {
+                sender.sendMessage(new TextComponent("§cDieser Spieler ist offline/existiert nicht"));
+                return;
+            }
+
+            if (!sender.hasPermission("ontime.show.other")) {
+                sender.sendMessage(new TextComponent("§cDu hast dazu keine Berechtigungen"));
+                return;
+            }
+
+            String mess = buildResponse(otherP.getUniqueId().toString(), otherP.getName());
+            sender.sendMessage(new TextComponent(mess));
+        }
     }
 
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-        List<String> list = new ArrayList();
-        Iterator var4 = Main.instance().getProxy().getPlayers().iterator();
+        List<String> list = new ArrayList<>();
 
-        while(var4.hasNext()) {
-            ProxiedPlayer all = (ProxiedPlayer)var4.next();
+        for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
             if (args.length == 1) {
-                list.add(all.getName());
+                list.add(p.getName());
             }
         }
-
         return list;
     }
 
-    public static String[] convertMillisToDHMS(long milliseconds) {
+    private static String buildResponse(String uuid, String... playerName) {
+        String header = playerName.length > 0 ? "  §b=== Ontime === §7(Von: §e" + playerName[0] + "§7)" : "  §b=== Ontime ===";
+
+        long[] playtimes = Util.getPlaytime(uuid);
+        long dayTime = playtimes[0];
+        long weekTime = playtimes[1];
+        long monthTime = playtimes[2];
+        long totalTime = playtimes[3];
+
+
+        String dayString = convertMillisToDHMS(dayTime);
+        String weekString = convertMillisToDHMS(weekTime);
+        String monthString = convertMillisToDHMS(monthTime);
+        String totalString = convertMillisToDHMS(totalTime);
+
+        String mess = header + "\n" 
+            + ChatColor.AQUA + "Heute: " + dayString.trim() + "\n"
+            + ChatColor.AQUA + "Diese Woche: " + weekString.trim() + "\n"
+            + ChatColor.AQUA + "Diesen Monat: " + monthString.trim() + "\n"
+            + ChatColor.AQUA + "Insgesamt: " + totalString.trim();
+
+
+        return mess;
+    }
+
+    public static String convertMillisToDHMS(long milliseconds) {
         long seconds = milliseconds / 1000L;
         long minutes = seconds / 60L;
         long hours = minutes / 60L;
@@ -266,6 +104,14 @@ public class OntimeCommand extends Command implements TabExecutor {
             timeArray[0] = "" + minutes + " Minuten";
         }
 
-        return timeArray;
+        String result = "";
+
+        for (int i = 0; i < 3; i++) {
+            if (timeArray[i] != null) {
+                result += timeArray[i] + " ";
+            }
+        }
+
+        return result;
     }
 }
