@@ -67,19 +67,21 @@ public class Util {
             stmt.setString(1, uuid);
             stmt.setLong(2, current - lastupdate);
             stmt.setLong(3, current - lastupdate);
-            tryToUpdateDay(uuid, lastupdate, current);
-            tryToUpdateWeek(uuid, lastupdate, current);
-            tryToUpdateMonth(uuid, lastupdate, current);
+
+            boolean[] dateChecks = dateComparison(lastupdate, current);
+            tryToUpdateDay(uuid, lastupdate, current, dateChecks[0]);
+            tryToUpdateWeek(uuid, lastupdate, current, dateChecks[1]);
+            tryToUpdateMonth(uuid, lastupdate, current, dateChecks[2]);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public static void tryToUpdateDay(String uuid, long time1, long time2) {
+    public static void tryToUpdateDay(String uuid, long time1, long time2, boolean isNewDay) {
         String query;
         long time;
-        if (isNewDay(time1, time2)) {
+        if (isNewDay) {
             query = "UPDATE player_playtime SET playtimeDay = ? WHERE uuid = ?;";
             time = (long)(new Date(time2)).getMinutes() * 60L * 1000L;
         } else {
@@ -96,10 +98,10 @@ public class Util {
         }
     }
 
-    public static void tryToUpdateWeek(String uuid, long time1, long time2) {
+    public static void tryToUpdateWeek(String uuid, long time1, long time2, boolean isNewWeek) {
         String query;
         long time;
-        if (isNewDay(time1, time2)) {
+        if (isNewWeek) {
             query = "UPDATE player_playtime SET playtimeWeek = ? WHERE uuid = ?;";
             time = (long)(new Date(time2)).getMinutes() * 60L * 1000L;
         } else {
@@ -116,10 +118,10 @@ public class Util {
         }
     }
 
-    public static void tryToUpdateMonth(String uuid, long time1, long time2) {
+    public static void tryToUpdateMonth(String uuid, long time1, long time2, boolean isNewMonth) {
         String query;
         long time;
-        if (isNewDay(time1, time2)) {
+        if (isNewMonth) {
             query = "UPDATE player_playtime SET playtimeMonth = ? WHERE uuid = ?;";
             time = (long)(new Date(time2)).getMinutes() * 60L * 1000L;
         } else {
@@ -182,52 +184,30 @@ public class Util {
         }
     }
 
-    public static boolean isNewDay(long time1, long time2) {
+    public static boolean[] dateComparison(long time1, long time2) {
+        boolean isNewDay = false;
+        boolean isNewWeek = false;
+        boolean isNewMonth = false;
         if (time1 > time2) {
-            return false;
+            return new boolean[]{isNewDay, isNewWeek, isNewMonth};
         } else {
             Calendar cal = Calendar.getInstance();
             cal.setTime(new Date(time1));
-            int year1 = cal.get(1);
-            int month1 = cal.get(2);
-            int day1 = cal.get(5);
-            cal.setTime(new Date(time2));
-            int year2 = cal.get(1);
-            int month2 = cal.get(2);
-            int day2 = cal.get(5);
-            return year1 < year2 || month1 < month2 || day1 < day2;
-        }
-    }
+            int year1 = cal.get(Calendar.YEAR);
+            int month1 = cal.get(Calendar.MONTH);
+            int week1 = cal.get(Calendar.WEEK_OF_MONTH);
+            int day1 = cal.get(Calendar.DAY_OF_MONTH);
 
-    public static boolean isNewWeek(long time1, long time2) {
-        if (time1 > time2) {
-            return false;
-        } else {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(new Date(time1));
-            int year1 = cal.get(1);
-            int month1 = cal.get(2);
-            int week1 = cal.get(4);
             cal.setTime(new Date(time2));
-            int year2 = cal.get(1);
-            int month2 = cal.get(2);
-            int week2 = cal.get(4);
-            return year1 < year2 || month1 < month2 || week1 < week2;
-        }
-    }
-
-    public static boolean isNewMonth(long time1, long time2) {
-        if (time1 > time2) {
-            return false;
-        } else {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(new Date(time1));
-            int year1 = cal.get(1);
-            int month1 = cal.get(2);
-            cal.setTime(new Date(time2));
-            int year2 = cal.get(1);
-            int month2 = cal.get(2);
-            return year1 < year2 || month1 < month2;
+            int year2 = cal.get(Calendar.YEAR);
+            int month2 = cal.get(Calendar.MONTH);
+            int week2 = cal.get(Calendar.WEEK_OF_MONTH);
+            int day2 = cal.get(Calendar.DAY_OF_MONTH);
+            
+            isNewDay = year1 < year2 || month1 < month2 || day1 < day2;
+            isNewWeek = year1 < year2 || month1 < month2 || week1 < week2;
+            isNewMonth = year1 < year2 || month1 < month2;
+            return new boolean[]{isNewDay, isNewWeek, isNewMonth};
         }
     }
 }
