@@ -56,7 +56,7 @@ public class OntimeCommand extends Command implements TabExecutor {
                 return;
             }
 
-            if (!cs.hasPermission("ontime.show.other")) {
+            if (!cs.hasPermission("ontime.show.other")&&!cs.hasPermission("ontime.show.*")) {
                 cs.sendMessage(new TextComponent(lang.getMessage(locale, "Ontime.NoPermission").replace("&","§")));
                 return;
             }
@@ -69,6 +69,9 @@ public class OntimeCommand extends Command implements TabExecutor {
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
         List<String> list = new ArrayList<>();
         PlayerData data = Cache.data;
+        if (!sender.hasPermission("ontime.show.other")&&!sender.hasPermission("ontime.show.*")){
+            return new ArrayList<>();
+        }
 
         for (String s : data.getListKeys()) {
 
@@ -78,8 +81,16 @@ public class OntimeCommand extends Command implements TabExecutor {
                 }
             }
         }
+        List<String> endlist = new ArrayList<>();
+        String currentarg = args[args.length-1].toLowerCase();
+        for (String s : endlist) {
+            String s1 = s.toLowerCase();
+            if (s1.startsWith(currentarg)){
+                endlist.add(s);
+            }
+        }
 
-        return list;
+        return endlist;
     }
 
     private static String buildResponse(CommandSender cs,String uuid, String... playerName) {
@@ -93,7 +104,7 @@ public class OntimeCommand extends Command implements TabExecutor {
             }
         }
         if (!cs.hasPermission("ontime.show.self")) {
-            return lang.getMessage(locale, "Ontime.NoPermission").replace("&","§");
+            return lang.getMessage(locale, "Ontime.NoPermission").replace("&","§ ");
         }
 
         String header = playerName.length > 0 ? lang.getMessage(locale,"Ontime.Header").replace("&","§").replace("(name)",  capitalize(playerName[0]) ): lang.getMessage(locale, "Ontime.HeaderAlt").replace("&","§");
