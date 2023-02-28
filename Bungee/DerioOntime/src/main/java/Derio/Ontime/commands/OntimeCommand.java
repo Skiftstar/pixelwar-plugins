@@ -52,12 +52,12 @@ public class OntimeCommand extends Command implements TabExecutor {
 
             String otherUUID = data.getUUID(args[0].toLowerCase());
             if (otherUUID == null) {
-                cs.sendMessage(new TextComponent(lang.getMessage(locale, "Ontime.WrongPlayer")));
+                cs.sendMessage(new TextComponent(lang.getMessage(locale, "Ontime.WrongPlayer").replace("&","§")));
                 return;
             }
 
             if (!cs.hasPermission("ontime.show.other")) {
-                cs.sendMessage(new TextComponent(lang.getMessage(locale, "Ontime.NoPermission")));
+                cs.sendMessage(new TextComponent(lang.getMessage(locale, "Ontime.NoPermission").replace("&","§")));
                 return;
             }
 
@@ -93,7 +93,7 @@ public class OntimeCommand extends Command implements TabExecutor {
             }
         }
         if (!cs.hasPermission("ontime.show.self")) {
-            return lang.getMessage(locale, "Ontime.NoPermission");
+            return lang.getMessage(locale, "Ontime.NoPermission").replace("&","§");
         }
 
         String header = playerName.length > 0 ? lang.getMessage(locale,"Ontime.Header").replace("&","§").replace("(name)",  capitalize(playerName[0]) ): lang.getMessage(locale, "Ontime.HeaderAlt").replace("&","§");
