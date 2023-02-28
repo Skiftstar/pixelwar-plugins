@@ -1,8 +1,11 @@
 package Derio.Ontime;
 
 import Derio.Ontime.Database.DB;
-import Derio.Ontime.Ontime.commands.OntimeCommand;
-import Derio.Ontime.Ontime.listener.OntimeListener;
+import Derio.Ontime.commands.OntimeCommand;
+import Derio.Ontime.listener.OntimeListener;
+import Derio.Ontime.utils.Cache;
+import Derio.Ontime.utils.LangFiles;
+import Derio.Ontime.utils.PlayerData;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
@@ -12,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 public final class Main extends Plugin {
@@ -27,6 +31,22 @@ public final class Main extends Plugin {
     public void onEnable() {
         instance = this;
         logger = getLogger();
+
+        try {
+            Cache.lang = new LangFiles("de", "en");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            Cache.data = new PlayerData();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Cache.lastLogin = new HashMap<>();
+        Cache.playtimeDay = new HashMap<>();
+        Cache.playtimeWeek = new HashMap<>();
+        Cache.playtimeTotal = new HashMap<>();
+        Cache.playtimeMonth = new HashMap<>();
 
         loadConfigValues();
         db = new DB();
@@ -53,7 +73,9 @@ public final class Main extends Plugin {
             e.printStackTrace();
         }
     }
-
+    public static Main getInstance(){
+        return instance;
+    }
     public static Configuration getConfig() {
         return config;
     }

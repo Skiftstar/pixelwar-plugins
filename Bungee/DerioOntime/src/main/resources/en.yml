@@ -1,0 +1,10 @@
+Ontime:
+  NoPermission: "&cDu hast nicht genug Rechte!"
+  WrongPlayer: "&cDieser Spieler existiert nicht"
+  Header: "&b=== Ontime === &7(From &e(name)&7)"
+  HeaderAlt: "&b=== Ontime ==="
+  Format: "&bToday: (day)\nThis week: (week)\nThis month: (month)\nTotal: (total)"
+  words:
+    minutes: "Minute/s"
+    hours: "Hour/s"
+    days: "Day/s"
