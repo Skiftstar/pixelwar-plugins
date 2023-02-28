@@ -51,7 +51,7 @@ public class OntimeCommand extends Command implements TabExecutor {
             LangFiles lang = Cache.lang;
 
             String otherUUID = data.getUUID(args[0].toLowerCase());
-            if (otherUUID == null) {
+            if (otherUUID.isBlank()) {
                 cs.sendMessage(new TextComponent(lang.getMessage(locale, "Ontime.WrongPlayer").replace("&","§")));
                 return;
             }
@@ -83,7 +83,7 @@ public class OntimeCommand extends Command implements TabExecutor {
         }
         List<String> endlist = new ArrayList<>();
         String currentarg = args[args.length-1].toLowerCase();
-        for (String s : endlist) {
+        for (String s : list) {
             String s1 = s.toLowerCase();
             if (s1.startsWith(currentarg)){
                 endlist.add(s);
@@ -142,7 +142,7 @@ public class OntimeCommand extends Command implements TabExecutor {
         long days = hours / 24L;
         String[] timeArray = new String[3];
         if (days > 0L) {
-            timeArray[0] = "" + days + " "+ lang.getMessage(locale, "Ontime.words.days");
+            timeArray[2] = "" + days + " "+ lang.getMessage(locale, "Ontime.words.days");
             hours %= 24L;
         }
 
@@ -158,8 +158,7 @@ public class OntimeCommand extends Command implements TabExecutor {
         }
 
         String result = "";
-
-        for (int i = 0; i < 3; i++) {
+        for (int i = 2; i > -1; i--) {
             if (timeArray[i] != null) {
                 result += timeArray[i] + " ";
             }
@@ -181,13 +180,13 @@ public class OntimeCommand extends Command implements TabExecutor {
         result[3] = System.currentTimeMillis()-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
 
     }catch (NullPointerException ex){
-        long[] cache = Util.getPlaytime(uuid);
+        long[] database = Util.getPlaytime(uuid);
         long lastLogin = Util.getLastUpdate(uuid);
 
-        Cache.playtimeDay.put(uuid, cache[0]);
-        Cache.playtimeWeek.put(uuid,cache[1]);
-        Cache.playtimeMonth.put(uuid,cache[2]);
-        Cache.playtimeTotal.put(uuid,cache[3]);
+        Cache.playtimeDay.put(uuid, database[0]);
+        Cache.playtimeWeek.put(uuid,database[1]);
+        Cache.playtimeMonth.put(uuid,database[2]);
+        Cache.playtimeTotal.put(uuid,database[3]);
         Cache.lastLogin.put(uuid, lastLogin);
 
         result[0] = Cache.playtimeDay.get(uuid);
