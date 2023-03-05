@@ -5,6 +5,7 @@ import Derio.Ontime.Main;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -59,6 +60,56 @@ public class Util {
         }
     }
 
+    public static void tryReset(String uuid){
+
+        long current = System.currentTimeMillis();
+        long lastupdate = getLastUpdate(uuid);
+
+
+            boolean[] dateChecks = dateComparison(lastupdate, current);
+
+
+
+        String query = "";
+        String query1 = "";
+        String query2 = "";
+        long time;
+        if (dateChecks[2]) {
+            query = "UPDATE player_playtime SET playtimeMonth = ? WHERE uuid = ?;";
+            query1 = "UPDATE player_playtime SET playtimeWeek = ? WHERE uuid = ?;";
+            query2 = "UPDATE player_playtime SET playtimeDay = ? WHERE uuid = ?;";
+            execute(uuid, query,query1, query2);
+
+        }else if (dateChecks[1]){
+            query = "UPDATE player_playtime SET playtimeWeek = ? WHERE uuid = ?;";
+            query1 = "UPDATE player_playtime SET playtimeDay = ? WHERE uuid = ?;";
+            execute(uuid, query,query1);
+
+        }else if (dateChecks[0]){
+            query = "UPDATE player_playtime SET playtimeDay = ? WHERE uuid = ?;";
+            execute(uuid, query);
+
+
+        }
+
+        }
+        private static void execute(String uuid,String... querys){
+            for (int i = 0; i < querys.length; i++) {
+                try (PreparedStatement stmt = Main.getDb().getConnection().prepareStatement(querys[i]);) {
+                    stmt.setLong(1, 0);
+                    stmt.setString(2, uuid);
+                    stmt.executeUpdate();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return;
+                }
+            }
+
+
+        }
+
+
+
     public static void addPlaytime(String uuid) {
         long current = System.currentTimeMillis();
         long lastupdate = getLastUpdate(uuid);
@@ -69,6 +120,7 @@ public class Util {
             stmt.setLong(3, current - lastupdate);
 
             boolean[] dateChecks = dateComparison(lastupdate, current);
+
             tryToUpdateDay(uuid, lastupdate, current, dateChecks[0]);
             tryToUpdateWeek(uuid, lastupdate, current, dateChecks[1]);
             tryToUpdateMonth(uuid, lastupdate, current, dateChecks[2]);
@@ -92,7 +144,7 @@ public class Util {
         long time;
         if (isNewDay) {
             query = "UPDATE player_playtime SET playtimeDay = ? WHERE uuid = ?;";
-            time =  getMinutesFromCurrentDay(time2)* 60L * 1000L;
+            time =  getMinutesFromCurrentDay(time2);
             Cache.playtimeDay.put(uuid,   getMinutesFromCurrentDay(time2));
         } else {
             query = "UPDATE player_playtime SET playtimeDay = playtimeDay + ? WHERE uuid = ?;";

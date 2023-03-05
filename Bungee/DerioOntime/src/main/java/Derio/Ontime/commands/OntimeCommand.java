@@ -4,10 +4,7 @@ import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
 
 import Derio.Ontime.Main;
 import Derio.Ontime.utils.Cache;
@@ -16,6 +13,7 @@ import Derio.Ontime.utils.PlayerData;
 import Derio.Ontime.utils.Util;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -110,7 +108,7 @@ public class OntimeCommand extends Command implements TabExecutor {
         String header = playerName.length > 0 ? lang.getMessage(locale,"Ontime.Header").replace("&","§").replace("(name)",  capitalize(playerName[0]) ): lang.getMessage(locale, "Ontime.HeaderAlt").replace("&","§");
 
         long[] playtimes = getPlaytime(uuid);
-        System.out.println(uuid);
+
         long dayTime = playtimes[0];
         long weekTime = playtimes[1];
         long monthTime = playtimes[2];
@@ -170,14 +168,91 @@ public class OntimeCommand extends Command implements TabExecutor {
 
 
             long[] result = new long[]{0, 0, 0, 0};
+            long current = System.currentTimeMillis();
+
+
+
+
     try {
+        if (isNewMonth(Cache.lastLogin.get(uuid), current)){
+
+            try {
+                if (ProxyServer.getInstance().getPlayer(UUID.fromString(uuid)).isConnected()){
+                    long playtimeM =  getMinutesFromCurrentDay(System.currentTimeMillis());
+                    long playtimeMs = playtimeM*60*1000;
+                    result[0] = playtimeMs;
+                    result[1] = playtimeMs;
+                    result[2] = playtimeMs;
+                    result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
+                    return result;
+                }
+            }catch (NullPointerException ex){
+
+            }
+            result[0] =  0;
+            result[1] =0;
+            result[2] = 0;
+            result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
+            return result;
+        }else if (isNewWeek(Cache.lastLogin.get(uuid), current)) {
+            try {
+                if (ProxyServer.getInstance().getPlayer(UUID.fromString(uuid)).isConnected()){
+                    long playtimeM =  getMinutesFromCurrentDay(System.currentTimeMillis());
+                    long playtimeMs = playtimeM*60*1000;
+                    result[0] = playtimeMs;
+                    result[1] = playtimeMs;
+                    result[2] = current-Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
+                    result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
+                    return result;
+                }
+            }catch (NullPointerException ex){
+
+            }
+            result[0] =  0;
+            result[1] = 0;
+            result[2] = current-Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
+            result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
+            return result;
+        }else if (isNewDay(Cache.lastLogin.get(uuid), current)) {
+            try {
+                if (ProxyServer.getInstance().getPlayer(UUID.fromString(uuid)).isConnected()){
+                    long playtimeM =  getMinutesFromCurrentDay(System.currentTimeMillis());
+                    long playtimeMs = playtimeM*60*1000;
+                    result[0] = playtimeMs;
+                    result[1] = current-Cache.lastLogin.get(uuid) + Cache.playtimeWeek.get(uuid);
+                    result[2] = current-Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
+                    result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
+                    return result;
+                }
+            }catch (NullPointerException ex){
+
+            }
+            result[0] =  0;
+            result[1] = current-Cache.lastLogin.get(uuid) + Cache.playtimeWeek.get(uuid);
+            result[2] = current-Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
+            result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
+            return result;
+
+        }else {
+            UUID p = UUID.fromString(uuid);
+            if (ProxyServer.getInstance().getPlayer(p) == null){
+                result[0] =  Cache.playtimeDay.get(uuid);
+                result[1] =  Cache.playtimeWeek.get(uuid);
+                result[2] =  Cache.playtimeMonth.get(uuid);
+                result[3] =  Cache.playtimeTotal.get(uuid);
+
+                return result;
+            }
 
 
+            result[0] =  current-Cache.lastLogin.get(uuid) + Cache.playtimeDay.get(uuid);
+            result[1] = current-Cache.lastLogin.get(uuid) + Cache.playtimeWeek.get(uuid);
+            result[2] = current-Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
+            result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
 
-        result[0] = System.currentTimeMillis()-Cache.lastLogin.get(uuid) + Cache.playtimeDay.get(uuid);
-        result[1] = System.currentTimeMillis()-Cache.lastLogin.get(uuid) + Cache.playtimeWeek.get(uuid);
-        result[2] = System.currentTimeMillis()-Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
-        result[3] = System.currentTimeMillis()-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
+        }
+
+
 
     }catch (NullPointerException ex){
         long[] database = Util.getPlaytime(uuid);
@@ -202,5 +277,57 @@ public class OntimeCommand extends Command implements TabExecutor {
     private static String capitalize(String str) {
         if (str == null || str.length() == 0) return str;
         return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
+    private static boolean isNewDay(long time1, long time2) {
+        if (time1 > time2) return false;
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new java.util.Date(time1));
+
+        int year1 = cal.get(Calendar.YEAR);
+        int month1 = cal.get(Calendar.MONTH);
+        int day1 = cal.get(Calendar.DAY_OF_MONTH);
+        cal.setTime(new java.util.Date(time2));
+        int year2 = cal.get(Calendar.YEAR);
+        int month2 = cal.get(Calendar.MONTH);
+        int day2 = cal.get(Calendar.DAY_OF_MONTH);
+
+        return year1 < year2 || month1 < month2 || day1 < day2;
+    }
+
+    private static boolean isNewWeek(long time1, long time2) {
+        if (time1 > time2) return false;
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new java.util.Date(time1));
+
+        int year1 = cal.get(Calendar.YEAR);
+        int month1 = cal.get(Calendar.MONTH);
+        int week1 = cal.get(Calendar.WEEK_OF_MONTH);
+        cal.setTime(new java.util.Date(time2));
+        int year2 = cal.get(Calendar.YEAR);
+        int month2 = cal.get(Calendar.MONTH);
+        int week2 = cal.get(Calendar.WEEK_OF_MONTH);
+
+        return year1 < year2 || month1 < month2 || week1 < week2;
+    }
+
+    private static boolean isNewMonth(long time1, long time2) {
+        if (time1 > time2) return false;
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new java.util.Date(time1));
+
+        int year1 = cal.get(Calendar.YEAR);
+        int month1 = cal.get(Calendar.MONTH);
+        cal.setTime(new java.util.Date(time2));
+        int year2 = cal.get(Calendar.YEAR);
+        int month2 = cal.get(Calendar.MONTH);
+
+        return year1 < year2 || month1 < month2;
+    }
+    public static long getMinutesFromCurrentDay(long currentMs) {
+        long minutes = (int) (currentMs / (1000 * 60));
+
+        long minutesSinceMidnight = minutes % (24 * 60);
+
+        return minutesSinceMidnight;
     }
 }

@@ -1,6 +1,7 @@
 package Derio.Ontime.listener;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -26,8 +27,10 @@ public class OntimeListener implements Listener {
             Util.registerUser(uuid.toString());
         }
 
-        Util.setLastUpdate(uuid.toString(), System.currentTimeMillis());
         Cache.lastLogin.put(uuid.toString(), System.currentTimeMillis());
+
+        Util.tryReset(uuid.toString());
+        Util.setLastUpdate(uuid.toString(), System.currentTimeMillis());
 
 
         data = Cache.data;
@@ -40,12 +43,15 @@ public class OntimeListener implements Listener {
     @EventHandler
     public void onLeave(PlayerDisconnectEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
-        Util.addPlaytime(uuid.toString());
 
         Cache.lastLogin.remove(uuid);
         Cache.playtimeDay.remove(uuid);
         Cache.playtimeWeek.remove(uuid);
         Cache.playtimeTotal.remove(uuid);
         Cache.playtimeMonth.remove(uuid);
+
+        Util.addPlaytime(uuid.toString());
+
+
     }
 }
