@@ -37,6 +37,12 @@ public class OntimeListener implements Listener {
 
         if (!data.isInConfig(uuid, e.getConnection().getName().toLowerCase())){
             data.set(uuid,e.getConnection().getName().toLowerCase());
+        }else {
+            Cache.lastLogin.remove(uuid);
+            Cache.playtimeDay.remove(uuid);
+            Cache.playtimeWeek.remove(uuid);
+            Cache.playtimeTotal.remove(uuid);
+            Cache.playtimeMonth.remove(uuid);
         }
     }
 
