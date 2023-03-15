@@ -1,0 +1,5 @@
+name: Aurelia
+version: '${project.version}'
+main: PixelWar.Aurelia.Main
+api-version: 1.19
+depend: [BetterEconomy, Vault]
