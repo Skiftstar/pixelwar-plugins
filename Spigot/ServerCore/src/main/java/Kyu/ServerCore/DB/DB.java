@@ -24,12 +24,9 @@ public class DB {
             e1.printStackTrace();
         }
         loadConfig();
-        System.out.println(host);
-        System.out.println(database);
         try {
             url = "jdbc:mariadb://" + host + ":" + port + "/" + database;
             dataSource = new MariaDbDataSource(url);
-            System.out.println(url);
             initDb();
         } catch (Exception e) {
             Main.getInstance().getLogger().severe("Error initializing DB tables!");
