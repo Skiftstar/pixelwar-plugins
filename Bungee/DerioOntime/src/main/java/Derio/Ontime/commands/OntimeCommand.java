@@ -1,18 +1,11 @@
 package Derio.Ontime.commands;
 
-import java.io.IOException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-
 import Derio.Ontime.Main;
 import Derio.Ontime.utils.Cache;
 import Derio.Ontime.utils.LangFiles;
 import Derio.Ontime.utils.PlayerData;
 import Derio.Ontime.utils.Util;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -124,7 +117,7 @@ public class OntimeCommand extends Command implements TabExecutor {
             lang.getMessage(locale, "Ontime.Format")
                     .replace("(day)", dayString.trim())
                     .replace("(week)", weekString.trim())
-                    .replace("(month)", weekString.trim())
+                    .replace("(month)", monthString.trim())
                     .replace("(total)", totalString.trim())
                     .replace("&","§");
 

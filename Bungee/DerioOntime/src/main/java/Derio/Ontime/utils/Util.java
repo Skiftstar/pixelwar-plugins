@@ -5,7 +5,6 @@ import Derio.Ontime.Main;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -65,15 +64,11 @@ public class Util {
         long current = System.currentTimeMillis();
         long lastupdate = getLastUpdate(uuid);
 
-
-            boolean[] dateChecks = dateComparison(lastupdate, current);
-
-
+        boolean[] dateChecks = dateComparison(lastupdate, current);
 
         String query = "";
         String query1 = "";
         String query2 = "";
-        long time;
         if (dateChecks[2]) {
             query = "UPDATE player_playtime SET playtimeMonth = ? WHERE uuid = ?;";
             query1 = "UPDATE player_playtime SET playtimeWeek = ? WHERE uuid = ?;";
@@ -85,28 +80,26 @@ public class Util {
             query1 = "UPDATE player_playtime SET playtimeDay = ? WHERE uuid = ?;";
             execute(uuid, query,query1);
 
-        }else if (dateChecks[0]){
+        } else if (dateChecks[0]){
             query = "UPDATE player_playtime SET playtimeDay = ? WHERE uuid = ?;";
             execute(uuid, query);
-
-
         }
+    }
 
-        }
-        private static void execute(String uuid,String... querys){
-            for (int i = 0; i < querys.length; i++) {
-                try (PreparedStatement stmt = Main.getDb().getConnection().prepareStatement(querys[i]);) {
-                    stmt.setLong(1, 0);
-                    stmt.setString(2, uuid);
-                    stmt.executeUpdate();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    return;
-                }
+    private static void execute(String uuid,String... querys){
+        for (int i = 0; i < querys.length; i++) {
+            try (PreparedStatement stmt = Main.getDb().getConnection().prepareStatement(querys[i]);) {
+                stmt.setLong(1, 0);
+                stmt.setString(2, uuid);
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return;
             }
-
-
         }
+
+
+    }
 
 
 

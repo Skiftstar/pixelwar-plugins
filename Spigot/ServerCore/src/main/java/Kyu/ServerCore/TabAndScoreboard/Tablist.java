@@ -59,7 +59,6 @@ public class Tablist {
         }
     }
 
-    @SuppressWarnings("deprecation")
     public void sortPlayer(Player p) {
         User user = Main.lp.getUserManager().getUser(p.getUniqueId());
         if (user == null) return;
@@ -67,7 +66,6 @@ public class Tablist {
         teams.get(groupName).addPlayer(p);
     }
 
-    @SuppressWarnings("deprecation")
     public void removePlayer(Player p) {
         User user = Main.lp.getUserManager().getUser(p.getUniqueId());
         if (user == null) return;

@@ -1,10 +1,7 @@
 package Derio.Ontime.listener;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.UUID;
-
 import Derio.Ontime.Main;
 import Derio.Ontime.utils.Cache;
 import Derio.Ontime.utils.PlayerData;
@@ -38,11 +35,11 @@ public class OntimeListener implements Listener {
         if (!data.isInConfig(uuid, e.getConnection().getName().toLowerCase())){
             data.set(uuid,e.getConnection().getName().toLowerCase());
         }else {
-            Cache.lastLogin.remove(uuid);
-            Cache.playtimeDay.remove(uuid);
-            Cache.playtimeWeek.remove(uuid);
-            Cache.playtimeTotal.remove(uuid);
-            Cache.playtimeMonth.remove(uuid);
+            Cache.lastLogin.remove(uuid.toString());
+            Cache.playtimeDay.remove(uuid.toString());
+            Cache.playtimeWeek.remove(uuid.toString());
+            Cache.playtimeTotal.remove(uuid.toString());
+            Cache.playtimeMonth.remove(uuid.toString());
         }
     }
 
@@ -50,11 +47,11 @@ public class OntimeListener implements Listener {
     public void onLeave(PlayerDisconnectEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
 
-        Cache.lastLogin.remove(uuid);
-        Cache.playtimeDay.remove(uuid);
-        Cache.playtimeWeek.remove(uuid);
-        Cache.playtimeTotal.remove(uuid);
-        Cache.playtimeMonth.remove(uuid);
+        Cache.lastLogin.remove(uuid.toString());
+        Cache.playtimeDay.remove(uuid.toString());
+        Cache.playtimeWeek.remove(uuid.toString());
+        Cache.playtimeTotal.remove(uuid.toString());
+        Cache.playtimeMonth.remove(uuid.toString());
 
         Util.addPlaytime(uuid.toString());
 
