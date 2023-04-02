@@ -1,7 +1,6 @@
 package Derio.Ontime.utils;
 
 import Derio.Ontime.Main;
-import Derio.Ontime.commands.OntimeCommand;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -107,7 +106,7 @@ public class Util {
     public static void addPlaytime(String uuid) {
         long current = System.currentTimeMillis();
         long lastupdate = getLastUpdate(uuid);
-        
+
         try (PreparedStatement stmt = Main.getDb().getConnection().prepareStatement("INSERT INTO player_playtime(uuid, playtimeTotal) VALUES(?, ?) ON DUPLICATE KEY UPDATE playtimeTotal = playtimeTotal + ?;");) {
             stmt.setString(1, uuid);
             stmt.setLong(2, current - lastupdate);
