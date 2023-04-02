@@ -158,68 +158,71 @@ public class OntimeCommand extends Command implements TabExecutor {
 
         return result;
     }
+
+    private static boolean isOnline(UUID uuid) {
+        ProxyServer server = ProxyServer.getInstance();
+        if (server.getPlayer(uuid) != null && !server.getPlayer(uuid).isConnected()) return true;
+        return false;
+    }
+
     private static long[] getPlaytime(String uuid) {
+        long[] result = new long[]{0, 0, 0, 0};
+        long current = System.currentTimeMillis();
+        long lastLoginCached = Cache.lastLogin.getOrDefault(uuid, -1L);
 
+        if (lastLoginCached == -1) {
+            long[] database = Util.getPlaytime(uuid);
+            long lastLogin = Util.getLastUpdate(uuid);
 
-            long[] result = new long[]{0, 0, 0, 0};
-            long current = System.currentTimeMillis();
+            Cache.playtimeDay.put(uuid, database[0]);
+            Cache.playtimeWeek.put(uuid, database[1]);
+            Cache.playtimeMonth.put(uuid, database[2]);
+            Cache.playtimeTotal.put(uuid, database[3]);
+            Cache.lastLogin.put(uuid, lastLogin);
+        }
 
-
-
-
-    try {
         if (isNewMonth(Cache.lastLogin.get(uuid), current)){
-
-            try {
-                if (ProxyServer.getInstance().getPlayer(UUID.fromString(uuid)).isConnected()){
-                    long playtimeM =  getMinutesFromCurrentDay(System.currentTimeMillis());
-                    long playtimeMs = playtimeM*60*1000;
-                    result[0] = playtimeMs;
-                    result[1] = playtimeMs;
-                    result[2] = playtimeMs;
-                    result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
-                    return result;
-                }
-            }catch (NullPointerException ex){
-
+            if (isOnline(UUID.fromString(uuid))) {
+                long playtimeM = getMinutesFromCurrentDay(System.currentTimeMillis());
+                long playtimeMs = playtimeM*60*1000;
+                result[0] = playtimeMs;
+                result[1] = playtimeMs;
+                result[2] = playtimeMs;
+                result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
+                return result;
             }
-            result[0] =  0;
-            result[1] =0;
+
+            result[0] = 0;
+            result[1] = 0;
             result[2] = 0;
             result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
             return result;
-        }else if (isNewWeek(Cache.lastLogin.get(uuid), current)) {
-            try {
-                if (ProxyServer.getInstance().getPlayer(UUID.fromString(uuid)).isConnected()){
-                    long playtimeM =  getMinutesFromCurrentDay(System.currentTimeMillis());
-                    long playtimeMs = playtimeM*60*1000;
-                    result[0] = playtimeMs;
-                    result[1] = playtimeMs;
-                    result[2] = current-Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
-                    result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
-                    return result;
-                }
-            }catch (NullPointerException ex){
-
+        } else if (isNewWeek(Cache.lastLogin.get(uuid), current)) {
+            if (isOnline(UUID.fromString(uuid))) {
+                long playtimeM =  getMinutesFromCurrentDay(System.currentTimeMillis());
+                long playtimeMs = playtimeM*60*1000;
+                result[0] = playtimeMs;
+                result[1] = playtimeMs;
+                result[2] = current-Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
+                result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
+                return result;
             }
+
             result[0] =  0;
             result[1] = 0;
             result[2] = current-Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
             result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
             return result;
-        }else if (isNewDay(Cache.lastLogin.get(uuid), current)) {
-            try {
-                if (ProxyServer.getInstance().getPlayer(UUID.fromString(uuid)).isConnected()){
-                    long playtimeM =  getMinutesFromCurrentDay(System.currentTimeMillis());
-                    long playtimeMs = playtimeM*60*1000;
-                    result[0] = playtimeMs;
-                    result[1] = current-Cache.lastLogin.get(uuid) + Cache.playtimeWeek.get(uuid);
-                    result[2] = current-Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
-                    result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
-                    return result;
-                }
-            }catch (NullPointerException ex){
 
+        } else if (isNewDay(Cache.lastLogin.get(uuid), current)) {
+            if (isOnline(UUID.fromString(uuid))) {
+                long playtimeM =  getMinutesFromCurrentDay(System.currentTimeMillis());
+                long playtimeMs = playtimeM*60*1000;
+                result[0] = playtimeMs;
+                result[1] = current-Cache.lastLogin.get(uuid) + Cache.playtimeWeek.get(uuid);
+                result[2] = current-Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
+                result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
+                return result;
             }
             result[0] =  0;
             result[1] = current-Cache.lastLogin.get(uuid) + Cache.playtimeWeek.get(uuid);
@@ -227,9 +230,8 @@ public class OntimeCommand extends Command implements TabExecutor {
             result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
             return result;
 
-        }else {
-            UUID p = UUID.fromString(uuid);
-            if (ProxyServer.getInstance().getPlayer(p) == null){
+        } else {
+            if (isOnline(UUID.fromString(uuid))) {
                 result[0] =  Cache.playtimeDay.get(uuid);
                 result[1] =  Cache.playtimeWeek.get(uuid);
                 result[2] =  Cache.playtimeMonth.get(uuid);
@@ -238,121 +240,16 @@ public class OntimeCommand extends Command implements TabExecutor {
                 return result;
             }
 
-
             result[0] =  current-Cache.lastLogin.get(uuid) + Cache.playtimeDay.get(uuid);
             result[1] = current-Cache.lastLogin.get(uuid) + Cache.playtimeWeek.get(uuid);
             result[2] = current-Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
             result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
-
         }
 
-
-
-    }catch (NullPointerException ex) {
-        long[] database = Util.getPlaytime(uuid);
-        long lastLogin = Util.getLastUpdate(uuid);
-
-        Cache.playtimeDay.put(uuid, database[0]);
-        Cache.playtimeWeek.put(uuid, database[1]);
-        Cache.playtimeMonth.put(uuid, database[2]);
-        Cache.playtimeTotal.put(uuid, database[3]);
-        Cache.lastLogin.put(uuid, lastLogin);
-
-        try {
-            if (isNewMonth(Cache.lastLogin.get(uuid), current)) {
-
-                try {
-                    if (ProxyServer.getInstance().getPlayer(UUID.fromString(uuid)).isConnected()) {
-                        long playtimeM = getMinutesFromCurrentDay(System.currentTimeMillis());
-                        long playtimeMs = playtimeM * 60 * 1000;
-                        result[0] = playtimeMs;
-                        result[1] = playtimeMs;
-                        result[2] = playtimeMs;
-                        result[3] = current - Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
-                        return result;
-                    }
-                } catch (NullPointerException öex) {
-
-                }
-                result[0] = 0;
-                result[1] = 0;
-                result[2] = 0;
-                result[3] = current - Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
-                return result;
-            } else if (isNewWeek(Cache.lastLogin.get(uuid), current)) {
-                try {
-                    if (ProxyServer.getInstance().getPlayer(UUID.fromString(uuid)).isConnected()) {
-                        long playtimeM = getMinutesFromCurrentDay(System.currentTimeMillis());
-                        long playtimeMs = playtimeM * 60 * 1000;
-                        result[0] = playtimeMs;
-                        result[1] = playtimeMs;
-                        result[2] = current - Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
-                        result[3] = current - Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
-                        return result;
-                    }
-                } catch (NullPointerException exa) {
-
-                }
-                result[0] = 0;
-                result[1] = 0;
-                result[2] = current - Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
-                result[3] = current - Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
-                return result;
-            } else if (isNewDay(Cache.lastLogin.get(uuid), current)) {
-                try {
-                    if (ProxyServer.getInstance().getPlayer(UUID.fromString(uuid)).isConnected()) {
-                        long playtimeM = getMinutesFromCurrentDay(System.currentTimeMillis());
-                        long playtimeMs = playtimeM * 60 * 1000;
-                        result[0] = playtimeMs;
-                        result[1] = current - Cache.lastLogin.get(uuid) + Cache.playtimeWeek.get(uuid);
-                        result[2] = current - Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
-                        result[3] = current - Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
-                        return result;
-                    }
-                } catch (NullPointerException vex) {
-
-                }
-                result[0] = 0;
-                result[1] = current - Cache.lastLogin.get(uuid) + Cache.playtimeWeek.get(uuid);
-                result[2] = current - Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
-                result[3] = current - Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
-                return result;
-
-            } else {
-                UUID p = UUID.fromString(uuid);
-                if (ProxyServer.getInstance().getPlayer(p) == null) {
-                    result[0] = Cache.playtimeDay.get(uuid);
-                    result[1] = Cache.playtimeWeek.get(uuid);
-                    result[2] = Cache.playtimeMonth.get(uuid);
-                    result[3] = Cache.playtimeTotal.get(uuid);
-
-                    return result;
-                }
-
-
-                result[0] = current - Cache.lastLogin.get(uuid) + Cache.playtimeDay.get(uuid);
-                result[1] = current - Cache.lastLogin.get(uuid) + Cache.playtimeWeek.get(uuid);
-                result[2] = current - Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
-                result[3] = current - Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
-
-            }
-
-
-            return result;
-            //  result[0] = Cache.playtimeDay.get(uuid);
-            //  result[1] = Cache.playtimeWeek.get(uuid);
-            // result[2] = Cache.playtimeMonth.get(uuid);
-            // result[3] = Cache.playtimeTotal.get(uuid);
-
-        } catch (Exception exc) {
-
-
-            }
-        }
-
-
-            return result;
+        return result;
     }
+
+
     private static String capitalize(String str) {
         if (str == null || str.length() == 0) return str;
         return str.substring(0, 1).toUpperCase() + str.substring(1);
