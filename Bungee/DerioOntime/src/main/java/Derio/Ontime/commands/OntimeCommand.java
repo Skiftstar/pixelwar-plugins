@@ -168,7 +168,7 @@ public class OntimeCommand extends Command implements TabExecutor {
 
     private static boolean isOnline(UUID uuid) {
         ProxyServer server = ProxyServer.getInstance();
-        if (server.getPlayer(uuid) != null && !server.getPlayer(uuid).isConnected()) return true;
+        if (server.getPlayer(uuid) != null && server.getPlayer(uuid).isConnected()) return true;
         return false;
     }
 
@@ -238,7 +238,16 @@ public class OntimeCommand extends Command implements TabExecutor {
             return result;
 
         } else {
-            result[0] = Cache.playtimeDay.get(uuid);
+            if (isOnline(UUID.fromString(uuid))) {
+                result[0] = current - Cache.lastLogin.get(uuid) + Cache.playtimeDay.get(uuid);
+                result[1] = current - Cache.lastLogin.get(uuid) + Cache.playtimeWeek.get(uuid);
+                result[2] = current - Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
+                result[3] = current - Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
+
+                return result;
+            }
+
+            result[0] =  Cache.playtimeDay.get(uuid);
             result[1] = Cache.playtimeWeek.get(uuid);
             result[2] = Cache.playtimeMonth.get(uuid);
             result[3] = Cache.playtimeTotal.get(uuid);
