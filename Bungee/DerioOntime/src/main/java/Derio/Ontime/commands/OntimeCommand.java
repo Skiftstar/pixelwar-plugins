@@ -22,8 +22,6 @@ public class OntimeCommand extends Command implements TabExecutor {
     }
 
     public void execute(CommandSender sender, String[] args)  {
-
-
         if (args.length == 0) {
             if (!(sender instanceof ProxiedPlayer)) {
                 return;
@@ -35,8 +33,7 @@ public class OntimeCommand extends Command implements TabExecutor {
         }
         args[0] = args[0].toLowerCase();
 
-        PlayerData data;
-        data = Cache.data;
+        PlayerData data = Cache.data;
         LangFiles lang = Cache.lang;
 
         String otherUUID = data.getUUID(args[0].toLowerCase());
@@ -55,30 +52,28 @@ public class OntimeCommand extends Command implements TabExecutor {
     }
 
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-        List<String> list = new ArrayList<>();
+        List<String> playerNames = new ArrayList<>();
         PlayerData data = Cache.data;
         if (!sender.hasPermission("ontime.show.other")&&!sender.hasPermission("ontime.show.*")){
             return new ArrayList<>();
         }
 
-        for (String s : data.getListKeys()) {
-
-            if (!s.equalsIgnoreCase("console")){
-                if (s.length()<=16){
-                    list.add(capitalize(s.toLowerCase()));
-                }
+        for (String cachedName : data.getListKeys()) {
+            if (cachedName.equalsIgnoreCase("console")) continue;
+            if (cachedName.length() <= 16) {
+                playerNames.add(capitalize(cachedName.toLowerCase()));
             }
         }
-        List<String> endlist = new ArrayList<>();
+
+        List<String> fittingNames = new ArrayList<>();
         String currentarg = args[args.length-1].toLowerCase();
-        for (String s : list) {
-            String s1 = s.toLowerCase();
-            if (s1.startsWith(currentarg)){
-                endlist.add(s);
+        for (String playerName : playerNames) {
+            if (playerName.toLowerCase().startsWith(currentarg)){
+                fittingNames.add(playerName);
             }
         }
 
-        return endlist;
+        return fittingNames;
     }
 
     private static String buildResponse(CommandSender sender, String uuid, String... playerName) {
