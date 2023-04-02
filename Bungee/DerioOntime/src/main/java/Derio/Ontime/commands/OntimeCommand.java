@@ -137,8 +137,6 @@ public class OntimeCommand extends Command implements TabExecutor {
         long minutes = (milliseconds / 1000 / 60);
         milliseconds -= minutes * 1000 * 60;
 
-        // long seconds = milliseconds / 1000;
-
         String[] timeArray = new String[3];
         if (days > 0L) {
             timeArray[2] = "" + days + " "+ lang.getMessage(locale, "Ontime.words.days");
@@ -176,7 +174,7 @@ public class OntimeCommand extends Command implements TabExecutor {
         long[] result = new long[]{0, 0, 0, 0};
         long current = System.currentTimeMillis();
         long lastLoginCached = Cache.lastLogin.getOrDefault(uuid, -1L);
-
+        
         if (lastLoginCached == -1) {
             long[] database = Util.getPlaytime(uuid);
             long lastLogin = Util.getLastUpdate(uuid);
@@ -188,7 +186,13 @@ public class OntimeCommand extends Command implements TabExecutor {
             Cache.lastLogin.put(uuid, lastLogin);
         }
 
-        if (isNewMonth(Cache.lastLogin.get(uuid), current)){
+        boolean[] dateCompareResult = Util.dateComparison(Cache.lastLogin.get(uuid), current);
+        boolean isNewDay = dateCompareResult[0];
+        boolean isNewWeek = dateCompareResult[1];
+        boolean isNewMonth = dateCompareResult[2];
+
+
+        if (isNewMonth){
             if (isOnline(UUID.fromString(uuid))) {
                 long playtimeM = getMinutesFromCurrentDay(System.currentTimeMillis());
                 long playtimeMs = playtimeM*60*1000;
@@ -204,7 +208,7 @@ public class OntimeCommand extends Command implements TabExecutor {
             result[2] = 0;
             result[3] = Cache.playtimeTotal.get(uuid);
             return result;
-        } else if (isNewWeek(Cache.lastLogin.get(uuid), current)) {
+        } else if (isNewWeek) {
             if (isOnline(UUID.fromString(uuid))) {
                 long playtimeM =  getMinutesFromCurrentDay(System.currentTimeMillis());
                 long playtimeMs = playtimeM*60*1000;
@@ -221,7 +225,7 @@ public class OntimeCommand extends Command implements TabExecutor {
             result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
             return result;
 
-        } else if (isNewDay(Cache.lastLogin.get(uuid), current)) {
+        } else if (isNewDay) {
             if (isOnline(UUID.fromString(uuid))) {
                 long playtimeM =  getMinutesFromCurrentDay(System.currentTimeMillis());
                 long playtimeMs = playtimeM*60*1000;
@@ -256,56 +260,11 @@ public class OntimeCommand extends Command implements TabExecutor {
         }
     }
 
-
     private static String capitalize(String str) {
         if (str == null || str.length() == 0) return str;
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
-    private static boolean isNewDay(long time1, long time2) {
-        if (time1 > time2) return false;
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new java.util.Date(time1));
 
-        int year1 = cal.get(Calendar.YEAR);
-        int month1 = cal.get(Calendar.MONTH);
-        int day1 = cal.get(Calendar.DAY_OF_MONTH);
-        cal.setTime(new java.util.Date(time2));
-        int year2 = cal.get(Calendar.YEAR);
-        int month2 = cal.get(Calendar.MONTH);
-        int day2 = cal.get(Calendar.DAY_OF_MONTH);
-
-        return year1 < year2 || month1 < month2 || day1 < day2;
-    }
-
-    private static boolean isNewWeek(long time1, long time2) {
-        if (time1 > time2) return false;
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new java.util.Date(time1));
-
-        int year1 = cal.get(Calendar.YEAR);
-        int month1 = cal.get(Calendar.MONTH);
-        int week1 = cal.get(Calendar.WEEK_OF_MONTH);
-        cal.setTime(new java.util.Date(time2));
-        int year2 = cal.get(Calendar.YEAR);
-        int month2 = cal.get(Calendar.MONTH);
-        int week2 = cal.get(Calendar.WEEK_OF_MONTH);
-
-        return year1 < year2 || month1 < month2 || week1 < week2;
-    }
-
-    private static boolean isNewMonth(long time1, long time2) {
-        if (time1 > time2) return false;
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new java.util.Date(time1));
-
-        int year1 = cal.get(Calendar.YEAR);
-        int month1 = cal.get(Calendar.MONTH);
-        cal.setTime(new java.util.Date(time2));
-        int year2 = cal.get(Calendar.YEAR);
-        int month2 = cal.get(Calendar.MONTH);
-
-        return year1 < year2 || month1 < month2;
-    }
     public static long getMinutesFromCurrentDay(long currentMs) {
         long minutes = (int) (currentMs / (1000 * 60));
 
