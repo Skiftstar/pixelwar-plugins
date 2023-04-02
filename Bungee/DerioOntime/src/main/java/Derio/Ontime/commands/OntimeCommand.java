@@ -128,10 +128,17 @@ public class OntimeCommand extends Command implements TabExecutor {
     public static String convertMillisToDHMS(long milliseconds) {
         LangFiles lang = Cache.lang;
 
-        long seconds = milliseconds / 1000L;
-        long minutes = seconds / 60L;
-        long hours = minutes / 60L;
-        long days = hours / 24L;
+        int days = (int) (milliseconds / 1000 / 60 / 60 / 24);
+        milliseconds -= (long) days * 1000 * 60 * 60 * 24;
+
+        long hours = (milliseconds / 1000 / 60 / 60);
+        milliseconds -= hours * 1000 * 60 * 60;
+
+        long minutes = (milliseconds / 1000 / 60);
+        milliseconds -= minutes * 1000 * 60;
+
+        // long seconds = milliseconds / 1000;
+
         String[] timeArray = new String[3];
         if (days > 0L) {
             timeArray[2] = "" + days + " "+ lang.getMessage(locale, "Ontime.words.days");
@@ -195,7 +202,7 @@ public class OntimeCommand extends Command implements TabExecutor {
             result[0] = 0;
             result[1] = 0;
             result[2] = 0;
-            result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
+            result[3] = Cache.playtimeTotal.get(uuid);
             return result;
         } else if (isNewWeek(Cache.lastLogin.get(uuid), current)) {
             if (isOnline(UUID.fromString(uuid))) {
@@ -203,8 +210,8 @@ public class OntimeCommand extends Command implements TabExecutor {
                 long playtimeMs = playtimeM*60*1000;
                 result[0] = playtimeMs;
                 result[1] = playtimeMs;
-                result[2] = current-Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
-                result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
+                result[2] = Cache.playtimeMonth.get(uuid);
+                result[3] = Cache.playtimeTotal.get(uuid);
                 return result;
             }
 
@@ -225,28 +232,19 @@ public class OntimeCommand extends Command implements TabExecutor {
                 return result;
             }
             result[0] =  0;
-            result[1] = current-Cache.lastLogin.get(uuid) + Cache.playtimeWeek.get(uuid);
-            result[2] = current-Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
-            result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
+            result[1] = Cache.playtimeWeek.get(uuid);
+            result[2] = Cache.playtimeMonth.get(uuid);
+            result[3] = Cache.playtimeTotal.get(uuid);
             return result;
 
         } else {
-            if (isOnline(UUID.fromString(uuid))) {
-                result[0] =  Cache.playtimeDay.get(uuid);
-                result[1] =  Cache.playtimeWeek.get(uuid);
-                result[2] =  Cache.playtimeMonth.get(uuid);
-                result[3] =  Cache.playtimeTotal.get(uuid);
+            result[0] = Cache.playtimeDay.get(uuid);
+            result[1] = Cache.playtimeWeek.get(uuid);
+            result[2] = Cache.playtimeMonth.get(uuid);
+            result[3] = Cache.playtimeTotal.get(uuid);
 
-                return result;
-            }
-
-            result[0] =  current-Cache.lastLogin.get(uuid) + Cache.playtimeDay.get(uuid);
-            result[1] = current-Cache.lastLogin.get(uuid) + Cache.playtimeWeek.get(uuid);
-            result[2] = current-Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
-            result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
+            return result;
         }
-
-        return result;
     }
 
 
