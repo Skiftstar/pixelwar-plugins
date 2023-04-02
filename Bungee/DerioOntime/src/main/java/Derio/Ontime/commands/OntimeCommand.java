@@ -21,41 +21,37 @@ public class OntimeCommand extends Command implements TabExecutor {
         main.getProxy().getPluginManager().registerCommand(main, this);
     }
 
-    public void execute(CommandSender cs, String[] args)  {
+    public void execute(CommandSender sender, String[] args)  {
 
 
         if (args.length == 0) {
-            if (!(cs instanceof ProxiedPlayer)) {
+            if (!(sender instanceof ProxiedPlayer)) {
                 return;
             }
-            ProxiedPlayer sender = (ProxiedPlayer)cs;
-
-
-
-            String mess = buildResponse(cs,sender.getUniqueId().toString());
+            ProxiedPlayer player = (ProxiedPlayer) sender;
+            String mess = buildResponse(sender, player.getUniqueId().toString());
             sender.sendMessage(new TextComponent(mess));
-
-        } else {
-            args[0] = args[0].toLowerCase();
-
-            PlayerData data;
-            data = Cache.data;
-            LangFiles lang = Cache.lang;
-
-            String otherUUID = data.getUUID(args[0].toLowerCase());
-            if (otherUUID.isBlank()) {
-                cs.sendMessage(new TextComponent(lang.getMessage(locale, "Ontime.WrongPlayer").replace("&","§")));
-                return;
-            }
-
-            if (!cs.hasPermission("ontime.show.other")&&!cs.hasPermission("ontime.show.*")) {
-                cs.sendMessage(new TextComponent(lang.getMessage(locale, "Ontime.NoPermission").replace("&","§")));
-                return;
-            }
-
-            String mess = buildResponse(cs, otherUUID, args[0]);
-            cs.sendMessage(new TextComponent(mess));
+            return;
         }
+        args[0] = args[0].toLowerCase();
+
+        PlayerData data;
+        data = Cache.data;
+        LangFiles lang = Cache.lang;
+
+        String otherUUID = data.getUUID(args[0].toLowerCase());
+        if (otherUUID.isBlank()) {
+            sender.sendMessage(new TextComponent(lang.getMessage(locale, "Ontime.WrongPlayer").replace("&","§")));
+            return;
+        }
+
+        if (!sender.hasPermission("ontime.show.other") && !sender.hasPermission("ontime.show.*")) {
+            sender.sendMessage(new TextComponent(lang.getMessage(locale, "Ontime.NoPermission").replace("&","§")));
+            return;
+        }
+
+        String mess = buildResponse(sender, otherUUID, args[0]);
+        sender.sendMessage(new TextComponent(mess));
     }
 
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
@@ -85,17 +81,17 @@ public class OntimeCommand extends Command implements TabExecutor {
         return endlist;
     }
 
-    private static String buildResponse(CommandSender cs,String uuid, String... playerName) {
+    private static String buildResponse(CommandSender sender, String uuid, String... playerName) {
          locale = "en";
         LangFiles lang = Cache.lang;
 
-        if (cs instanceof ProxiedPlayer){
-            locale = Util.getLocale(((ProxiedPlayer) cs).getUniqueId().toString());
+        if (sender instanceof ProxiedPlayer){
+            locale = Util.getLocale(((ProxiedPlayer) sender).getUniqueId().toString());
             if (locale == null){
                 locale = "en";
             }
         }
-        if (!cs.hasPermission("ontime.show.self")) {
+        if (!sender.hasPermission("ontime.show.self")) {
             return lang.getMessage(locale, "Ontime.NoPermission").replace("&","§ ");
         }
 
