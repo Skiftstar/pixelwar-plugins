@@ -101,7 +101,7 @@ public class TeleportCMD {
                             .replace("%player", ((TextComponent) p2.displayName()).content())
                             .replace("%location", x + " " + y + " " + z));
                     p2.sendMessage(Main.helper.getMess(p2, "SbTeleportedYou", true)
-                            .replace("%player", ((TextComponent) p2.displayName()).content())
+                            .replace("%player", ((TextComponent) p.displayName()).content())
                             .replace("%location", x + " " + y + " " + z));
                 } catch (NumberFormatException ex) {
                     p.sendMessage(Main.helper.getMess(p, "InvalidCoordinates", true)
