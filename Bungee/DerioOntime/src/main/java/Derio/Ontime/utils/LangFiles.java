@@ -20,40 +20,33 @@ public class LangFiles {
     public LangFiles(String... locales) throws IOException {
         configNames = new String[locales.length];
         configs = new Configuration[locales.length];
-        for (int i = 0; i < locales.length; i++) {
-
 
         dir = new File(Main.instance().getDataFolder().getPath());
         if (!dir.exists()) {
             dir.mkdirs();
         }
-
-        file = new File(dir, locales[i] + ".yml");
-            if (!file.exists()) {
-                FileOutputStream outputStream = new FileOutputStream(file);
-                InputStream in = Main.getInstance().getResourceAsStream(locales[i]+".yml");
-                in.transferTo(outputStream);
-            }
-        configs[i] = ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(dir, locales[i] + ".yml"));
-        configNames[i] = locales[i];
-    }
+        
+        for (int i = 0; i < locales.length; i++) {
+            file = new File(dir, locales[i] + ".yml");
+                if (!file.exists()) {
+                    FileOutputStream outputStream = new FileOutputStream(file);
+                    InputStream in = Main.getInstance().getResourceAsStream(locales[i]+".yml");
+                    in.transferTo(outputStream);
+                }
+            configs[i] = ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(dir, locales[i] + ".yml"));
+            configNames[i] = locales[i];
+        }
 
 
     }
 
     public String getMessage(String locale, String path){
-
         for (int i = 0; i < configNames.length; i++) {
-
             if (configNames[i].equalsIgnoreCase(locale)){
                 return configs[i].getString(path);
             }
-
         }
-
         return null;
     }
-
-
 
 }

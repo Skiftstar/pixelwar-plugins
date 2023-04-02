@@ -182,73 +182,22 @@ public class OntimeCommand extends Command implements TabExecutor {
         boolean isNewWeek = dateCompareResult[1];
         boolean isNewMonth = dateCompareResult[2];
 
+        long playtimeM = getMinutesFromCurrentDay(System.currentTimeMillis());
+        long playtimeMs = playtimeM*60*1000;
 
-        if (isNewMonth){
-            if (isOnline(UUID.fromString(uuid))) {
-                long playtimeM = getMinutesFromCurrentDay(System.currentTimeMillis());
-                long playtimeMs = playtimeM*60*1000;
-                result[0] = playtimeMs;
-                result[1] = playtimeMs;
-                result[2] = playtimeMs;
-                result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
-                return result;
-            }
-
-            result[0] = 0;
-            result[1] = 0;
-            result[2] = 0;
-            result[3] = Cache.playtimeTotal.get(uuid);
-            return result;
-        } else if (isNewWeek) {
-            if (isOnline(UUID.fromString(uuid))) {
-                long playtimeM =  getMinutesFromCurrentDay(System.currentTimeMillis());
-                long playtimeMs = playtimeM*60*1000;
-                result[0] = playtimeMs;
-                result[1] = playtimeMs;
-                result[2] = Cache.playtimeMonth.get(uuid);
-                result[3] = Cache.playtimeTotal.get(uuid);
-                return result;
-            }
-
-            result[0] =  0;
-            result[1] = 0;
-            result[2] = current-Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
-            result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
-            return result;
-
-        } else if (isNewDay) {
-            if (isOnline(UUID.fromString(uuid))) {
-                long playtimeM =  getMinutesFromCurrentDay(System.currentTimeMillis());
-                long playtimeMs = playtimeM*60*1000;
-                result[0] = playtimeMs;
-                result[1] = current-Cache.lastLogin.get(uuid) + Cache.playtimeWeek.get(uuid);
-                result[2] = current-Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
-                result[3] = current-Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
-                return result;
-            }
-            result[0] =  0;
-            result[1] = Cache.playtimeWeek.get(uuid);
-            result[2] = Cache.playtimeMonth.get(uuid);
-            result[3] = Cache.playtimeTotal.get(uuid);
-            return result;
-
-        } else {
-            if (isOnline(UUID.fromString(uuid))) {
-                result[0] = current - Cache.lastLogin.get(uuid) + Cache.playtimeDay.get(uuid);
-                result[1] = current - Cache.lastLogin.get(uuid) + Cache.playtimeWeek.get(uuid);
-                result[2] = current - Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
-                result[3] = current - Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
-
-                return result;
-            }
-
-            result[0] =  Cache.playtimeDay.get(uuid);
-            result[1] = Cache.playtimeWeek.get(uuid);
-            result[2] = Cache.playtimeMonth.get(uuid);
-            result[3] = Cache.playtimeTotal.get(uuid);
-
-            return result;
+        if (isOnline(UUID.fromString(uuid))) {
+            result[0] = isNewMonth ? playtimeMs : current - Cache.lastLogin.get(uuid) + Cache.playtimeDay.get(uuid);
+            result[1] = isNewWeek ? playtimeMs : current - Cache.lastLogin.get(uuid) + Cache.playtimeWeek.get(uuid);
+            result[2] = isNewDay ? playtimeMs : current - Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
+            result[3] = current - Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
         }
+
+        result[0] = isNewMonth ? 0 : Cache.playtimeDay.get(uuid);
+        result[1] = isNewWeek ? 0 : Cache.playtimeWeek.get(uuid);
+        result[2] = isNewDay ? 0 : Cache.playtimeMonth.get(uuid);
+        result[3] = Cache.playtimeTotal.get(uuid);
+
+        return result;
     }
 
     private static String capitalize(String str) {

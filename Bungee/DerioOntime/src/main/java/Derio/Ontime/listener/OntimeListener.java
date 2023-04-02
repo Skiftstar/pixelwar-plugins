@@ -29,7 +29,6 @@ public class OntimeListener implements Listener {
         Util.tryReset(uuid.toString());
         Util.setLastUpdate(uuid.toString(), System.currentTimeMillis());
 
-
         data = Cache.data;
 
         if (!data.isInConfig(uuid, e.getConnection().getName().toLowerCase())){
