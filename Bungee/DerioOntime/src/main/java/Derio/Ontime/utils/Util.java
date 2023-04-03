@@ -218,7 +218,7 @@ public class Util {
      * Returns whether time1 is on a new day/week/month compared to time2
      * @param time1 older time
      * @param time2 newer time
-     * @return a boolean array [isNewDay, isNewWeek, isNewWeek]
+     * @return a boolean array [isNewDay, isNewWeek, isNewMonth]
      */
     public static boolean[] dateComparison(long time1, long time2) {
         boolean isNewDay = false;
