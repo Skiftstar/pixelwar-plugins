@@ -182,13 +182,12 @@ public class OntimeCommand extends Command implements TabExecutor {
         boolean isNewWeek = dateCompareResult[1];
         boolean isNewMonth = dateCompareResult[2];
 
-        long playtimeM = getMinutesFromCurrentDay(System.currentTimeMillis());
-        long playtimeMs = playtimeM*60*1000;
-
         if (isOnline(UUID.fromString(uuid))) {
-            result[0] = isNewDay ? playtimeMs : current - Cache.lastLogin.get(uuid) + Cache.playtimeDay.get(uuid);
-            result[1] = isNewWeek ? playtimeMs : current - Cache.lastLogin.get(uuid) + Cache.playtimeWeek.get(uuid);
-            result[2] = isNewMonth ? playtimeMs : current - Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
+            long minutesCurrentDay = getMinutesFromCurrentDay(System.currentTimeMillis());
+            long msCurrentDay = minutesCurrentDay * 60 * 1000;
+            result[0] = isNewDay ? msCurrentDay : current - Cache.lastLogin.get(uuid) + Cache.playtimeDay.get(uuid);
+            result[1] = isNewWeek ? msCurrentDay : current - Cache.lastLogin.get(uuid) + Cache.playtimeWeek.get(uuid);
+            result[2] = isNewMonth ? msCurrentDay : current - Cache.lastLogin.get(uuid) + Cache.playtimeMonth.get(uuid);
             result[3] = current - Cache.lastLogin.get(uuid) + Cache.playtimeTotal.get(uuid);
 
             return result;
