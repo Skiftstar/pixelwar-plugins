@@ -65,22 +65,25 @@ public class Util {
         long lastupdate = getLastUpdate(uuid);
 
         boolean[] dateChecks = dateComparison(lastupdate, current);
+        boolean isNewDay = dateChecks[0];
+        boolean isNewWeek = dateChecks[1];
+        boolean isNewMonth = dateChecks[2];
 
         String query = "";
         String query1 = "";
         String query2 = "";
-        if (dateChecks[2]) {
+        if (isNewMonth) {
             query = "UPDATE player_playtime SET playtimeMonth = ? WHERE uuid = ?;";
             query1 = "UPDATE player_playtime SET playtimeWeek = ? WHERE uuid = ?;";
             query2 = "UPDATE player_playtime SET playtimeDay = ? WHERE uuid = ?;";
             execute(uuid, query,query1, query2);
 
-        }else if (dateChecks[1]){
+        }else if (isNewWeek){
             query = "UPDATE player_playtime SET playtimeWeek = ? WHERE uuid = ?;";
             query1 = "UPDATE player_playtime SET playtimeDay = ? WHERE uuid = ?;";
             execute(uuid, query,query1);
 
-        } else if (dateChecks[0]){
+        } else if (isNewDay){
             query = "UPDATE player_playtime SET playtimeDay = ? WHERE uuid = ?;";
             execute(uuid, query);
         }
