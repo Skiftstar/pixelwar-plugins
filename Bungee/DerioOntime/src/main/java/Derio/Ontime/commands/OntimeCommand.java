@@ -38,12 +38,14 @@ public class OntimeCommand extends Command implements TabExecutor {
 
         String otherUUID = data.getUUID(args[0].toLowerCase());
         if (otherUUID.isBlank()) {
-            sender.sendMessage(new TextComponent(lang.getMessage(locale, "Ontime.WrongPlayer").replace("&","§")));
+            sender.sendMessage(new TextComponent(lang.getMessage(locale, "Ontime.WrongPlayer")
+                .replace("&","§")));
             return;
         }
 
         if (!sender.hasPermission("ontime.show.other") && !sender.hasPermission("ontime.show.*")) {
-            sender.sendMessage(new TextComponent(lang.getMessage(locale, "Ontime.NoPermission").replace("&","§")));
+            sender.sendMessage(new TextComponent(lang.getMessage(locale, "Ontime.NoPermission")
+                .replace("&","§")));
             return;
         }
 
@@ -77,20 +79,26 @@ public class OntimeCommand extends Command implements TabExecutor {
     }
 
     private static String buildResponse(CommandSender sender, String uuid, String... playerName) {
-         locale = "en";
+        OntimeCommand.locale = "en";
         LangFiles lang = Cache.lang;
 
         if (sender instanceof ProxiedPlayer){
-            locale = Util.getLocale(((ProxiedPlayer) sender).getUniqueId().toString());
-            if (locale == null){
-                locale = "en";
+            OntimeCommand.locale = Util.getLocale(((ProxiedPlayer) sender).getUniqueId().toString());
+            if (OntimeCommand.locale == null){
+                OntimeCommand.locale = "en";
             }
         }
         if (!sender.hasPermission("ontime.show.self")) {
-            return lang.getMessage(locale, "Ontime.NoPermission").replace("&","§ ");
+            return lang.getMessage(OntimeCommand.locale, "Ontime.NoPermission")
+                .replace("&","§ ");
         }
 
-        String header = playerName.length > 0 ? lang.getMessage(locale,"Ontime.Header").replace("&","§").replace("(name)",  capitalize(playerName[0]) ): lang.getMessage(locale, "Ontime.HeaderAlt").replace("&","§");
+        String header = playerName.length > 0 ? 
+            lang.getMessage(OntimeCommand.locale, "Ontime.Header")
+                .replace("&","§")
+                .replace("(name)",  capitalize(playerName[0]) ) : 
+            lang.getMessage(OntimeCommand.locale, "Ontime.HeaderAlt")
+                .replace("&","§");
 
         long[] playtimes = getPlaytime(uuid);
 
@@ -105,7 +113,7 @@ public class OntimeCommand extends Command implements TabExecutor {
         String monthString = convertMillisToDHMS(monthTime);
         String totalString = convertMillisToDHMS(totalTime);
         String mess = header + "\n" +
-            lang.getMessage(locale, "Ontime.Format")
+            lang.getMessage(OntimeCommand.locale, "Ontime.Format")
                     .replace("(day)", dayString.trim())
                     .replace("(week)", weekString.trim())
                     .replace("(month)", monthString.trim())
