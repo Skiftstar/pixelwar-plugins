@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class Util {
+    
     public static long[] getPlaytime(String uuid) {
         try (PreparedStatement stmt = Main.getDb().getConnection().prepareStatement("SELECT * FROM player_playtime WHERE uuid = ?;");) {
             stmt.setString(1, uuid);
@@ -103,8 +104,6 @@ public class Util {
 
 
     }
-
-
 
     public static void addPlaytime(String uuid) {
         long current = System.currentTimeMillis();
@@ -249,6 +248,7 @@ public class Util {
             return new boolean[]{isNewDay, isNewWeek, isNewMonth};
         }
     }
+
     public static long getMinutesFromCurrentDay(long currentMs) {
         long minutes = (int) (currentMs / (1000 * 60));
 
@@ -256,6 +256,7 @@ public class Util {
 
         return minutesSinceMidnight;
     }
+
     public static String getLocale(String uuid){
 
         try (PreparedStatement stmt = Main.getDb().getConnection().prepareStatement("SELECT lang FROM userLangs WHERE uuid = ?;");) {
@@ -271,7 +272,6 @@ public class Util {
             e.printStackTrace();
             return null;
         }
-
-
     }
+
 }
