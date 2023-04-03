@@ -46,7 +46,7 @@ public class OntimeListener implements Listener {
 
         long playtimeFromDB = OntimeCommand.getPlaytime(uuid.toString())[3];
 
-        System.out.println("=======ONJOIN=======\nPlaytime from DB: " + playtimeFromDB);
+        System.out.println("=======ONJOIN=======\nPlaytime from DB: " + playtimeFromDB + " DHMS: " + OntimeCommand.convertMillisToDHMS(playtimeFromDB));
     }
 
     @EventHandler
@@ -66,9 +66,9 @@ public class OntimeListener implements Listener {
 
         long newPlaytimeFromDBAfterSave = Util.getPlaytime(uuid.toString())[3];
 
-        System.out.println("=======ONLEAVE=======\nPlaytime BS Manual: " + newPlaytimeManualBeforeSave + "\n" +
-            "Playtime BS From Cache: " + newPlaytimeFromCacheBeforeSave + "\n" +
-            "Playtime AS from DB: " + newPlaytimeFromDBAfterSave);
+        System.out.println("=======ONLEAVE=======\nPlaytime BS Manual: " + newPlaytimeManualBeforeSave + " DHMS: " + OntimeCommand.convertMillisToDHMS(newPlaytimeFromDBAfterSave) + "\n" +
+            "Playtime BS From Cache: " + newPlaytimeFromCacheBeforeSave + " DHMS: " + OntimeCommand.convertMillisToDHMS(newPlaytimeFromCacheBeforeSave)+ "\n" +
+            "Playtime AS from DB: " + newPlaytimeFromDBAfterSave + " DHMS: " + OntimeCommand.convertMillisToDHMS(newPlaytimeFromDBAfterSave));
 
 
     }
