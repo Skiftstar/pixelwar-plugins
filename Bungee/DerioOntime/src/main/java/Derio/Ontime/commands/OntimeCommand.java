@@ -169,7 +169,7 @@ public class OntimeCommand extends Command implements TabExecutor {
         return false;
     }
 
-    private static long[] getPlaytime(String uuid) {
+    public static long[] getPlaytime(String uuid) {
         long[] result = new long[]{0, 0, 0, 0};
         long current = System.currentTimeMillis();
         long lastLoginCached = Cache.lastLogin.getOrDefault(uuid, -1L);

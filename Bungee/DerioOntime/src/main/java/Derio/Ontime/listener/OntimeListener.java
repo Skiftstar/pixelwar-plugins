@@ -3,6 +3,7 @@ package Derio.Ontime.listener;
 import java.io.IOException;
 import java.util.UUID;
 import Derio.Ontime.Main;
+import Derio.Ontime.commands.OntimeCommand;
 import Derio.Ontime.utils.Cache;
 import Derio.Ontime.utils.PlayerData;
 import Derio.Ontime.utils.Util;
@@ -24,10 +25,12 @@ public class OntimeListener implements Listener {
             Util.registerUser(uuid.toString());
         }
 
-        Cache.lastLogin.put(uuid.toString(), System.currentTimeMillis());
+        long current = System.currentTimeMillis();
+
+        Cache.lastLogin.put(uuid.toString(), current);
 
         Util.tryReset(uuid.toString());
-        Util.setLastUpdate(uuid.toString(), System.currentTimeMillis());
+        Util.setLastUpdate(uuid.toString(), current);
 
         data = Cache.data;
 
@@ -40,19 +43,32 @@ public class OntimeListener implements Listener {
             Cache.playtimeTotal.remove(uuid.toString());
             Cache.playtimeMonth.remove(uuid.toString());
         }
+
+        long playtimeFromDB = OntimeCommand.getPlaytime(uuid.toString())[3];
+
+        System.out.println("=======ONJOIN=======\nPlaytime from DB: " + playtimeFromDB);
     }
 
     @EventHandler
     public void onLeave(PlayerDisconnectEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
 
+        long newPlaytimeManualBeforeSave = System.currentTimeMillis() - Cache.lastLogin.get(uuid.toString()) + Cache.playtimeTotal.get(uuid.toString());
+        long newPlaytimeFromCacheBeforeSave = OntimeCommand.getPlaytime(uuid.toString())[3];
+
         Cache.lastLogin.remove(uuid.toString());
         Cache.playtimeDay.remove(uuid.toString());
         Cache.playtimeWeek.remove(uuid.toString());
         Cache.playtimeTotal.remove(uuid.toString());
         Cache.playtimeMonth.remove(uuid.toString());
-
+        
         Util.addPlaytime(uuid.toString());
+
+        long newPlaytimeFromDBAfterSave = Util.getPlaytime(uuid.toString())[3];
+
+        System.out.println("=======ONLEAVE=======\nPlaytime BS Manual: " + newPlaytimeManualBeforeSave + "\n" +
+            "Playtime BS From Cache: " + newPlaytimeFromCacheBeforeSave + "\n" +
+            "Playtime AS from DB: " + newPlaytimeFromDBAfterSave);
 
 
     }
