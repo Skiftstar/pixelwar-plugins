@@ -3,7 +3,6 @@ package Derio.Ontime.listener;
 import java.io.IOException;
 import java.util.UUID;
 import Derio.Ontime.Main;
-import Derio.Ontime.commands.OntimeCommand;
 import Derio.Ontime.utils.Cache;
 import Derio.Ontime.utils.PlayerData;
 import Derio.Ontime.utils.Util;
@@ -43,18 +42,11 @@ public class OntimeListener implements Listener {
             Cache.playtimeTotal.remove(uuid.toString());
             Cache.playtimeMonth.remove(uuid.toString());
         }
-
-        long playtimeFromDB = OntimeCommand.getPlaytime(uuid.toString())[3];
-
-        System.out.println("=======ONJOIN=======\nPlaytime from DB: " + playtimeFromDB + " DHMS: " + OntimeCommand.convertMillisToDHMS(playtimeFromDB));
     }
 
     @EventHandler
     public void onLeave(PlayerDisconnectEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
-
-        long newPlaytimeManualBeforeSave = System.currentTimeMillis() - Cache.lastLogin.get(uuid.toString()) + Cache.playtimeTotal.get(uuid.toString());
-        long newPlaytimeFromCacheBeforeSave = OntimeCommand.getPlaytime(uuid.toString())[3];
 
         Cache.lastLogin.remove(uuid.toString());
         Cache.playtimeDay.remove(uuid.toString());
@@ -63,13 +55,5 @@ public class OntimeListener implements Listener {
         Cache.playtimeMonth.remove(uuid.toString());
         
         Util.addPlaytime(uuid.toString());
-
-        long newPlaytimeFromDBAfterSave = Util.getPlaytime(uuid.toString())[3];
-
-        System.out.println("=======ONLEAVE=======\nPlaytime BS Manual: " + newPlaytimeManualBeforeSave + " DHMS: " + OntimeCommand.convertMillisToDHMS(newPlaytimeFromDBAfterSave) + "\n" +
-            "Playtime BS From Cache: " + newPlaytimeFromCacheBeforeSave + " DHMS: " + OntimeCommand.convertMillisToDHMS(newPlaytimeFromCacheBeforeSave)+ "\n" +
-            "Playtime AS from DB: " + newPlaytimeFromDBAfterSave + " DHMS: " + OntimeCommand.convertMillisToDHMS(newPlaytimeFromDBAfterSave));
-
-
     }
 }

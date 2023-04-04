@@ -105,19 +105,6 @@ public class Util {
 
     }
 
-    /*
-     * FIXME:
-            - Ontime zählt normal hoch wenn man online ist, keine Probleme da
-            - Aber, wenn man disconnected und dann reconnected wird mehr ontime angezeigt als davor (z.b. man war 3 Minuten online, reloggt und es wird +6 Minuten angezeigt)
-            - Liegt am Leave
-            - Value ist vor addPlaytime call schon affected, da geht irgendwas in der Berechnung schief
-
-            Theorien:
-            - Irgendwas im Cache geht schief? 
-
-            Was noch herausgefunden werden muss:
-            - Ist nur Total Playtime betroffen? 
-     */
     public static void addPlaytime(String uuid) {
         long current = System.currentTimeMillis();
         long lastupdate = getLastUpdate(uuid);
