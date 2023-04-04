@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import Kyu.Ontime.Main;
+
 public class Cache {
     
     private static Map<UUID, Ontime> data = new HashMap<>();
@@ -34,6 +36,10 @@ public class Cache {
         Ontime ontime;
         if (!data.containsKey(uuid)) {
             final long[] dataFromDB = Ontime.loadDataFromDB(uuid);
+            if (dataFromDB[0] == -1L) {
+                Main.logger().warning("Error loading Data from " + uuid + " from Database! Not Registering!\nSee error above!");
+                return;
+            }
             ontime = new Ontime(uuid, dataFromDB[0], dataFromDB[1], dataFromDB[2], dataFromDB[3], dataFromDB[4], false);
             data.put(uuid, ontime);
         } else {

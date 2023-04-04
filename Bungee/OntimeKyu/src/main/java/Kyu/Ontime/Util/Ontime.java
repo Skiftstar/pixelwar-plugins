@@ -122,7 +122,6 @@ public class Ontime {
 
             ResultSet rs = stmt.executeQuery();
             if (!rs.next()) {
-                Main.logger().warning("Ontime of Player with UUID " + uuid + " not in Database!");
                 final long current = System.currentTimeMillis();
                 saveToDB(uuid, 0, 0, 0, 0, current); 
                 return new long[]{0, 0, 0, 0, current};
