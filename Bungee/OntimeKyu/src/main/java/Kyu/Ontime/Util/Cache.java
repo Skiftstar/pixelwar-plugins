@@ -4,36 +4,33 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import Kyu.Ontime.Main;
-import net.md_5.bungee.api.ProxyServer;
-
 public class Cache {
     
     private static Map<UUID, Ontime> data = new HashMap<>();
 
     public static long[] getPlaytimes(UUID uuid) {
         if (!data.containsKey(uuid)) {
-            register(uuid);
+            register(uuid, false);
         }
         return data.get(uuid).getPlaytimes();
     }
 
     public static void setLastUpdate(UUID uuid, long lastUpdate) {
         if (!data.containsKey(uuid)) {
-            register(uuid);
+            register(uuid, false);
         }
         data.get(uuid).setLastUpdate(lastUpdate);
     }
 
     public static void handlePlayerLeave(UUID uuid) {
         if (!data.containsKey(uuid)) {
-            register(uuid);
+            register(uuid, true);
         }
         data.get(uuid).updateDB();
         data.get(uuid).setIsOnline(false);
     }
 
-    public static void register(UUID uuid) {
+    public static void register(UUID uuid, boolean setOnline) {
         Ontime ontime;
         if (!data.containsKey(uuid)) {
             final long[] dataFromDB = Ontime.loadDataFromDB(uuid);
@@ -43,8 +40,6 @@ public class Cache {
             ontime = data.get(uuid);
         }
 
-        final ProxyServer proxy = Main.getInstance().getProxy();
-        final boolean isOnline = proxy.getPlayer(uuid) != null && proxy.getPlayer(uuid).isConnected();
-        ontime.setIsOnline(isOnline);
+        ontime.setIsOnline(setOnline);
     }
 }

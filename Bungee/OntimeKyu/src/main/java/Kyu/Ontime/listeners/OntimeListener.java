@@ -19,7 +19,7 @@ public class OntimeListener implements Listener {
     public void onJoin(LoginEvent e) {
         addToUUIDCache(e);
         UUID uuid = e.getConnection().getUniqueId();
-        Cache.register(uuid);
+        Cache.register(uuid, true);
         Cache.setLastUpdate(uuid, System.currentTimeMillis());
     }
 

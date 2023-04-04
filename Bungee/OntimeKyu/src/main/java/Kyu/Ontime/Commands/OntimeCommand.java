@@ -1,5 +1,7 @@
 package Kyu.Ontime.Commands;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import Kyu.Ontime.Main;
@@ -9,8 +11,9 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+import net.md_5.bungee.api.plugin.TabExecutor;
 
-public class OntimeCommand extends Command {
+public class OntimeCommand extends Command implements TabExecutor {
     
     public OntimeCommand(Main main) {
         super("ontime", "ontime.show.self");
@@ -46,6 +49,30 @@ public class OntimeCommand extends Command {
 
         String mess = buildResponse(sender, otherUUID, args[0]);
         sender.sendMessage(new TextComponent(mess));
+    }
+
+    public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
+        List<String> playerNames = new ArrayList<>();
+        if (!sender.hasPermission("ontime.show.other")&&!sender.hasPermission("ontime.show.*")){
+            return new ArrayList<>();
+        }
+
+        for (String key : Main.getUuidStorage().getKeys()) {
+            if (key.equalsIgnoreCase("console")) continue;
+            if (key.length() <= 16) {
+                playerNames.add(Util.capitalize(key.toLowerCase()));
+            }
+        }
+
+        List<String> fittingNames = new ArrayList<>();
+        String currentarg = args[args.length-1].toLowerCase();
+        for (String playerName : playerNames) {
+            if (playerName.toLowerCase().startsWith(currentarg)){
+                fittingNames.add(playerName);
+            }
+        }
+
+        return fittingNames;
     }
 
     private static String buildResponse(CommandSender sender, UUID uuid, String... playerName) {
