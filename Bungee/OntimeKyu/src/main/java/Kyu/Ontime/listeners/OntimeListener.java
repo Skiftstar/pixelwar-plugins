@@ -20,7 +20,7 @@ public class OntimeListener implements Listener {
         addToUUIDCache(e);
         UUID uuid = e.getConnection().getUniqueId();
         Cache.register(uuid, true);
-        Cache.setLastUpdate(uuid, System.currentTimeMillis());
+        Cache.checkReset(uuid, System.currentTimeMillis());
     }
 
     private void addToUUIDCache(LoginEvent e) {

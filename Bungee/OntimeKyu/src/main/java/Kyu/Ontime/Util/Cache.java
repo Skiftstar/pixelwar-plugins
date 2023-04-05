@@ -24,6 +24,13 @@ public class Cache {
         data.get(uuid).setLastUpdate(lastUpdate);
     }
 
+    public static void checkReset(UUID uuid, long currentMillis) {
+        if (!data.containsKey(uuid)) {
+            register(uuid, false);
+        }
+        data.get(uuid).checkReset(currentMillis);
+    }
+
     public static void handlePlayerLeave(UUID uuid) {
         if (!data.containsKey(uuid)) {
             register(uuid, true);

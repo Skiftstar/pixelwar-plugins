@@ -9,6 +9,6 @@ words:
   minutes: "Minutes"
   hours: "Hours"
   days: "Days"
-  minuteSing: "Minute"
+  minutesSing: "Minute"
   hoursSing: "Hour"
   daysSing: "Day"
