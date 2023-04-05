@@ -63,6 +63,18 @@ public class Ontime {
         };
     }
 
+    void checkReset(long currentMillis) {
+        final boolean[] dateComparisons = Util.dateComparison(lastUpdate, currentMillis);
+        final boolean isNewDay = dateComparisons[0];
+        final boolean isNewWeek = dateComparisons[1];
+        final boolean isNewMonth = dateComparisons[2];
+
+        dayTime = isNewDay ? 0 : dayTime;
+        weekTime = isNewWeek ? 0 : weekTime;
+        monthTime = isNewMonth ? 0 : monthTime;
+        lastUpdate = currentMillis;
+    }
+
     void updatePlaytime(final boolean isNewDay, final boolean isNewWeek, final boolean isNewMonth, final long currentMillis) {
         final long msCurrentDay = Util.getMillisFromCurrentDay(currentMillis);
 
