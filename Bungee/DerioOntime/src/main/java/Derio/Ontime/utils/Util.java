@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class Util {
+    
     public static long[] getPlaytime(String uuid) {
         try (PreparedStatement stmt = Main.getDb().getConnection().prepareStatement("SELECT * FROM player_playtime WHERE uuid = ?;");) {
             stmt.setString(1, uuid);
@@ -65,22 +66,25 @@ public class Util {
         long lastupdate = getLastUpdate(uuid);
 
         boolean[] dateChecks = dateComparison(lastupdate, current);
+        boolean isNewDay = dateChecks[0];
+        boolean isNewWeek = dateChecks[1];
+        boolean isNewMonth = dateChecks[2];
 
         String query = "";
         String query1 = "";
         String query2 = "";
-        if (dateChecks[2]) {
+        if (isNewMonth) {
             query = "UPDATE player_playtime SET playtimeMonth = ? WHERE uuid = ?;";
             query1 = "UPDATE player_playtime SET playtimeWeek = ? WHERE uuid = ?;";
             query2 = "UPDATE player_playtime SET playtimeDay = ? WHERE uuid = ?;";
             execute(uuid, query,query1, query2);
 
-        }else if (dateChecks[1]){
+        }else if (isNewWeek){
             query = "UPDATE player_playtime SET playtimeWeek = ? WHERE uuid = ?;";
             query1 = "UPDATE player_playtime SET playtimeDay = ? WHERE uuid = ?;";
             execute(uuid, query,query1);
 
-        } else if (dateChecks[0]){
+        } else if (isNewDay){
             query = "UPDATE player_playtime SET playtimeDay = ? WHERE uuid = ?;";
             execute(uuid, query);
         }
@@ -101,8 +105,6 @@ public class Util {
 
     }
 
-
-
     public static void addPlaytime(String uuid) {
         long current = System.currentTimeMillis();
         long lastupdate = getLastUpdate(uuid);
@@ -117,7 +119,7 @@ public class Util {
             tryToUpdateDay(uuid, lastupdate, current, dateChecks[0]);
             tryToUpdateWeek(uuid, lastupdate, current, dateChecks[1]);
             tryToUpdateMonth(uuid, lastupdate, current, dateChecks[2]);
-
+            setLastUpdate(uuid, current);
 
 
             stmt.executeUpdate();
@@ -142,20 +144,13 @@ public class Util {
         } else {
             query = "UPDATE player_playtime SET playtimeDay = playtimeDay + ? WHERE uuid = ?;";
             time = time2 - time1;
-            try {
-                Cache.playtimeDay.put(uuid, Cache.playtimeDay.get(uuid)+ time2-time1);
-            }catch (NullPointerException ex){
-                Cache.playtimeDay.put(uuid, time2-time1);
-            }
-
+            Cache.playtimeDay.put(uuid, Cache.playtimeDay.getOrDefault(uuid, 0L) + time);
         }
         try (PreparedStatement stmt = Main.getDb().getConnection().prepareStatement(query);) {
             stmt.setLong(1, time);
             stmt.setString(2, uuid);
 
-
             stmt.executeUpdate();
-
         } catch (SQLException e) {
             e.printStackTrace();
             return;
@@ -172,11 +167,7 @@ public class Util {
         } else {
             query = "UPDATE player_playtime SET playtimeWeek = playtimeWeek + ? WHERE uuid = ?;";
             time = time2 - time1;
-            try {
-                Cache.playtimeWeek.put(uuid, Cache.playtimeDay.get(uuid)+ time2-time1);
-            }catch (NullPointerException ex){
-                Cache.playtimeWeek.put(uuid, time2-time1);
-            }
+            Cache.playtimeWeek.put(uuid, Cache.playtimeDay.getOrDefault(uuid, 0L) + time);
         }
         try (PreparedStatement stmt = Main.getDb().getConnection().prepareStatement(query);) {
             stmt.setLong(1, time);
@@ -198,11 +189,7 @@ public class Util {
         } else {
             query = "UPDATE player_playtime SET playtimeMonth = playtimeMonth + ? WHERE uuid = ?;";
             time = time2 - time1;
-            try {
-                Cache.playtimeMonth.put(uuid, Cache.playtimeDay.get(uuid)+ time2-time1);
-            }catch (NullPointerException ex){
-                Cache.playtimeMonth.put(uuid, time2-time1);
-            }
+            Cache.playtimeMonth.put(uuid, Cache.playtimeDay.getOrDefault(uuid, 0L) + time);
         }
         try (PreparedStatement stmt = Main.getDb().getConnection().prepareStatement(query);) {
             stmt.setLong(1, time);
@@ -229,6 +216,12 @@ public class Util {
         }
     }
 
+    /**
+     * Returns whether time1 is on a new day/week/month compared to time2
+     * @param time1 older time
+     * @param time2 newer time
+     * @return a boolean array [isNewDay, isNewWeek, isNewMonth]
+     */
     public static boolean[] dateComparison(long time1, long time2) {
         boolean isNewDay = false;
         boolean isNewWeek = false;
@@ -255,6 +248,7 @@ public class Util {
             return new boolean[]{isNewDay, isNewWeek, isNewMonth};
         }
     }
+
     public static long getMinutesFromCurrentDay(long currentMs) {
         long minutes = (int) (currentMs / (1000 * 60));
 
@@ -262,6 +256,7 @@ public class Util {
 
         return minutesSinceMidnight;
     }
+
     public static String getLocale(String uuid){
 
         try (PreparedStatement stmt = Main.getDb().getConnection().prepareStatement("SELECT lang FROM userLangs WHERE uuid = ?;");) {
@@ -277,7 +272,6 @@ public class Util {
             e.printStackTrace();
             return null;
         }
-
-
     }
+
 }

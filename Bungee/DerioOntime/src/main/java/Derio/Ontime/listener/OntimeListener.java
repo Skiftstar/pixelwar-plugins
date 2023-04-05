@@ -24,11 +24,12 @@ public class OntimeListener implements Listener {
             Util.registerUser(uuid.toString());
         }
 
-        Cache.lastLogin.put(uuid.toString(), System.currentTimeMillis());
+        long current = System.currentTimeMillis();
+
+        Cache.lastLogin.put(uuid.toString(), current);
 
         Util.tryReset(uuid.toString());
-        Util.setLastUpdate(uuid.toString(), System.currentTimeMillis());
-
+        Util.setLastUpdate(uuid.toString(), current);
 
         data = Cache.data;
 
@@ -52,9 +53,7 @@ public class OntimeListener implements Listener {
         Cache.playtimeWeek.remove(uuid.toString());
         Cache.playtimeTotal.remove(uuid.toString());
         Cache.playtimeMonth.remove(uuid.toString());
-
+        
         Util.addPlaytime(uuid.toString());
-
-
     }
 }

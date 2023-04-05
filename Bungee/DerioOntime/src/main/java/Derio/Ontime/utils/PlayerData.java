@@ -7,7 +7,8 @@ import net.md_5.bungee.config.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.UUID;
 
 public class PlayerData {
 
@@ -19,7 +20,6 @@ public class PlayerData {
         dir = new File(Main.instance().getDataFolder().getPath());
 
         file = new File(dir, "uuids.yml");
-
         if (!file.exists()){
             file.createNewFile();
         }
@@ -27,7 +27,6 @@ public class PlayerData {
         config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(Main.instance().getDataFolder(),  "uuids.yml"));
 
     }
-
 
     public boolean isInConfig(UUID uuid, String name){
         return config.getString(uuid.toString()).equalsIgnoreCase(name);
@@ -38,15 +37,19 @@ public class PlayerData {
         config.set(name , uuid.toString());
         save();
     }
+
     public String getUUID(String name){
         return config.getString(name);
     }
+
     public String getName(String uuid){
         return config.getString(uuid);
     }
+
     public Collection<String> getListKeys(){
         return config.getKeys();
     }
+
     private void save(){
         try {
             ConfigurationProvider.getProvider(YamlConfiguration.class).save(config, new File(Main.instance().getDataFolder(), "uuids.yml"));
