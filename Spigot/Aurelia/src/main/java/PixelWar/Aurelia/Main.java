@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,14 +19,12 @@ import Kyu.LangSupport.LanguageHelper;
 import Kyu.LangSupport.DB.MariaDB;
 import PixelWar.Aurelia.DB.DB;
 import PixelWar.Aurelia.Util.Util;
-import net.milkbowl.vault.economy.Economy;
 
 public final class Main extends JavaPlugin {
 
     public static LanguageHelper helper;
     public static String serverName;
     public static long cacheDelay;
-    public static Economy econ = null;
     public static List<SCommand> commands = new ArrayList<>();
 
     private static Main instance;
@@ -45,24 +42,7 @@ public final class Main extends JavaPlugin {
 
         db = new DB();
 
-        if (!setupEconomy()) {
-            System.out.println("Vault dependency not found! disabling!");
-            return;
-        }
-
         loadConfigValues();
-    }
-
-    private boolean setupEconomy() {
-        if (getServer().getPluginManager().getPlugin("Vault") == null) {
-            return false;
-        }
-        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-        if (rsp == null) {
-            return false;
-        }
-        econ = rsp.getProvider();
-        return econ != null;
     }
 
     public void loadConfigValues() {

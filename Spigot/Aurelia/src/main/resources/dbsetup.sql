@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS worlds(
     world_id char(36) NOT NULL, 
     owner_id char(36) NOT NULL,
 
-    FOREIGN KEY (owner_id) REFERENCES player_data(uuid) ON DELETE CASCADE,
+    FOREIGN KEY (owner_id) REFERENCES players(uuid) ON DELETE CASCADE,
     PRIMARY KEY (world_id)
 );
 
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS quests(
 CREATE TABLE IF NOT EXISTS quest_stages(
     quest_stage_id char(36) NOT NULL,
     stage_name char(255) NOT NULL,
-    stage_number, INT NOT NULL,
+    stage_number INT NOT NULL,
     quest_id char(36) NOT NULL,
     reward_id char(36),
 
