@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS player_skills(
     skill_id char(36) NOT NULL,
 
     FOREIGN KEY (player_data_id) REFERENCES player_data(id) ON DELETE CASCADE,
-    FOREIGN KEY (skill_id) REFERENCES (skill_id) ON DELETE CASCADE,
+    FOREIGN KEY (skill_id) REFERENCES skills(skill_id) ON DELETE CASCADE,
     PRIMARY KEY (id)
 );
 
