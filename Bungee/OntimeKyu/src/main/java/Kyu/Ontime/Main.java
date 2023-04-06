@@ -2,7 +2,7 @@ package Kyu.Ontime;
 
 import Kyu.Ontime.Commands.OntimeCommand;
 import Kyu.Ontime.Database.DB;
-import Kyu.Ontime.listeners.OntimeListener;
+import Kyu.Ontime.Listeners.OntimeListener;
 import Kyu.WaterFallLanguageHelper.LanguageHelper;
 import Kyu.WaterFallLanguageHelper.MariaDB;
 import net.md_5.bungee.api.ChatColor;
