@@ -2,6 +2,7 @@ package PixelWar.Aurelia.GUI;
 
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import PixelWar.Aurelia.Main;
@@ -14,11 +15,8 @@ import PixelWar.Aurelia.Util.Util;
 
 public class MainMenu {
 
-    public static Window build(AureliaPlayer aureliaPlayer) {
+    public static Window build(GUI gui, AureliaPlayer aureliaPlayer) {
         Player player = aureliaPlayer.getPlayer();
-
-        //TODO: remove this and move it to command? idk
-        GUI gui = new GUI(player, Main.getInstance());
 
         Window mainMenu = new Window(gui, 6, Main.helper.getMess(player, "MainMenuTitle"));
 
@@ -26,10 +24,16 @@ public class MainMenu {
         String[] statsLore = new StringArray(statsTemplate)
             .replace("%health", "" + aureliaPlayer.getHealth())
             .getArray();
-            
-
         GuiItem statsItem = new GuiItem(Util.getPlayerHead(player), Main.helper.getMess(player, "&6Your Profile"), statsLore);
         mainMenu.setItem(statsItem, 13);
+
+        if (player.hasPermission("aurelia.admin")) {
+            GuiItem adminItem = new GuiItem(Material.REDSTONE, Main.helper.getMess(player, "&cAdmin-View"), 1)
+                .withListener(e -> {
+                    gui.openWindow(AdminMenu.build(gui, aureliaPlayer));
+                });
+            mainMenu.setItem(adminItem, 53);
+        }
 
         return mainMenu;
     }
