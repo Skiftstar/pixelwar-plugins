@@ -1,8 +1,5 @@
 package PixelWar.Aurelia.Util;
 
-import java.util.List;
-import java.util.UUID;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
