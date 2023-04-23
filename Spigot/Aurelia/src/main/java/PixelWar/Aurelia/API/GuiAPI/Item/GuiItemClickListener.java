@@ -1,4 +1,4 @@
-package PixelWar.Aurelia.GuiAPI.Item;
+package PixelWar.Aurelia.API.GuiAPI.Item;
 
 import org.bukkit.event.inventory.InventoryClickEvent;
 

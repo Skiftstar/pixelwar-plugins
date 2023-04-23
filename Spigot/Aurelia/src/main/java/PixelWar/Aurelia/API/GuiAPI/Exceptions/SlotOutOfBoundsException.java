@@ -1,4 +1,4 @@
-package PixelWar.Aurelia.GuiAPI.Exceptions;
+package PixelWar.Aurelia.API.GuiAPI.Exceptions;
 
 public class SlotOutOfBoundsException extends RuntimeException{
 

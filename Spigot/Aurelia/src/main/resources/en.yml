@@ -2,3 +2,11 @@ Error:
   PlayerOnly: "Player only!"
   NEPerms: "&cNot enough permissions!"
   NEArgs: "&cNot enough arguments!"
+
+MenuTitles:
+  MainMenuTitle: "&bMain Menu"
+
+MainMenuLores:
+  StatsLore:
+    - "&6Level %lvl"
+    - "&cHealth %health"

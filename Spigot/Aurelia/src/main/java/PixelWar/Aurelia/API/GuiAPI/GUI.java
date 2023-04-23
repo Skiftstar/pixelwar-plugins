@@ -1,11 +1,11 @@
-package PixelWar.Aurelia.GuiAPI;
+package PixelWar.Aurelia.API.GuiAPI;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import PixelWar.Aurelia.GuiAPI.Window.Window;
-import PixelWar.Aurelia.GuiAPI.Window.WindowListener;
+import PixelWar.Aurelia.API.GuiAPI.Window.Window;
+import PixelWar.Aurelia.API.GuiAPI.Window.WindowListener;
 
 public class GUI {
 

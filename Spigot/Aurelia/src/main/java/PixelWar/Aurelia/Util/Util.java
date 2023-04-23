@@ -1,6 +1,13 @@
 package PixelWar.Aurelia.Util;
 
+import java.util.List;
+import java.util.UUID;
+
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
 public class Util {
 
@@ -30,6 +37,14 @@ public class Util {
             }
         }
         return colorCode;
+    }
+
+    public static ItemStack getPlayerHead(Player p) {
+        ItemStack item = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta meta = (SkullMeta)item.getItemMeta();
+        meta.setOwningPlayer(p);
+        item.setItemMeta(meta);
+        return item;
     }
 
 }

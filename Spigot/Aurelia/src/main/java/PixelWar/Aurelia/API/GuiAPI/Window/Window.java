@@ -1,4 +1,4 @@
-package PixelWar.Aurelia.GuiAPI.Window;
+package PixelWar.Aurelia.API.GuiAPI.Window;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,11 +12,11 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import PixelWar.Aurelia.GuiAPI.GUI;
-import PixelWar.Aurelia.GuiAPI.Exceptions.NoPaginationPossibleException;
-import PixelWar.Aurelia.GuiAPI.Exceptions.RowsOutOfBoundsException;
-import PixelWar.Aurelia.GuiAPI.Exceptions.SlotOutOfBoundsException;
-import PixelWar.Aurelia.GuiAPI.Item.GuiItem;
+import PixelWar.Aurelia.API.GuiAPI.GUI;
+import PixelWar.Aurelia.API.GuiAPI.Exceptions.NoPaginationPossibleException;
+import PixelWar.Aurelia.API.GuiAPI.Exceptions.RowsOutOfBoundsException;
+import PixelWar.Aurelia.API.GuiAPI.Exceptions.SlotOutOfBoundsException;
+import PixelWar.Aurelia.API.GuiAPI.Item.GuiItem;
 import PixelWar.Aurelia.Util.Util;
 import net.kyori.adventure.text.Component;
 
