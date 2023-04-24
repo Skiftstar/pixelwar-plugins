@@ -1,6 +1,8 @@
 CREATE TABLE IF NOT EXISTS players(
     uuid char(36) NOT NULL,
     username char(16) NOT NULL,
+    last_used_profile_id char(16),
+
     PRIMARY KEY (uuid)
 );
 
@@ -139,3 +141,5 @@ CREATE TABLE IF NOT EXISTS player_dungeons(
     FOREIGN KEY (dungeon_id) REFERENCES dungeons(dungeon_id) ON DELETE CASCADE,
     PRIMARY KEY (id)
 );
+
+ALTER TABLE players ADD FOREIGN KEY (last_used_profile_id) REFERENCES player_data(id) ON DELETE SET NULL;

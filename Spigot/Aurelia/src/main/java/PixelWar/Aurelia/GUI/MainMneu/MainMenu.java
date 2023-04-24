@@ -1,4 +1,4 @@
-package PixelWar.Aurelia.GUI;
+package PixelWar.Aurelia.GUI.MainMneu;
 
 import java.util.List;
 
@@ -9,6 +9,7 @@ import PixelWar.Aurelia.Main;
 import PixelWar.Aurelia.API.GuiAPI.GUI;
 import PixelWar.Aurelia.API.GuiAPI.Item.GuiItem;
 import PixelWar.Aurelia.API.GuiAPI.Window.Window;
+import PixelWar.Aurelia.GUI.AdminMenu.AdminMainMenu;
 import PixelWar.Aurelia.Player.AureliaPlayer;
 import PixelWar.Aurelia.Util.StringArray;
 import PixelWar.Aurelia.Util.Util;
@@ -30,7 +31,7 @@ public class MainMenu {
         if (player.hasPermission("aurelia.admin")) {
             GuiItem adminItem = new GuiItem(Material.REDSTONE, Main.helper.getMess(player, "&cAdmin-View"), 1)
                 .withListener(e -> {
-                    gui.openWindow(AdminMenu.build(gui, aureliaPlayer));
+                    gui.openWindow(AdminMainMenu.build(gui, aureliaPlayer));
                 });
             mainMenu.setItem(adminItem, 53);
         }

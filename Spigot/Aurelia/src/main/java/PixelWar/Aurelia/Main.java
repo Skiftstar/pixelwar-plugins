@@ -18,6 +18,7 @@ import Kyu.SCommand;
 import Kyu.LangSupport.LanguageHelper;
 import Kyu.LangSupport.DB.MariaDB;
 import PixelWar.Aurelia.DB.DB;
+import PixelWar.Aurelia.Listener.JoinLeaveListener;
 import PixelWar.Aurelia.Util.Util;
 
 public final class Main extends JavaPlugin {
@@ -43,6 +44,8 @@ public final class Main extends JavaPlugin {
         db = new DB();
 
         loadConfigValues();
+
+        new JoinLeaveListener(this);
     }
 
     public void loadConfigValues() {

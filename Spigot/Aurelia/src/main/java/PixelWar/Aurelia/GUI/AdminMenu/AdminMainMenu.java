@@ -1,13 +1,14 @@
-package PixelWar.Aurelia.GUI;
+package PixelWar.Aurelia.GUI.AdminMenu;
 
 import org.bukkit.entity.Player;
 
 import PixelWar.Aurelia.Main;
 import PixelWar.Aurelia.API.GuiAPI.GUI;
 import PixelWar.Aurelia.API.GuiAPI.Window.Window;
+import PixelWar.Aurelia.GUI.MainMneu.MainMenu;
 import PixelWar.Aurelia.Player.AureliaPlayer;
 
-public class AdminMenu {
+public class AdminMainMenu {
     
     public static Window build(GUI gui, AureliaPlayer aureliaPlayer) {
         Player player = aureliaPlayer.getPlayer();
