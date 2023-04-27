@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import Kyu.SCommand;
 import Kyu.LangSupport.LanguageHelper;
 import Kyu.LangSupport.DB.MariaDB;
+import PixelWar.Aurelia.Commands.GUICommands.MainMenuCommand;
 import PixelWar.Aurelia.DB.DB;
 import PixelWar.Aurelia.Listener.JoinLeaveListener;
 import PixelWar.Aurelia.Util.Util;
@@ -46,6 +47,7 @@ public final class Main extends JavaPlugin {
         loadConfigValues();
 
         new JoinLeaveListener(this);
+        new MainMenuCommand(this);
     }
 
     public void loadConfigValues() {

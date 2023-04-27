@@ -14,14 +14,15 @@ public class AureliaPlayer {
     
     private Player player;
     private AureliaWorld world;
-    private UUID dataUUID;
+    private UUID profileUUID;
     private int health;
 
-    public AureliaPlayer(Player p, UUID dataUUID) {
-        this.player = p;
-        this.dataUUID = dataUUID;
-        NetworkPlayer.get(p).setLastUsedProfile(dataUUID);
+    public AureliaPlayer(Player player, UUID profileUUID) {
+        this.player = player;
+        this.profileUUID = profileUUID;
+        NetworkPlayer.get(player).setLastUsedProfile(profileUUID);
         loadStats();
+        players.put(player, this);
     }
 
     /**
@@ -32,8 +33,14 @@ public class AureliaPlayer {
         //TODO: Test if UUID is taken
         UUID profileUUID = UUID.randomUUID();
         AureliaWorld world = AureliaWorld.createNewWorld(profileUUID);
+
+        this.player = player;
+        this.profileUUID = profileUUID;
+        this.world = world;
+        
         setDefaultStats();
         player.teleport(world.getSpawnLocation());
+        players.put(player, this);
     }
 
     public Player getPlayer() {
@@ -59,10 +66,8 @@ public class AureliaPlayer {
         return new AureliaPlayer(player);
     }
 
-    public static AureliaPlayer addPlayer(Player player, UUID dataUUID) {
-        AureliaPlayer aureliaPlayer = new AureliaPlayer(player, dataUUID);
-        players.put(player, aureliaPlayer);
-        return aureliaPlayer;
+    public static AureliaPlayer getPlayer(Player player) {
+        return players.getOrDefault(player, null);
     }
 
     public static void removePlayer(Player player) {

@@ -6,8 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import PixelWar.Aurelia.Util.WorldManager;
-
 public class AureliaWorld {
     
     private World world;
@@ -48,7 +46,7 @@ public class AureliaWorld {
     public static AureliaWorld createNewWorld(UUID ownerUUID) {
         //TODO: check if taken
         UUID worldUUID = UUID.randomUUID();
-        WorldManager.copyWorld(Bukkit.getWorld("template"), worldUUID.toString());
+        WorldManager.copyWorld("templateWorld", worldUUID.toString());
         return new AureliaWorld(worldUUID, ownerUUID);
     }
 
