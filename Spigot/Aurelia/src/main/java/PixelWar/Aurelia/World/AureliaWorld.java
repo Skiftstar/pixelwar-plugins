@@ -1,5 +1,7 @@
 package PixelWar.Aurelia.World;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -13,9 +15,13 @@ public class AureliaWorld {
     private UUID ownerUUID;
     private Location spawnLoc;
 
+    private static Map<UUID, AureliaWorld> worlds = new HashMap<>();
+
     public AureliaWorld(UUID worldUUID) {
         this.worldUUID = worldUUID;
         loadData();
+
+        worlds.put(worldUUID, this);
     }
 
     /**
@@ -27,6 +33,8 @@ public class AureliaWorld {
         this.worldUUID = worldUUID;
         this.ownerUUID = ownerUUID;
         setDefaultStats();
+
+        worlds.put(worldUUID, this);
     }
 
     public Location getSpawnLocation() {
@@ -36,11 +44,17 @@ public class AureliaWorld {
     }
 
     private void setDefaultStats() {
-        //TODO: this
+        //TODO: the rest
+        loadWorld();
     }
 
     private void loadData() {
-        //TODO: this
+        //TODO: the rest
+        loadWorld();
+    }
+
+    private void loadWorld() {
+        world = WorldManager.loadWorld(worldUUID.toString());
     }
 
     public static AureliaWorld createNewWorld(UUID ownerUUID) {

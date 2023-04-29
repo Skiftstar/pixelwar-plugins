@@ -6,6 +6,10 @@ Error:
 MenuTitles:
   MainMenuTitle: "&bMain Menu"
 
+MainMenuItemNames:
+  ProfileItem: "&6Your Profile"
+  AdminViewItem: "&cAdmin View"
+
 MainMenuLores:
   StatsLore:
     - "&6Level %lvl"

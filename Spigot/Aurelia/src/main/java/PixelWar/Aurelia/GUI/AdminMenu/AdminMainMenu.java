@@ -15,6 +15,7 @@ public class AdminMainMenu {
 
         Window adminWindow = new Window(gui, 6, Main.helper.getMess(player, "AdminMenuTitle"));
         adminWindow.setOnClose(e -> {
+            //FIXME: This is kinda buggy
             gui.openWindow(MainMenu.build(gui, aureliaPlayer));
         });
 

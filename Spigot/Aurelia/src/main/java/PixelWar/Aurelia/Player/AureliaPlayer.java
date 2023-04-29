@@ -72,6 +72,7 @@ public class AureliaPlayer {
 
     public static void removePlayer(Player player) {
         players.remove(player);
+        //TODO: Unload world if noone is online in it
     }
 
 }

@@ -25,11 +25,11 @@ public class MainMenu {
         String[] statsLore = new StringArray(statsTemplate)
             .replace("%health", "" + aureliaPlayer.getHealth())
             .getArray();
-        GuiItem statsItem = new GuiItem(Util.getPlayerHead(player), Main.helper.getMess(player, "&6Your Profile"), statsLore);
+        GuiItem statsItem = new GuiItem(Util.getPlayerHead(player), Main.helper.getMess(player, "ProfileItem"), statsLore);
         mainMenu.setItem(statsItem, 13);
 
         if (player.hasPermission("aurelia.admin")) {
-            GuiItem adminItem = new GuiItem(Material.REDSTONE, Main.helper.getMess(player, "&cAdmin-View"), 1)
+            GuiItem adminItem = new GuiItem(Material.REDSTONE, Main.helper.getMess(player, "AdminViewItem"), 1)
                 .withListener(e -> {
                     gui.openWindow(AdminMainMenu.build(gui, aureliaPlayer));
                 });
