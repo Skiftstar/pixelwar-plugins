@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
+import PixelWar.Aurelia.Player.Attributes.PlayerAttribute;
 import PixelWar.Aurelia.World.AureliaWorld;
 
 public class AureliaPlayer {
@@ -15,6 +16,10 @@ public class AureliaPlayer {
     private Player player;
     private AureliaWorld world;
     private UUID profileUUID;
+    private int level;
+    private int chunkPoints;
+    private int attributePoints;
+    private Map<PlayerAttribute, Integer> attributes;
     private int health;
 
     public AureliaPlayer(Player player, UUID profileUUID) {
@@ -38,10 +43,28 @@ public class AureliaPlayer {
         this.profileUUID = profileUUID;
         this.world = world;
         
-        setDefaultStats();
+        applyDefaultStats();
         player.teleport(world.getSpawnLocation());
         players.put(player, this);
     }
+
+    private void loadStats() {
+        health = 10;
+        //TODO: this (and remove hardcoded above)
+    }
+
+    private void applyDefaultStats() {
+        health = 10;
+        //TODO: this (and remove hardcoded above)
+    }
+
+    //#region Setter
+
+
+
+    //#endregion
+
+    //#region Getter
 
     public Player getPlayer() {
         return player;
@@ -51,16 +74,21 @@ public class AureliaPlayer {
         return health;
     }
 
-    private void loadStats() {
-        health = 10;
-        //TODO: this (and remove hardcoded above)
+    public int getAttributePoints() {
+        return attributePoints;
     }
 
-    private void setDefaultStats() {
-        health = 10;
-        //TODO: this (and remove hardcoded above)
+    public int getChunkPoints() {
+        return chunkPoints;
     }
 
+    public Integer getAttributeLevel(PlayerAttribute attribute) {
+        return attributes.getOrDefault(attribute, attribute.getStartValue());
+    }
+
+    //#endregion
+
+    //#region Static Methods
 
     public static AureliaPlayer createNew(Player player) {
         return new AureliaPlayer(player);
@@ -75,4 +103,5 @@ public class AureliaPlayer {
         //TODO: Unload world if noone is online in it
     }
 
+    //#endregion
 }

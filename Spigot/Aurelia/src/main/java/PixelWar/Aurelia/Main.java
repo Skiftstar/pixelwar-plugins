@@ -20,6 +20,7 @@ import Kyu.LangSupport.DB.MariaDB;
 import PixelWar.Aurelia.Commands.GUICommands.MainMenuCommand;
 import PixelWar.Aurelia.DB.DB;
 import PixelWar.Aurelia.Listener.JoinLeaveListener;
+import PixelWar.Aurelia.Player.Attributes.PlayerAttribute;
 import PixelWar.Aurelia.Util.Util;
 
 public final class Main extends JavaPlugin {
@@ -45,6 +46,9 @@ public final class Main extends JavaPlugin {
         db = new DB();
 
         loadConfigValues();
+
+        //TODO: Make setup class
+        PlayerAttribute.fetchStartValues();
 
         new JoinLeaveListener(this);
         new MainMenuCommand(this);

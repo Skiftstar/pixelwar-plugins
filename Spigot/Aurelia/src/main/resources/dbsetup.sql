@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS worlds(
 CREATE TABLE IF NOT EXISTS roles(
     role_id binary(16) NOT NULL,
     role_name char(255) NOT NULL,
+
     UNIQUE(role_name),
     PRIMARY KEY (role_id)
 );
@@ -33,6 +34,7 @@ CREATE TABLE IF NOT EXISTS roles(
 CREATE TABLE IF NOT EXISTS skills(
     skill_id binary(16) NOT NULL,
     skill_name char(255) NOT NULL,
+
     UNIQUE(skill_name),
     PRIMARY KEY (skill_id)
 );
@@ -40,6 +42,8 @@ CREATE TABLE IF NOT EXISTS skills(
 CREATE TABLE IF NOT EXISTS attributes(
     attribute_id binary(16) NOT NULL,
     attribute_name char(255) NOT NULL,
+    start_level INT NOT NULL,
+
     UNIQUE(attribute_name),
     PRIMARY KEY (attribute_id)
 );
@@ -95,14 +99,13 @@ CREATE TABLE IF NOT EXISTS player_data(
     world_id binary(16) NOT NULL,
     role_id binary(16),
     lvl INT DEFAULT 1,
-    skill_points INT DEFAULT 0,
+    attribute_points INT DEFAULT 0,
     chunk_claim_points INT DEFAULT 0,
     logout_x DOUBLE,
     logout_y DOUBLE,
     logout_z DOUBLE,
     logout_pitch FLOAT,
     logout_yaw FLOAT,
-
 
     FOREIGN KEY (player_id) REFERENCES players(uuid) ON DELETE CASCADE,
     FOREIGN KEY (world_id) REFERENCES worlds(world_id) ON DELETE CASCADE,
