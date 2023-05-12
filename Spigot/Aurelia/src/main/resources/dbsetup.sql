@@ -13,6 +13,11 @@ CREATE TABLE IF NOT EXISTS players(
 CREATE TABLE IF NOT EXISTS worlds(
     world_id binary(16) NOT NULL, 
     owner_id binary(16) NOT NULL,
+    spawn_x DOUBLE NOT NULL,
+    spawn_y DOUBLE NOT NULL,
+    spawn_z DOUBLE NOT NULL,
+    spawn_yaw FLOAT NOT NULL,
+    spawn_pitch FLOAT NOT NULL,
 
     FOREIGN KEY (owner_id) REFERENCES players(uuid) ON DELETE CASCADE,
     PRIMARY KEY (world_id)
@@ -96,7 +101,7 @@ CREATE TABLE IF NOT EXISTS player_data(
     logout_y DOUBLE,
     logout_z DOUBLE,
     logout_pitch FLOAT,
-    logout_yaw FLOAT
+    logout_yaw FLOAT,
 
 
     FOREIGN KEY (player_id) REFERENCES players(uuid) ON DELETE CASCADE,
