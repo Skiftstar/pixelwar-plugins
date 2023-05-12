@@ -46,12 +46,12 @@ public class AureliaPlayer {
 
     private void loadStats() {
         health = 10;
-        //TODO: this (and remove hardcode above)
+        //TODO: this (and remove hardcoded above)
     }
 
     private void setDefaultStats() {
         health = 10;
-        //TODO: this (and remove hardcore above)
+        //TODO: this (and remove hardcoded above)
     }
 
 
