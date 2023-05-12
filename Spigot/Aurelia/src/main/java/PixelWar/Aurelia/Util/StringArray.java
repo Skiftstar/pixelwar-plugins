@@ -19,8 +19,8 @@ public class StringArray {
     }
 
     public StringArray replace(String toReplace, String toReplaceWith) {
-        for (String s : array) {
-            s = s.replace(toReplace, toReplaceWith);
+        for (int i = 0; i < array.length; i++) {
+            array[i] = array[i].replace(toReplace, toReplaceWith);
         }
         return this;
     }

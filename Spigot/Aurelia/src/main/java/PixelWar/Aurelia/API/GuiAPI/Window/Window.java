@@ -47,7 +47,7 @@ public class Window implements InventoryHolder {
         this.gui = gui;
         this.title = title;
         this.rows = rows;
-        inv = Bukkit.createInventory(gui.getHolder(), rows * 9, Component.text(Util.color(title)));
+        inv = Bukkit.createInventory(this, rows * 9, Component.text(Util.color(title)));
     }
 
     /**
@@ -82,7 +82,7 @@ public class Window implements InventoryHolder {
      * @throws SlotOufOfBoundsException if the slot is less than 0 or greater than the inventory size
      */
     public void setItem(GuiItem item, int slot) {
-        int maxSlot = rows * 6 - 1;
+        int maxSlot = rows * 9 - 1;
         if (slot < 0 || slot > maxSlot) {
             throw new SlotOutOfBoundsException(slot, maxSlot);
         }
@@ -233,8 +233,10 @@ public class Window implements InventoryHolder {
     /**
      * 
      * @param onClose Function to call when the inventory gets closed and {@link Window#isIgnoreCloseEvent} is False.
+     * Automatically disables {@link Window#isPreventClose}
      */
     public void setOnClose(Consumer<InventoryCloseEvent> onClose) {
+        this.preventClose = false;
         this.onClose = onClose;
     }
 

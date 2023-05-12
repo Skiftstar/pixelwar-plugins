@@ -1,4 +1,4 @@
-package PixelWar.Aurelia.Util;
+package PixelWar.Aurelia.World;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,8 +25,8 @@ public class WorldManager {
         return Bukkit.getWorld(worldName);
     }
 
-    public static void copyWorld(World originalWorld, String newWorldName) {
-        copyFileStructure(originalWorld.getWorldFolder(), new File(Bukkit.getWorldContainer(), newWorldName));
+    public static void copyWorld(String originalWorldName, String newWorldName) {
+        copyFileStructure(new File(Bukkit.getWorldContainer(), originalWorldName), new File(Bukkit.getWorldContainer(), newWorldName));
     }
 
     public static void copyFileStructure(File source, File target){

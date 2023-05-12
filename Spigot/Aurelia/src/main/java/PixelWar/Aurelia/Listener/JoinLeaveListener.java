@@ -34,7 +34,9 @@ public class JoinLeaveListener implements Listener {
 
     @EventHandler
     private void onLeave(PlayerQuitEvent e) {
-
+        Player player = e.getPlayer();
+        AureliaPlayer.removePlayer(player);
+        NetworkPlayer.removePlayer(player);
     }
     
 }

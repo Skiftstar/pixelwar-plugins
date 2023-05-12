@@ -24,7 +24,8 @@ public class GUI {
     public GUI(Player holder, JavaPlugin plugin) {
         this.holder = holder;
         this.plugin = plugin;
-        this.listener = new WindowListener();
+        //TODO: Check if automatically removed from listeners when gui no longer used
+        this.listener = new WindowListener(plugin);
     }
 
     /**
