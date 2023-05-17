@@ -37,6 +37,7 @@ public class AureliaWorld {
 
     public Location getSpawnLocation() {
         spawnLoc = new Location(world, 0, 60, 0, 0, 0);
+        world.loadChunk(spawnLoc.getChunk());
         //TODO: load spawnLoc dynamically
         return spawnLoc;
     }
